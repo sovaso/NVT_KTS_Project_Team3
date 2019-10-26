@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -18,19 +20,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(catalog = "dbteam3", name = "event_location")
 public class EventLocation {
 
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
+	}
+
 	@Id
 	@GeneratedValue
 	private long id;
 
-	public Set<Event> getEvents() {
-		return events;
-	}
-
-	public void setEvents(Set<Event> events) {
-		this.events = events;
-	}
-
-	@OneToOne(mappedBy = "eventLocation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "location_info_id")
 	private Location locationInfo;
 
 	// one to many
@@ -39,8 +42,9 @@ public class EventLocation {
 	private Set<LeasedZone> leasedZones = new HashSet<>();
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "eventLocation", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private Set<Event> events = new HashSet<>();
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "event_id")
+	private Event event;
 
 	public EventLocation(long id, Location locationInfo, Set<LeasedZone> leasedZones) {
 		super();

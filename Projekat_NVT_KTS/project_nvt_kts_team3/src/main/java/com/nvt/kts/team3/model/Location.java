@@ -9,9 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,21 +32,20 @@ public class Location {
 	private String description;
 
 	@JsonIgnore
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "event_location_id")
-	private EventLocation eventLocation;
+	@OneToMany(mappedBy = "locationInfo", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	private Set<EventLocation> eventLocations = new HashSet<>();
 
 	// one to many...
 	@JsonIgnore
 	@OneToMany(mappedBy = "location", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<LocationZone> locationZones = new HashSet<>();
 
-	public EventLocation getEventLocation() {
-		return eventLocation;
+	public Set<EventLocation> getEventLocations() {
+		return eventLocations;
 	}
 
-	public void setEventLocation(EventLocation eventLocation) {
-		this.eventLocation = eventLocation;
+	public void setEventLocations(Set<EventLocation> eventLocations) {
+		this.eventLocations = eventLocations;
 	}
 
 	public Location(long id, String name, String address, String description, Set<LocationZone> locationZones) {

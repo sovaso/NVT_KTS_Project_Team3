@@ -13,9 +13,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,15 +45,14 @@ public class Event {
 	private boolean status;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name  = "type")
+	@Column(name = "type")
 	private EventType type;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<Ticket> tickets = new HashSet<>();
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "event_location_id")
+	@OneToOne(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private EventLocation eventLocation;
 
 	// slike i videi...
