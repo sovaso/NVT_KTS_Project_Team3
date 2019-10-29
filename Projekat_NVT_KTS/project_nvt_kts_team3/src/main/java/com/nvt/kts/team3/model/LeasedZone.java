@@ -32,26 +32,27 @@ public class LeasedZone {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "location_zone_id")
 	private LocationZone zone;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "event_location_id")
-	private EventLocation eventLocation;
+	@JoinColumn(name = "maintenance_id")
+	private Maintenance maintenance;
 
 	// one to many
 	@JsonIgnore
 	@OneToMany(mappedBy = "zone", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private Set<Seat> seats = new HashSet<>();
+	private Set<Ticket> tickets = new HashSet<>();
 
-	public LeasedZone(long id, double seatPrice, LocationZone zone, Set<Seat> seats) {
+	public LeasedZone() {
+		super();
+	}
+
+	public LeasedZone(long id, double seatPrice, LocationZone zone, Maintenance maintenance, Set<Ticket> tickets) {
 		super();
 		this.id = id;
 		this.seatPrice = seatPrice;
 		this.zone = zone;
-		this.seats = seats;
-	}
-
-	public LeasedZone() {
-		super();
+		this.maintenance = maintenance;
+		this.tickets = tickets;
 	}
 
 	public long getId() {
@@ -78,12 +79,20 @@ public class LeasedZone {
 		this.zone = zone;
 	}
 
-	public Set<Seat> getSeats() {
-		return seats;
+	public Maintenance getMaintenance() {
+		return maintenance;
 	}
 
-	public void setSeats(Set<Seat> seats) {
-		this.seats = seats;
+	public void setMaintenance(Maintenance maintenance) {
+		this.maintenance = maintenance;
+	}
+
+	public Set<Ticket> getTickets() {
+		return tickets;
+	}
+
+	public void setTickets(Set<Ticket> tickets) {
+		this.tickets = tickets;
 	}
 
 }

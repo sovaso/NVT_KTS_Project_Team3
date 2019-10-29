@@ -33,20 +33,12 @@ public class Location {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "locationInfo", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private Set<EventLocation> eventLocations = new HashSet<>();
+	private Set<Event> events = new HashSet<>();
 
 	// one to many...
 	@JsonIgnore
 	@OneToMany(mappedBy = "location", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<LocationZone> locationZones = new HashSet<>();
-
-	public Set<EventLocation> getEventLocations() {
-		return eventLocations;
-	}
-
-	public void setEventLocations(Set<EventLocation> eventLocations) {
-		this.eventLocations = eventLocations;
-	}
 
 	public Location(long id, String name, String address, String description, Set<LocationZone> locationZones) {
 		super();
@@ -99,6 +91,14 @@ public class Location {
 
 	public void setLocationZones(Set<LocationZone> locationZones) {
 		this.locationZones = locationZones;
+	}
+
+	public Set<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(Set<Event> events) {
+		this.events = events;
 	}
 
 }

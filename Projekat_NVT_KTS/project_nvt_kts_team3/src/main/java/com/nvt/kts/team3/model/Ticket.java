@@ -1,10 +1,5 @@
 package com.nvt.kts.team3.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,142 +8,51 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
-@Table(catalog = "dbteam3", name = "ticket")
+@Table(catalog = "dbteam3", name = "seat")
 public class Ticket {
 
 	@Id
 	@GeneratedValue
 	private long id;
 
-	@Column(name = "dates")
-	private ArrayList<Date> dates;
+	@Column(name = "number_row")
+	private int row;
 
-	@Column(name = "date_of_reservation")
-	private Date dateOfReservation;
+	@Column(name = "number_col")
+	private int col;
 
-	@Column(name = "expiry_date")
-	private Date expiryDate;
+	@Column(name = "price")
+	private double price;
 
-	@Column(name = "paid")
-	private boolean paid;
-
-	@Column(name = "ticket_price")
-	private double ticketPrice;
+	@Column(name = "reserved")
+	private boolean reserved;
 
 	// many to one
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "user_id")
-	private RegularUser user;
-
-	// one to many
-	@JsonIgnore
-	@OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private Set<Seat> reservedSeats = new HashSet<>();
+	@JoinColumn(name = "reservation_id")
+	private Reservation reservation;
 
 	// many to one
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name = "event_id")
-	private Event event;
-
-	// QR kod...
-	@Column(name = "qr_code")
-	private String qrCode;
-
-	public String getQrCode() {
-		return qrCode;
-	}
-
-	public void setQrCode(String qrCode) {
-		this.qrCode = qrCode;
-	}
+	@JoinColumn(name = "leased_zone_id")
+	private LeasedZone zone;
 
 	public Ticket() {
 		super();
 	}
 
-	public Ticket(long id, ArrayList<Date> dates, Date dateOfReservation, Date expiryDate, boolean paid,
-			double ticketPrice, RegularUser user, Set<Seat> reservedSeats, Event event, String qrCode) {
+	public Ticket(long id, int row, int col, double price, boolean reserved, Reservation reservation, LeasedZone zone) {
 		super();
 		this.id = id;
-		this.dates = dates;
-		this.dateOfReservation = dateOfReservation;
-		this.expiryDate = expiryDate;
-		this.paid = paid;
-		this.ticketPrice = ticketPrice;
-		this.user = user;
-		this.reservedSeats = reservedSeats;
-		this.event = event;
-		this.qrCode = qrCode;
-	}
-
-	public ArrayList<Date> getDates() {
-		return dates;
-	}
-
-	public void setDates(ArrayList<Date> dates) {
-		this.dates = dates;
-	}
-
-	public Date getDateOfReservation() {
-		return dateOfReservation;
-	}
-
-	public void setDateOfReservation(Date dateOfReservation) {
-		this.dateOfReservation = dateOfReservation;
-	}
-
-	public Date getExpiryDate() {
-		return expiryDate;
-	}
-
-	public void setExpiryDate(Date expiryDate) {
-		this.expiryDate = expiryDate;
-	}
-
-	public boolean isPaid() {
-		return paid;
-	}
-
-	public void setPaid(boolean paid) {
-		this.paid = paid;
-	}
-
-	public double getTicketPrice() {
-		return ticketPrice;
-	}
-
-	public void setTicketPrice(double ticketPrice) {
-		this.ticketPrice = ticketPrice;
-	}
-
-	public RegularUser getUser() {
-		return user;
-	}
-
-	public void setUser(RegularUser user) {
-		this.user = user;
-	}
-
-	public Set<Seat> getReservedSeats() {
-		return reservedSeats;
-	}
-
-	public void setReservedSeats(Set<Seat> reservedSeats) {
-		this.reservedSeats = reservedSeats;
-	}
-
-	public Event getEvent() {
-		return event;
-	}
-
-	public void setEvent(Event event) {
-		this.event = event;
+		this.row = row;
+		this.col = col;
+		this.price = price;
+		this.reserved = reserved;
+		this.reservation = reservation;
+		this.zone = zone;
 	}
 
 	public long getId() {
@@ -159,4 +63,51 @@ public class Ticket {
 		this.id = id;
 	}
 
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
+
+	public int getCol() {
+		return col;
+	}
+
+	public void setCol(int col) {
+		this.col = col;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public boolean isReserved() {
+		return reserved;
+	}
+
+	public void setReserved(boolean reserved) {
+		this.reserved = reserved;
+	}
+
+	public LeasedZone getZone() {
+		return zone;
+	}
+
+	public void setZone(LeasedZone zone) {
+		this.zone = zone;
+	}
+
+	public Reservation getReservation() {
+		return reservation;
+	}
+
+	public void setReservation(Reservation reservation) {
+		this.reservation = reservation;
+	}
 }

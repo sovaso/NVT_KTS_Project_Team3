@@ -6,8 +6,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,12 +27,17 @@ public class LocationZone {
 	@Column(name = "number_row")
 	private int rowNumber;
 
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "capacity")
+	private int capacity;
+
+	@Column(name = "matrix")
+	private boolean matrix;
+
 	@Column(name = "number_col")
 	private int colNumber;
-
-	@Enumerated(EnumType.STRING)
-	@Column(name = "zone_type")
-	private ZoneType zoneType;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "zone", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -53,17 +56,21 @@ public class LocationZone {
 	@JoinColumn(name = "location_id")
 	private Location location;
 
-	public LocationZone(long id, int rowNumber, int colNumber, ZoneType zoneType, Location location) {
+	public LocationZone() {
+		super();
+	}
+
+	public LocationZone(long id, int rowNumber, String name, int capacity, boolean matrix, int colNumber,
+			Set<LeasedZone> leasedZone, Location location) {
 		super();
 		this.id = id;
 		this.rowNumber = rowNumber;
+		this.name = name;
+		this.capacity = capacity;
+		this.matrix = matrix;
 		this.colNumber = colNumber;
-		this.zoneType = zoneType;
+		this.leasedZone = leasedZone;
 		this.location = location;
-	}
-
-	public LocationZone() {
-		super();
 	}
 
 	public long getId() {
@@ -98,12 +105,28 @@ public class LocationZone {
 		this.location = location;
 	}
 
-	public ZoneType getZoneType() {
-		return zoneType;
+	public String getName() {
+		return name;
 	}
 
-	public void setZoneType(ZoneType zoneType) {
-		this.zoneType = zoneType;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getCapacity() {
+		return capacity;
+	}
+
+	public void setCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+
+	public boolean isMatrix() {
+		return matrix;
+	}
+
+	public void setMatrix(boolean matrix) {
+		this.matrix = matrix;
 	}
 
 }

@@ -13,8 +13,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,13 +31,8 @@ public class Event {
 	@Column(name = "name")
 	private String name;
 
-	public Set<Ticket> getTickets() {
-		return tickets;
-	}
-
-	public void setTickets(Set<Ticket> tickets) {
-		this.tickets = tickets;
-	}
+	@Column(name = "reservation_expiry")
+	private Date reservationExpiry;
 
 	@Column(name = "maintenance")
 	private ArrayList<Date> maintenance;
@@ -50,16 +46,38 @@ public class Event {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private Set<Ticket> tickets = new HashSet<>();
+	private Set<Reservation> reservations = new HashSet<>();
 
-	@OneToOne(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private EventLocation eventLocation;
+	@JsonIgnore
+	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	private Set<Maintenance> maintenances = new HashSet<>();
+
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "location_info_id")
+	private Location locationInfo;
 
 	// slike i videi...
 	@Column(name = "pictures")
 	private ArrayList<String> pictures;
 	@Column(name = "videos")
 	private ArrayList<String> videos;
+
+	public Event(long id, String name, Date reservationExpiry, ArrayList<Date> maintenance, boolean status,
+			EventType type, Set<Reservation> reservations, Set<Maintenance> maintenances, Location locationInfo,
+			ArrayList<String> pictures, ArrayList<String> videos) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.reservationExpiry = reservationExpiry;
+		this.maintenance = maintenance;
+		this.status = status;
+		this.type = type;
+		this.reservations = reservations;
+		this.maintenances = maintenances;
+		this.locationInfo = locationInfo;
+		this.pictures = pictures;
+		this.videos = videos;
+	}
 
 	public ArrayList<String> getPictures() {
 		return pictures;
@@ -74,19 +92,6 @@ public class Event {
 	}
 
 	public void setVideos(ArrayList<String> videos) {
-		this.videos = videos;
-	}
-
-	public Event(long id, String name, ArrayList<Date> maintenance, boolean status, EventType type,
-			EventLocation eventLocation, ArrayList<String> pictures, ArrayList<String> videos) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.maintenance = maintenance;
-		this.status = status;
-		this.type = type;
-		this.eventLocation = eventLocation;
-		this.pictures = pictures;
 		this.videos = videos;
 	}
 
@@ -134,11 +139,35 @@ public class Event {
 		this.type = type;
 	}
 
-	public EventLocation getEventLocation() {
-		return eventLocation;
+	public Date getReservationExpiry() {
+		return reservationExpiry;
 	}
 
-	public void setEventLocation(EventLocation eventLocation) {
-		this.eventLocation = eventLocation;
+	public void setReservationExpiry(Date reservationExpiry) {
+		this.reservationExpiry = reservationExpiry;
+	}
+
+	public Set<Maintenance> getMaintenances() {
+		return maintenances;
+	}
+
+	public void setMaintenances(Set<Maintenance> maintenances) {
+		this.maintenances = maintenances;
+	}
+
+	public Location getLocationInfo() {
+		return locationInfo;
+	}
+
+	public void setLocationInfo(Location locationInfo) {
+		this.locationInfo = locationInfo;
+	}
+
+	public Set<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(Set<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 }

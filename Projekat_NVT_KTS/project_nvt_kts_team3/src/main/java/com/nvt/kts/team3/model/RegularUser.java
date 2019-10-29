@@ -12,15 +12,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class RegularUser extends User {
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	private Set<Ticket> tickets = new HashSet<>();
+	private Set<Reservation> reservations = new HashSet<>();
 
-	public Set<Ticket> getTickets() {
-		return tickets;
+	public RegularUser(long id, String name, String surname, String username, String email, String password) {
+		super(id, name, surname, username, email, password);
 	}
 
-	public void setTickets(Set<Ticket> tickets) {
-		this.tickets = tickets;
+	public RegularUser(long id, String name, String surname, String username, String email, String password,
+			Set<Reservation> reservations) {
+		super(id, name, surname, username, email, password);
+		this.reservations = reservations;
+	}
+
+	public Set<Reservation> getReservations() {
+		return reservations;
+	}
+
+	public void setReservations(Set<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 }
