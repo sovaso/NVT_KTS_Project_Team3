@@ -13,6 +13,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class RegularUser extends User {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<Reservation> reservations = new HashSet<>();
@@ -33,5 +38,9 @@ public class RegularUser extends User {
 
 	public void setReservations(Set<Reservation> reservations) {
 		this.reservations = reservations;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 }
