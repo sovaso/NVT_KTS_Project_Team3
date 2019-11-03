@@ -1,7 +1,6 @@
 package com.nvt.kts.team3.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,12 +30,6 @@ public class Event {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "reservation_expiry")
-	private Date reservationExpiry;
-
-	@Column(name = "maintenance")
-	private ArrayList<Date> maintenance;
-
 	@Column(name = "status")
 	private boolean status;
 
@@ -62,14 +55,12 @@ public class Event {
 	@Column(name = "videos")
 	private ArrayList<String> videos;
 
-	public Event(long id, String name, Date reservationExpiry, ArrayList<Date> maintenance, boolean status,
+	public Event(long id, String name, boolean status,
 			EventType type, Set<Reservation> reservations, Set<Maintenance> maintenances, Location locationInfo,
 			ArrayList<String> pictures, ArrayList<String> videos) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.reservationExpiry = reservationExpiry;
-		this.maintenance = maintenance;
 		this.status = status;
 		this.type = type;
 		this.reservations = reservations;
@@ -115,14 +106,6 @@ public class Event {
 		this.name = name;
 	}
 
-	public ArrayList<Date> getMaintenance() {
-		return maintenance;
-	}
-
-	public void setMaintenance(ArrayList<Date> maintenance) {
-		this.maintenance = maintenance;
-	}
-
 	public boolean isStatus() {
 		return status;
 	}
@@ -137,14 +120,6 @@ public class Event {
 
 	public void setType(EventType type) {
 		this.type = type;
-	}
-
-	public Date getReservationExpiry() {
-		return reservationExpiry;
-	}
-
-	public void setReservationExpiry(Date reservationExpiry) {
-		this.reservationExpiry = reservationExpiry;
 	}
 
 	public Set<Maintenance> getMaintenances() {
