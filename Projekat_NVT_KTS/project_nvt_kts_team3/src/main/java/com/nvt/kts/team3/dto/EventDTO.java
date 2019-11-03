@@ -3,16 +3,18 @@ package com.nvt.kts.team3.dto;
 import java.util.ArrayList;
 
 public class EventDTO {
+	private long id;
 	private String name;
 	private String description;
 	private String eventType;
-	private ArrayList<String> maintenance;
+	private ArrayList<MaintenanceDTO> maintenance;
 	private ArrayList<LeasedZoneDTO> locationZones;
 	private long locationId;
 
-	public EventDTO(String name, String description, String eventType, ArrayList<String> maintenance,
+	public EventDTO(long id, String name, String description, String eventType, ArrayList<MaintenanceDTO> maintenance,
 			ArrayList<LeasedZoneDTO> locationZones, long locationId) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.eventType = eventType;
@@ -43,10 +45,10 @@ public class EventDTO {
 	public void setEventType(String eventType) {
 		this.eventType = eventType;
 	}
-	public ArrayList<String> getMaintenance() {
+	public ArrayList<MaintenanceDTO> getMaintenance() {
 		return maintenance;
 	}
-	public void setMaintenance(ArrayList<String> maintenance) {
+	public void setMaintenance(ArrayList<MaintenanceDTO> maintenance) {
 		this.maintenance = maintenance;
 	}
 	public long getLocationId() {
@@ -62,5 +64,13 @@ public class EventDTO {
 
 	public void setLocationZones(ArrayList<LeasedZoneDTO> locationZones) {
 		this.locationZones = locationZones;
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 }

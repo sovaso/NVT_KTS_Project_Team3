@@ -18,11 +18,17 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(catalog = "dbteam3", name = "event_location")
+@Table(catalog = "dbteam3", name = "maintenance")
 public class Maintenance {
 
 	@Column(name = "maintenance_date")
 	private Date maintenanceDate;
+	
+	@Column(name = "maintenance_end_time")
+	private Date maintenanceEndTime;
+	
+	@Column(name = "reservation_expiry")
+	private Date reservationExpiry;
 
 	public Event getEvent() {
 		return event;
@@ -45,10 +51,15 @@ public class Maintenance {
 	@JoinColumn(name = "event_id")
 	private Event event;
 
-	public Maintenance(long id, Set<LeasedZone> leasedZones) {
+	public Maintenance(Date maintenanceDate, Date maintenanceEndTime, Date reservationExpiry, long id,
+			Set<LeasedZone> leasedZones, Event event) {
 		super();
+		this.maintenanceDate = maintenanceDate;
+		this.maintenanceEndTime = maintenanceEndTime;
+		this.reservationExpiry = reservationExpiry;
 		this.id = id;
 		this.leasedZones = leasedZones;
+		this.event = event;
 	}
 
 	public Maintenance() {
@@ -79,4 +90,19 @@ public class Maintenance {
 		this.maintenanceDate = maintenanceDate;
 	}
 
+	public Date getReservationExpiry() {
+		return reservationExpiry;
+	}
+
+	public void setReservationExpiry(Date reservationExpiry) {
+		this.reservationExpiry = reservationExpiry;
+	}
+
+	public Date getMaintenanceEndTime() {
+		return maintenanceEndTime;
+	}
+
+	public void setMaintenanceEndTime(Date maintenanceEndTime) {
+		this.maintenanceEndTime = maintenanceEndTime;
+	}
 }

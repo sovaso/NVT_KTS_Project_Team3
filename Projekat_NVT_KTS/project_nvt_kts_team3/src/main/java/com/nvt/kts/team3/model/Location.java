@@ -30,22 +30,29 @@ public class Location {
 
 	@Column(name = "description")
 	private String description;
+	
+	@Column(name = "status")
+	private boolean status;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "locationInfo", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<Event> events = new HashSet<>();
 
-	// one to many...
 	@JsonIgnore
 	@OneToMany(mappedBy = "location", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<LocationZone> locationZones = new HashSet<>();
 
-	public Location(long id, String name, String address, String description, Set<LocationZone> locationZones) {
+	
+
+	public Location(long id, String name, String address, String description, boolean status, Set<Event> events,
+			Set<LocationZone> locationZones) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.address = address;
 		this.description = description;
+		this.status = status;
+		this.events = events;
 		this.locationZones = locationZones;
 	}
 
@@ -101,4 +108,12 @@ public class Location {
 		this.events = events;
 	}
 
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
+	}
+	
 }
