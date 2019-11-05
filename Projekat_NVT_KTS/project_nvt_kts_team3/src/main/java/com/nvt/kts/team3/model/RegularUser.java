@@ -22,6 +22,9 @@ public class RegularUser extends User {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<Reservation> reservations = new HashSet<>();
 
+	public RegularUser() {
+		
+	}
 	public RegularUser(long id, String name, String surname, String username, String email, String password) {
 		super(id, name, surname, username, email, password);
 	}

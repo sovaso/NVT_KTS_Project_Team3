@@ -20,6 +20,8 @@ import javax.persistence.Table;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.sym.Name;
+import com.nvt.kts.team3.dto.UserDTO;
 
 @Entity
 @Table(catalog = "dbteam3", name = "user")
@@ -62,7 +64,6 @@ public abstract class User implements UserDetails {
 	private List<Authority> authorities;
 
 	public User(long id, String name, String surname, String username, String email, String password) {
-		super();
 		this.id = id;
 		this.name = name;
 		this.surname = surname;
@@ -71,8 +72,16 @@ public abstract class User implements UserDetails {
 		this.password = password;
 	}
 
+	public User(UserDTO userDto) {
+		this.id = userDto.getId();
+		this.name = userDto.getName();
+		this.surname = userDto.getSurname();
+		this.username=userDto.getUsername();
+		this.email = userDto.getEmail();
+		this.password =userDto.getPassword();
+	}
 	public User() {
-		super();
+		
 	}
 
 	public String getName() {
