@@ -3,13 +3,14 @@ package com.nvt.kts.team3.dto;
 public class LeasedZoneDTO {
 	private long id;
 	private long zoneId;
+	private long maintenanceId;
 	private double price;
 	
-	
-	public LeasedZoneDTO(long id, long zoneId, double price) {
+	public LeasedZoneDTO(long id, long zoneId, long maintenanceId, double price) {
 		super();
 		this.id = id;
 		this.zoneId = zoneId;
+		this.maintenanceId = maintenanceId;
 		this.price = price;
 	}
 	public LeasedZoneDTO() {
@@ -32,5 +33,11 @@ public class LeasedZoneDTO {
 	}
 	public void setId(long id) {
 		this.id = id;
+	}
+	public long getMaintenanceId() {
+		return maintenanceId;
+	}
+	public void setMaintenanceId(long maintenanceId) {
+		this.maintenanceId = maintenanceId;
 	}
 }

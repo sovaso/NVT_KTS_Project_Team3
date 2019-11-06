@@ -35,4 +35,54 @@ public class TicketServiceImpl implements TicketService{
 		ticketRepository.deleteById(id);
 	}
 
+	@Override
+	public Ticket saveAndFlush(Ticket ticket) {
+		return ticketRepository.saveAndFlush(ticket);
+	}
+
+	@Override
+	public List<Ticket> getMaintenanceReservedTickets(long maintenanceID) {
+		return ticketRepository.getMaintenanceReservedTickets(maintenanceID);
+	}
+	
+	@Override
+	public List<Ticket> getMaintenanceSoldTickets(long maintenanceID) {
+		return ticketRepository.getMaintenanceSoldTickets(maintenanceID);
+	}
+
+	@Override
+	public List<Ticket> getMaintenanceTickets(long maintenanceID) {
+		return ticketRepository.getMaintenanceTickets(maintenanceID);
+	}
+
+	@Override
+	public List<Ticket> getEventTickets(long eventID) {
+		return ticketRepository.getEventTickets(eventID);
+	}
+
+	@Override
+	public List<Ticket> getEventReservedTickets(long eventID) {
+		return ticketRepository.getEventReservedTickets(eventID);
+	}
+
+	@Override
+	public List<Ticket> getEventSoldTickets(long eventID) {
+		return ticketRepository.getEventSoldTickets(eventID);
+	}
+
+	@Override
+	public List<Ticket> getLeasedZoneReservedTickets(long leasedZoneID) {
+		return ticketRepository.getLeasedZoneReservedTickets(leasedZoneID);
+	}
+
+	@Override
+	public List<Ticket> getLeasedZoneSoldTickets(long leasedZoneID) {
+		return ticketRepository.getLeasedZoneSoldTickets(leasedZoneID);
+	}
+
+	@Override
+	public List<Ticket> getLeasedZoneTickets(long leasedZoneID) {
+		return ticketRepository.getLeasedZoneTickets(leasedZoneID);
+	}
+
 }

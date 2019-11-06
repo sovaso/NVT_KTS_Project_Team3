@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,21 @@ public class EventServiceImpl implements EventService{
 	@Override
 	public void remove(Long id) {
 		eventRepository.deleteById(id);
+	}
+	
+	@Override
+	public ArrayList<Event> getReservedTickets(Long eventId) {
+		return eventRepository.getReservedTickets(eventId);
+	}
+
+	@Override
+	public ArrayList<Event> getSoldTickets(Long eventId) {
+		return eventRepository.getSoldTickets(eventId);
+	}
+
+	@Override
+	public List<Event> getActiveEvents() {
+		return eventRepository.getActiveEvents();
 	}
 
 }

@@ -1,9 +1,11 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.repository.LeasedZoneRepository;
@@ -21,6 +23,7 @@ public class LeasedZoneServiceImpl implements LeasedZoneService{
 	}
 
 	@Override
+	@Transactional
 	public LeasedZone save(LeasedZone leasedZone) {
 		return leasedZoneRepository.save(leasedZone);
 	}
@@ -33,6 +36,17 @@ public class LeasedZoneServiceImpl implements LeasedZoneService{
 	@Override
 	public void remove(Long id) {
 		leasedZoneRepository.deleteById(id);
+	}
+
+	@Override
+	@Transactional
+	public LeasedZone saveAndFlush(LeasedZone leasedZone) {
+		return leasedZoneRepository.saveAndFlush(leasedZone);
+	}
+
+	@Override
+	public ArrayList<LeasedZone> getEventLeasedZones(long eventId) {
+		return leasedZoneRepository.getEventLeasedZones(eventId);
 	}
 
 }
