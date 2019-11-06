@@ -31,11 +31,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 	private AuthenticationManager authenticationManager;
 
 	public boolean saveUser(User ru) {
-		try {
+		this.userRepository.save(ru);
+		/*try {
 			this.userRepository.save(ru);
 		} catch (Exception e) {
 			return false;
 		}
+		*/
 		return true;
 	}
 

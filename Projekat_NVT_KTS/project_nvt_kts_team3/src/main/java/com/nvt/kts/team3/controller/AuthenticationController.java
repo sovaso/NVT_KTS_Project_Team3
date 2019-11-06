@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -55,6 +56,7 @@ public class AuthenticationController {
 			return new ResponseEntity<>(new MessageDTO("Username is already take.", "Error"), HttpStatus.OK);
 		}
 		RegularUser regularUser = new RegularUser();
+		regularUser.setId(user.getId());
 		regularUser.setEmail(user.getEmail());
 		regularUser.setUsername(user.getUsername());
 		regularUser.setPassword(this.userDetailsService.encodePassword(user.getPassword()));
@@ -72,17 +74,19 @@ public class AuthenticationController {
 			return new ResponseEntity<>(true, HttpStatus.OK); 
 			}
 		 
-		return new ResponseEntity<>(false, HttpStatus.OK);
+		return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 	
 	}
 
 	@PostMapping(value = "auth/registerAdmin")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> registerAdmin(@RequestBody UserDTO user) {
 		
 		if (this.userDetailsService.usernameTaken(user.getUsername())) {
 			return new ResponseEntity<>(new MessageDTO("Username is already take.", "Error"), HttpStatus.OK);
 		}
 		Administrator admin = new Administrator();
+		admin.setId(user.getId());
 		admin.setEmail(user.getEmail());
 		admin.setUsername(user.getUsername());
 		admin.setPassword(this.userDetailsService.encodePassword(user.getPassword()));
@@ -100,7 +104,7 @@ public class AuthenticationController {
 			return new ResponseEntity<>(true, HttpStatus.OK); 
 			}
 		 
-		return new ResponseEntity<>(false, HttpStatus.OK);
+		return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 	}
 
 	@PostMapping(value = "auth/login")
@@ -112,7 +116,7 @@ public class AuthenticationController {
 			authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 		} catch (BadCredentialsException e) {
-			return new ResponseEntity<>(new MessageDTO("Wrong username or password.", "Error"), HttpStatus.OK);
+			return new ResponseEntity<>(new MessageDTO("Wrong username or password.", "Error"), HttpStatus.NOT_FOUND);
 		} catch (DisabledException e) {
 			return new ResponseEntity<>(new MessageDTO("Account is not verified. Check your email.", "Error"),
 					HttpStatus.OK);

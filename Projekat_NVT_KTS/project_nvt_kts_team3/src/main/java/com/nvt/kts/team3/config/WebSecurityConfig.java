@@ -72,7 +72,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/h2-console/**").permitAll()
 			.antMatchers("/login/**").permitAll()
 			.antMatchers("/**").permitAll()
+			.antMatchers("/getLocation/{id}/**").permitAll()
+			.antMatchers("/getAllLocations/**").permitAll()
+			.antMatchers("/getActiveLocations/**").permitAll()
 			
+			.antMatchers("/auth/registerAdmin/**").permitAll()
 			// svaki zahtev mora biti autorizovan
 			.anyRequest().authenticated().and()
 			

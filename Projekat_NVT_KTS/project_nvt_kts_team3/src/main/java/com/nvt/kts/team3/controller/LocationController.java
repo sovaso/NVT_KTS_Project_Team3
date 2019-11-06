@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ public class LocationController {
 	private LocationZoneService locationZoneService;
 	
 	@PostMapping(value = "/createLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLocation(@RequestBody LocationDTO locationDTO){
 		Location location = new Location();
 		location.setStatus(true);
@@ -88,6 +90,7 @@ public class LocationController {
 	
 	
 	@PostMapping(value = "/updateLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLocation(@RequestBody LocationDTO locationDTO){
 		Location location = locationService.findById(locationDTO.getId());
 		if(location == null){
@@ -188,6 +191,7 @@ public class LocationController {
 	}
 	
 	@DeleteMapping(value = "/deleteLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteLocation(@PathVariable(value = "id") Long locationId){
 		List<Event> activeEvents = locationService.getActiveEvents(locationId);
 		Location location = locationService.findById(locationId);

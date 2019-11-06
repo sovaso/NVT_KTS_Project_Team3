@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,6 +50,7 @@ public class ReservationController {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	@PostMapping(value = "/createReservation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
 		Event e = this.eventService.findById(reservationDTO.getEventId());
 		if (e.isStatus() == true) {
@@ -100,6 +102,7 @@ public class ReservationController {
 	}
 
 	@DeleteMapping(value = "/deleteReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> deleteReservation(@PathVariable long reservationId) {
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
 		Reservation r = this.reservationService.findById(reservationId);
@@ -130,6 +133,7 @@ public class ReservationController {
 	}
 
 	@PutMapping(value = "/payReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> payReservation(@PathVariable long reservationId) {
 
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
@@ -155,12 +159,14 @@ public class ReservationController {
 	}
 
 	@GetMapping(value = "/getAllReservations", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Reservation>> getAllReservations() {
 		List<Reservation> reservations = this.reservationService.findAll();
 		return new ResponseEntity<>(reservations, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getUserReservations/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<List<Reservation>> getUserReservations(@PathVariable long userId) {
 		List<Reservation> reservations = this.reservationService
 				.findByUser((RegularUser) this.userService.findById(userId));
@@ -168,18 +174,21 @@ public class ReservationController {
 	}
 
 	@GetMapping(value = "/getReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
 	public ResponseEntity<Reservation> getReservation(@PathVariable long reservationId) {
 		Reservation res = this.reservationService.findById(reservationId);
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getEventReservations/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Reservation>> getEventReservations(@PathVariable long eventId) {
 		List<Reservation> res = this.reservationService.findByEvent(this.eventService.findById(eventId));
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getLocationReservations/{locationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Reservation>> getLocationReservations(@PathVariable long locationId) {
 		List<Reservation> res = this.reservationService.findAll();
 		List<Reservation> ret = new ArrayList<Reservation>();
@@ -192,6 +201,7 @@ public class ReservationController {
 	}
 
 	@PutMapping(value = "/cancelTicket/{ticketId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
 	public ResponseEntity<MessageDTO> cancelTicket(@PathVariable long ticketId) {
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
 		Ticket t = this.ticketService.findById(ticketId);
