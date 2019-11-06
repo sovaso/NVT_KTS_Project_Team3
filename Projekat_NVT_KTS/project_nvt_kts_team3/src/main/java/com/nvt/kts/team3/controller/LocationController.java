@@ -1,5 +1,10 @@
 package com.nvt.kts.team3.controller;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +21,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.LocationDTO;
+import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.LocationZoneDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.LocationZone;
+import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.LocationZoneService;
+import com.nvt.kts.team3.service.ReservationService;
+
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -33,6 +42,9 @@ public class LocationController {
 	
 	@Autowired
 	private LocationZoneService locationZoneService;
+	
+	@Autowired
+	private ReservationService reservationService;
 	
 	@PostMapping(value = "/createLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -208,5 +220,72 @@ public class LocationController {
 		location.setStatus(false);
 		locationService.save(location);
 		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully deleted!."), HttpStatus.OK);
+	}
+	
+	
+	@GetMapping(value = "/getLocationReport/{location_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<LocationReportDTO> getLocationReport(@PathVariable long location_id) throws ParseException {
+		LocationReportDTO retVal = new LocationReportDTO();
+		List<Reservation> res = this.reservationService.findAll();
+		List<Reservation> ret = new ArrayList<Reservation>();
+		for (Reservation r : res) {
+			if (r.getEvent().getLocationInfo().getId() == location_id) {
+				ret.add(r);
+			}
+		}
+		long DAY_IN_MILI = 86400000;
+		Date currentDate = new Date();
+		DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+		DateFormat df2 = new SimpleDateFormat("yyyy-MM");
+		Date today = df1.parse(df1.format(currentDate));
+		Date thisMonth = df2.parse(df2.format(currentDate));
+		Date workWith;
+		Date workWith2;
+		Date startDate;
+		// daily
+		for (int i = 1; i < 8; i++) {
+			int number = 0;
+			workWith = new Date(today.getTime() - i * DAY_IN_MILI);
+			retVal.getDailyLabels().add(df1.format(workWith));
+			for (Reservation r : ret) {
+				startDate = r.getDateOfReservation();
+				if (df1.format(startDate).equals(df1.format(workWith))) {
+					number += 1;
+				}
+			}
+			retVal.getDailyValues().add(number);
+		}
+		// weekly
+		for (int i = 0; i < 7; i++) {
+			int number = 0;
+			workWith = new Date(today.getTime() - (i * 7 + 1) * DAY_IN_MILI);
+			workWith2 = new Date(today.getTime() - (7 * i + 7) * DAY_IN_MILI);
+			retVal.getWeeklyLabels().add(df1.format(workWith2) + " to " + df1.format(workWith));
+			for (Reservation r : ret) {
+				startDate = r.getDateOfReservation();
+				if (!startDate.after(workWith) && !startDate.before(workWith2)) {
+					number += 1;
+				}
+			}
+			retVal.getWeeklyValues().add(number);
+		}
+		// monthly
+		for (int i = 0; i < 7; i++) {
+			int number = 0;
+			workWith = new Date(thisMonth.getTime() - DAY_IN_MILI);
+			workWith2 = df2.parse(df2.format(workWith));
+			retVal.getMonthlyLabels().add(df2.format(workWith2));
+			for (Reservation r : ret) {
+				startDate = r.getDateOfReservation();
+				if (!startDate.after(workWith) && !startDate.before(workWith2)) {
+					number += 1;
+				}
+			}
+			retVal.getMonthlyValues().add(number);
+			thisMonth = df2.parse(df2.format(new Date(thisMonth.getTime() - DAY_IN_MILI)));
+		}
+		return new ResponseEntity<>(retVal, HttpStatus.OK);
+		
 	}
 }

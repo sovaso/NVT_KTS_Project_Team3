@@ -4,12 +4,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +28,14 @@ import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.model.Maintenance;
+import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.LeasedZoneService;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
+import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 
 @RestController
@@ -54,6 +59,9 @@ public class EventController {
 	
 	@Autowired
 	private LocationZoneService locationZoneService;
+	
+	@Autowired
+	private ReservationService reservationService;
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
@@ -162,4 +170,23 @@ public class EventController {
 		}
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfuly created!"), HttpStatus.CREATED);
 	}
+	
+	
+	@GetMapping(value = "/getEventIncome/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Double> getEventIncome(@PathVariable long event_id) {
+		Event e=this.eventService.findById(event_id);
+		List<Reservation> reservations=this.reservationService.findByEvent(e);
+		double income=0;
+		for(Reservation r:reservations) {
+			if(r.isPaid()==true) {
+				income+=r.getTotalPrice();
+			}
+		}
+		return new ResponseEntity<Double>(income,HttpStatus.OK);
+		
+	}
+	
+	
+	
 }

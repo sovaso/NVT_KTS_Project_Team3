@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,8 @@ import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 import com.nvt.kts.team3.service.UserService;
+
+
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 
@@ -53,6 +56,7 @@ public class ReservationController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
 		Event e = this.eventService.findById(reservationDTO.getEventId());
+		RegularUser logged = (RegularUser) this.userService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		if (e.isStatus() == true) {
 			Reservation r = new Reservation();
 			r.setDateOfReservation(new Date());
@@ -80,10 +84,10 @@ public class ReservationController {
 			}
 			r.setTotalPrice(price);
 			this.reservationService.save(r);
-//			RegularUser u = (RegularUser) this.userService.findById(reservationDTO.getUserId());
-//			u.getReservations().add(r);
-//			this.userService.save(u);
-//			r.setUser(u);
+//			//RegularUser u = (RegularUser) this.userService.findById(reservationDTO.getUserId());
+//			logged.getReservations().add(r);
+//			this.userService.save(logged);
+//			r.setUser(logged);
 			r.setUser(null);
 			if (noSuccess == 0) {
 				return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly created!"),
@@ -222,5 +226,9 @@ public class ReservationController {
 		}
 		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
 	}
+	
+	
+	
+	
 
 }
