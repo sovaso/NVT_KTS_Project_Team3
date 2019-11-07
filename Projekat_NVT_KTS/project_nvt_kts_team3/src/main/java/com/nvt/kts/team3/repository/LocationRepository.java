@@ -16,7 +16,7 @@ public interface LocationRepository extends JpaRepository<Location, Long>{
 	public Location findByNameAndAddress(String name, String address);
 	
 	@Query("SELECT DISTINCT e FROM Event e " +
-		    "WHERE e.id IN " +
+		    "WHERE e.status = 1 AND e.id IN " +
 		    "(SELECT DISTINCT m.event.id FROM Maintenance m " +
 				"WHERE m.event.locationInfo.id = ?1 "+
 		   		"AND m.maintenanceDate > NOW())")
@@ -25,11 +25,13 @@ public interface LocationRepository extends JpaRepository<Location, Long>{
 	@Query("SELECT DISTINCT l FROM Location l WHERE l.status = 1")
 	public ArrayList<Location> getActiveLocations();
 	
-	@Query("SELECT DISTINCT e FROM Event e " +
-		    "WHERE e.id IN " +
-		    "(SELECT DISTINCT m.event.id FROM Maintenance m " +
+	@Query("SELECT DISTINCT m.event FROM Maintenance m " +
 				"WHERE m.event.locationInfo.id = ?1 "+
-		   		"AND ((m.maintenanceDate <= ?2 AND m.maintenanceEndTime >= ?3 ) OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3 ) OR (m.maintenanceDate >= ?2 AND m.maintenanceDate <= ?3 ) OR (m.maintenanceEndTime >= ?2 AND m.maintenanceEndTime <= ?3 )))")
+				"AND m.event.status = 1 "+
+				"AND ((m.maintenanceDate <= ?3 AND m.maintenanceEndTime >= ?3) " +
+				"		OR (m.maintenanceDate <= ?2 AND m.maintenanceEndTime >= ?3) " +
+				"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3) " +
+				"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3))")
 	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate);
 }
 

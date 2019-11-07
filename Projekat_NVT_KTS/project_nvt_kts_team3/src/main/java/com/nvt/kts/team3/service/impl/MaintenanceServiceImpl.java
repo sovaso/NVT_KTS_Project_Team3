@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.repository.MaintenanceRepository;
@@ -21,6 +22,7 @@ public class MaintenanceServiceImpl implements MaintenanceService{
 	}
 
 	@Override
+	@Transactional
 	public Maintenance save(Maintenance maintenance) {
 		return maintenanceRepository.save(maintenance);
 	}
@@ -33,6 +35,17 @@ public class MaintenanceServiceImpl implements MaintenanceService{
 	@Override
 	public void remove(Long id) {
 		maintenanceRepository.deleteById(id);
+	}
+
+	@Override
+	@Transactional
+	public Maintenance saveAndFlush(Maintenance maintenance) {
+		return maintenanceRepository.saveAndFlush(maintenance);
+	}
+
+	@Override
+	public Maintenance getLastMaintenanceOfEvent(long eventId) {
+		return maintenanceRepository.getLastMaintenanceOfEvent(eventId);
 	}
 
 }

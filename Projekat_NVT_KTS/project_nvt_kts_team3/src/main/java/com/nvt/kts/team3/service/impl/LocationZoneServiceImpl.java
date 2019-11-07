@@ -1,11 +1,13 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nvt.kts.team3.model.LocationZone;
+import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.repository.LocationZoneRepository;
 import com.nvt.kts.team3.service.LocationZoneService;
 
@@ -33,6 +35,11 @@ public class LocationZoneServiceImpl implements LocationZoneService{
 	@Override
 	public void remove(Long id) {
 		locationZoneRepository.deleteById(id);
+	}
+
+	@Override
+	public ArrayList<Maintenance> getActiveMaintenances(long locationZoneId) {
+		return locationZoneRepository.getActiveMaintenances(locationZoneId);
 	}
 
 }

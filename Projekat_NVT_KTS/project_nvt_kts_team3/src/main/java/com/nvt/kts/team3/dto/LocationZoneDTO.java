@@ -2,15 +2,17 @@ package com.nvt.kts.team3.dto;
 
 public class LocationZoneDTO {
 	private long id;
+	private long locationId;
 	private boolean matrix;
 	private String name;
 	private int row;
 	private int col;
 	private int capacity;
 
-	public LocationZoneDTO(long id, boolean matrix, String name, int row, int col, int capacity) {
+	public LocationZoneDTO(long id, long locationId, boolean matrix, String name, int row, int col, int capacity) {
 		super();
 		this.id = id;
+		this.locationId = locationId;
 		this.matrix = matrix;
 		this.name = name;
 		this.row = row;
@@ -68,5 +70,13 @@ public class LocationZoneDTO {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public long getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(long locationId) {
+		this.locationId = locationId;
 	}
 }

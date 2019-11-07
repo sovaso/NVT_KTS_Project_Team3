@@ -105,11 +105,8 @@ public class LocationController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLocation(@RequestBody LocationDTO locationDTO){
 		Location location = locationService.findById(locationDTO.getId());
-		if(location == null){
-			return new ResponseEntity<>(new MessageDTO("Could not find location", "Location with this ID does not exist."), HttpStatus.NOT_FOUND);
-		}
-		if(location.isStatus() == false){
-			return new ResponseEntity<>(new MessageDTO("Location is deleted", "Deleted locations can not be updated."), HttpStatus.OK);
+		if(location == null || location.isStatus() == false){
+			return new ResponseEntity<>(new MessageDTO("Could not find location", "Location with this ID does not exist or is deleted."), HttpStatus.NOT_FOUND);
 		}
 		
 		Location testName = locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress());
@@ -127,10 +124,12 @@ public class LocationController {
 		
 		boolean updatable = true;
 		
-		if(locationService.getActiveEvents(location.getId()) != null && locationService.getActiveEvents(location.getId()).isEmpty() == false){
+		List<Event> activeEvents = locationService.getActiveEvents(location.getId());
+		if(activeEvents != null && activeEvents.isEmpty() == false){
 			updatable = false;
 		}
 		
+		String message = "";
 		if(updatable){
 			try {
 				for(LocationZoneDTO lz : locationDTO.getLocationZone()){
@@ -167,7 +166,7 @@ public class LocationController {
 							zone.setMatrix(false);
 						}
 						else{
-							return new ResponseEntity<>(new MessageDTO("Could not update location", "Location zones are not valid."), HttpStatus.BAD_REQUEST);
+							return new ResponseEntity<>(new MessageDTO("Unable to update location", "Location zones are not valid."), HttpStatus.BAD_REQUEST);
 						}
 						if(changed){
 							locationZoneService.save(zone);
@@ -178,7 +177,10 @@ public class LocationController {
 				return new ResponseEntity<>(new MessageDTO("Unable to update location zones", "Location zones are not valid."), HttpStatus.BAD_REQUEST);
 			}
 		}
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfuly updated!"), HttpStatus.OK);
+		else{
+			message = "Make sure that location zones can not be changed sience there are active events on this location.";
+		}
+		return new ResponseEntity<>(new MessageDTO("Success", "Location successfuly updated! "+ message), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
