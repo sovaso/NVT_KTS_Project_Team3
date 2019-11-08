@@ -51,58 +51,30 @@ public class ReservationController {
 	private UserService userService;
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	
+
+	public ReservationController(ReservationService reservationService, TicketService ticketService,
+			EventService eventService, UserService userService) {
+		super();
+		this.reservationService = reservationService;
+		this.ticketService = ticketService;
+		this.eventService = eventService;
+		this.userService = userService;
+	}
 
 	@PostMapping(value = "/createReservation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
-		Event e = this.eventService.findById(reservationDTO.getEventId());
-		RegularUser logged = (RegularUser) this.userService.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-		if (e.isStatus() == true) {
-			Reservation r = new Reservation();
-			r.setDateOfReservation(new Date());
-			r.setEvent(eventService.findById(reservationDTO.getEventId()));
-			r.setPaid(false);
-			r.setQrCode(reservationDTO.getQrCode());
-			double price = 0;
-			int noSuccess = 0;
-			boolean created=false;
-			for (TicketDTO t : reservationDTO.getTickets()) {
-				Ticket ticket = ticketService.findById(t.getId());
-				if (ticket.isReserved() == false) {
-					if(created==false) {
-						this.reservationService.save(r);
-						created=true;
-					}
-					ticket.setReserved(true);
-					ticket.setReservation(r);
-					r.getReservedTickets().add(ticket);
-					price += ticket.getPrice();
-					this.ticketService.save(ticket);
-				} else {
-					noSuccess++;
-				}
-			}
-			r.setTotalPrice(price);
-			this.reservationService.save(r);
-//			//RegularUser u = (RegularUser) this.userService.findById(reservationDTO.getUserId());
-//			logged.getReservations().add(r);
-//			this.userService.save(logged);
-//			r.setUser(logged);
-			r.setUser(null);
-			if (noSuccess == 0) {
-				return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly created!"),
-						HttpStatus.CREATED);
-			} else if (noSuccess == reservationDTO.getTickets().size()) {
-				return new ResponseEntity<>(new MessageDTO("No success", "Reservation was not successfuly created!"),
-						HttpStatus.BAD_REQUEST);
-			} else {
-				return new ResponseEntity<>(
-						new MessageDTO("No fully success", "Some of the tickets are already reserved!"),
-						HttpStatus.CREATED);
-			}
-		} else {
-			return new ResponseEntity<>(new MessageDTO("No success", "Event is not active!"), HttpStatus.BAD_REQUEST);
+		Reservation r=this.reservationService.create(new Reservation(reservationDTO));
+		if(r==null) {
+			return new ResponseEntity<>(new MessageDTO("No success", "Reservation could not be done!"), HttpStatus.BAD_REQUEST);
 		}
+		if(r.getReservedTickets().size()>reservationDTO.getTickets().size()) {
+			return new ResponseEntity<>(new MessageDTO("Partly success", "Some tickets could not be reserved, but reservation is created!"), HttpStatus.BAD_REQUEST);
+		}else {
+			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly created!"),HttpStatus.CREATED);
+		}
+		
 	}
 
 	@DeleteMapping(value = "/deleteReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -151,7 +123,7 @@ public class ReservationController {
 			}
 			if (noSuccess == 0) {
 				r.setPaid(true);
-				reservationService.save(r);
+				reservationService.create(r);
 				return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be paid, it expired!"),
@@ -215,7 +187,7 @@ public class ReservationController {
 			t.setReserved(false);
 			t.setReservation(null);
 			r.getReservedTickets().remove(t);
-			reservationService.save(r);
+			reservationService.create(r);
 			ticketService.save(t);
 			if(r.getReservedTickets().size()==0) {
 				reservationService.remove(r.getId());

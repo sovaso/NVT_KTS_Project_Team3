@@ -2,24 +2,26 @@ package com.nvt.kts.team3.dto;
 
 import java.util.ArrayList;
 
+import com.nvt.kts.team3.model.Event;
+
 public class ReservationDTO {
-	private long eventId;
+	private Event event;
 	private ArrayList<TicketDTO> tickets;
 	private String qrCode;
-	private long userId;
-	
-	public ReservationDTO(long eventId, ArrayList<TicketDTO> tickets, String qrCode, long userId) {
+	public ReservationDTO(Event event, ArrayList<TicketDTO> tickets, String qrCode) {
 		super();
-		this.eventId = eventId;
+		this.event = event;
 		this.tickets = tickets;
 		this.qrCode = qrCode;
-		this.userId = userId;
 	}
-	public long getEventId() {
-		return eventId;
+	public ReservationDTO() {
+		super();
 	}
-	public void setEventId(long eventId) {
-		this.eventId = eventId;
+	public Event getEvent() {
+		return event;
+	}
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 	public ArrayList<TicketDTO> getTickets() {
 		return tickets;
@@ -33,15 +35,8 @@ public class ReservationDTO {
 	public void setQrCode(String qrCode) {
 		this.qrCode = qrCode;
 	}
-	public long getUserId() {
-		return userId;
-	}
-	public void setUserId(long userId) {
-		this.userId = userId;
-	}
-	public ReservationDTO() {
-		super();
-	}
+	
+	
 	
 	
 

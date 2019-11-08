@@ -14,4 +14,5 @@ import com.nvt.kts.team3.model.User;
 public interface ReservationRepository extends JpaRepository<Reservation, Long>{
 	public List<Reservation> findByUser(RegularUser u);
 	public List<Reservation> findByEvent(Event e);
+	public List<Reservation> findByUserAndPaid(RegularUser u,boolean paid);
 }
