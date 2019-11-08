@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nvt.kts.team3.dto.ReservationDTO;
+import com.nvt.kts.team3.dto.TicketDTO;
 
 @Entity
 @Table(catalog = "dbteam3", name = "reservation")
@@ -70,6 +72,17 @@ public class Reservation {
 		this.qrCode = qrCode;
 	}
 
+	public Reservation(ReservationDTO reservationDTO) {
+		this.dateOfReservation=new Date();
+		this.paid=false;
+		this.totalPrice=0;
+		this.reservedTickets=new HashSet<>();
+		for(TicketDTO ticket: reservationDTO.getTickets()) {
+			this.reservedTickets.add(new Ticket(ticket));
+		}
+		this.event=reservationDTO.getEvent();
+		this.qrCode=reservationDTO.getQrCode();
+	}
 	public String getQrCode() {
 		return qrCode;
 	}

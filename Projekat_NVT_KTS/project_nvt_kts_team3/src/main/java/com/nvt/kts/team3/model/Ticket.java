@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.nvt.kts.team3.dto.TicketDTO;
+
 @Entity
 @Table(catalog = "dbteam3", name = "ticket")
 public class Ticket {
@@ -53,6 +55,10 @@ public class Ticket {
 		this.reserved = reserved;
 		this.reservation = reservation;
 		this.zone = zone;
+	}
+	
+	public Ticket(TicketDTO ticketDTO) {
+		this.id=ticketDTO.getId();
 	}
 
 	public long getId() {
