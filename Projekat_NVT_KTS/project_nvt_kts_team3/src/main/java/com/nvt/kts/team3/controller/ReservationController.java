@@ -30,7 +30,6 @@ import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 import com.nvt.kts.team3.service.UserService;
 
-
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 
@@ -51,7 +50,6 @@ public class ReservationController {
 	private UserService userService;
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	
 
 	public ReservationController(ReservationService reservationService, TicketService ticketService,
 			EventService eventService, UserService userService) {
@@ -65,45 +63,30 @@ public class ReservationController {
 	@PostMapping(value = "/createReservation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
-		Reservation r=this.reservationService.create(new Reservation(reservationDTO));
-		if(r==null) {
-			return new ResponseEntity<>(new MessageDTO("No success", "Reservation could not be done!"), HttpStatus.BAD_REQUEST);
+		Reservation r = this.reservationService.create(new Reservation(reservationDTO));
+		if (r == null) {
+			return new ResponseEntity<>(new MessageDTO("No success", "Reservation could not be done!"),
+					HttpStatus.BAD_REQUEST);
 		}
-		if(r.getReservedTickets().size()>reservationDTO.getTickets().size()) {
-			return new ResponseEntity<>(new MessageDTO("Partly success", "Some tickets could not be reserved, but reservation is created!"), HttpStatus.BAD_REQUEST);
-		}else {
-			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly created!"),HttpStatus.CREATED);
+		if (r.getReservedTickets().size() > reservationDTO.getTickets().size()) {
+			return new ResponseEntity<>(
+					new MessageDTO("Partly success", "Some tickets could not be reserved, but reservation is created!"),
+					HttpStatus.BAD_REQUEST);
+		} else {
+			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly created!"),
+					HttpStatus.CREATED);
 		}
-		
+
 	}
 
 	@DeleteMapping(value = "/deleteReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> deleteReservation(@PathVariable long reservationId) {
-		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
-		Reservation r = this.reservationService.findById(reservationId);
-		if (r != null) {
-			int noSuccess = 0;
-			for (Ticket t : r.getReservedTickets()) {
-				if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())
-						&& t.getReservation().getId() == r.getId() && t.isReserved() == true) {
-					t.setReserved(false);
-					t.setReservation(null);
-				} else {
-					noSuccess++;
-				}
-			}
-			if (noSuccess == 0) {
-				this.reservationService.remove(r.getId());
-				return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"),
-						HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be cancelled!"),
-						HttpStatus.BAD_REQUEST);
-			}
-
+		boolean message = this.reservationService.remove(reservationId);
+		if (message) {
+			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be found!"),
+			return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be cancelled!"),
 					HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -111,27 +94,14 @@ public class ReservationController {
 	@PutMapping(value = "/payReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> payReservation(@PathVariable long reservationId) {
-
-		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
-		Reservation r = this.reservationService.findById(reservationId);
-		if (r.getEvent().isStatus() == true) {
-			int noSuccess = 0;
-			for (Ticket t : r.getReservedTickets()) {
-				if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
-					noSuccess++;
-				}
-			}
-			if (noSuccess == 0) {
-				r.setPaid(true);
-				reservationService.create(r);
-				return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
-			} else {
-				return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be paid, it expired!"),
-						HttpStatus.BAD_REQUEST);
-			}
+		boolean value = this.reservationService.payReservation(reservationId);
+		if (value) {
+			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(new MessageDTO("No success", "Event is not active!"), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be paid!"),
+					HttpStatus.BAD_REQUEST);
 		}
+
 	}
 
 	@GetMapping(value = "/getAllReservations", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -177,30 +147,15 @@ public class ReservationController {
 	}
 
 	@PutMapping(value = "/cancelTicket/{ticketId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> cancelTicket(@PathVariable long ticketId) {
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
-		Ticket t = this.ticketService.findById(ticketId);
-		Reservation r=t.getReservation();
-		if (t != null && t.isReserved() == true
-				&& t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
-			t.setReserved(false);
-			t.setReservation(null);
-			r.getReservedTickets().remove(t);
-			reservationService.create(r);
-			ticketService.save(t);
-			if(r.getReservedTickets().size()==0) {
-				reservationService.remove(r.getId());
-			}
-		} else {
+		Boolean b=this.ticketService.cancelTicket(ticketId);
+		if(!b) {
 			return new ResponseEntity<>(new MessageDTO("No success", "Ticket cannot be cancelled!"),
 					HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
 	}
-	
-	
-	
-	
 
 }
