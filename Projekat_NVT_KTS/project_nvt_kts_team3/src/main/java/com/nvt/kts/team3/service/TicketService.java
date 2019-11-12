@@ -10,6 +10,7 @@ public interface TicketService {
 	public Ticket saveAndFlush(Ticket ticket);
 	public List<Ticket> findAll();
 	public void remove(Long id);
+	public boolean cancelTicket(Long id);
 	public List<Ticket> getMaintenanceReservedTickets(long maintenanceID);
 	public List<Ticket> getEventTickets(long eventID);
 	public List<Ticket> getEventReservedTickets(long eventID);

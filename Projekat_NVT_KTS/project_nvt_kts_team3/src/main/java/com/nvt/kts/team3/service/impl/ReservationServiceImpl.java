@@ -3,13 +3,17 @@ package com.nvt.kts.team3.service.impl;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
@@ -99,8 +103,29 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
-	public void remove(Long id) {
-		reservationRepository.deleteById(id);
+	public boolean remove(Long id) {
+		Reservation r = findById(id);
+		if (r != null) {
+			int noSuccess = 0;
+			for (Ticket t : r.getReservedTickets()) {
+				if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())
+						&& t.getReservation().getId() == r.getId() && t.isReserved() == true) {
+					t.setReserved(false);
+					t.setReservation(null);
+				} else {
+					noSuccess++;
+				}
+			}
+			if (noSuccess == 0) {
+				reservationRepository.deleteById(id);
+				return true;
+			} else {
+				return false;
+			}
+
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -116,6 +141,28 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public List<Reservation> findByUserAndPaid(RegularUser u, boolean paid) {
 		return reservationRepository.findByUserAndPaid(u, paid);
+	}
+
+	@Override
+	public boolean payReservation(Long id) {
+		Reservation r = findById(id);
+		if (r.getEvent().isStatus() == true && r.isPaid()==false) {
+			int noSuccess = 0;
+			for (Ticket t : r.getReservedTickets()) {
+				if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
+					noSuccess++;
+				}
+			}
+			if (noSuccess == 0) {
+				r.setPaid(true);
+				reservationRepository.save(r);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }
