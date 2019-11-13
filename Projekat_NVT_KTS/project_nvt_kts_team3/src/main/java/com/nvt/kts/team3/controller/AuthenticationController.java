@@ -50,61 +50,25 @@ public class AuthenticationController {
 
 	@PostMapping(value = "auth/registerUser")
 	public ResponseEntity<?> registerUser(@RequestBody UserDTO user) {
-		
-		
-		if (this.userDetailsService.usernameTaken(user.getUsername())) {
-			return new ResponseEntity<>(new MessageDTO("Username is already take.", "Error"), HttpStatus.OK);
+		boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_USER);
+		if (result == true) {
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
 		}
-		RegularUser regularUser = new RegularUser();
-		regularUser.setId(user.getId());
-		regularUser.setEmail(user.getEmail());
-		regularUser.setUsername(user.getUsername());
-		regularUser.setPassword(this.userDetailsService.encodePassword(user.getPassword()));
-		List<Authority> authorities = new ArrayList<>();
-		Authority a = new Authority();
-		a.setName(UserRoleName.ROLE_USER);
-		authorities.add(a);
-		regularUser.setAuthorities(authorities);
-		regularUser.setEnabled(true);
-		regularUser.setName(user.getName());
-		regularUser.setSurname(user.getSurname());
-		regularUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
-		regularUser.setReservations(new HashSet<Reservation>());
-		if (this.userDetailsService.saveUser(regularUser)) { 
-			return new ResponseEntity<>(true, HttpStatus.OK); 
-			}
-		 
-		return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 	
 	}
 
 	@PostMapping(value = "auth/registerAdmin")
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> registerAdmin(@RequestBody UserDTO user) {
-		
-		if (this.userDetailsService.usernameTaken(user.getUsername())) {
-			return new ResponseEntity<>(new MessageDTO("Username is already take.", "Error"), HttpStatus.OK);
+		boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_ADMIN);
+		if (result == true) {
+			return new ResponseEntity<>(result, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
 		}
-		Administrator admin = new Administrator();
-		admin.setId(user.getId());
-		admin.setEmail(user.getEmail());
-		admin.setUsername(user.getUsername());
-		admin.setPassword(this.userDetailsService.encodePassword(user.getPassword()));
-		List<Authority> authorities = new ArrayList<>();
-		Authority a = new Authority();
-		a.setName(UserRoleName.ROLE_ADMIN);
-		authorities.add(a);
-		admin.setAuthorities(authorities);
-		admin.setEnabled(true);
-		admin.setName(user.getName());
-		admin.setSurname(user.getSurname());
-		admin.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
 		
-		if (this.userDetailsService.saveUser(admin)) { 
-			return new ResponseEntity<>(true, HttpStatus.OK); 
-			}
-		 
-		return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
 	}
 
 	@PostMapping(value = "auth/login")

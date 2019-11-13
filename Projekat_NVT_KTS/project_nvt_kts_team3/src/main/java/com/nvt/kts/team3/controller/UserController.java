@@ -59,13 +59,7 @@ public class UserController {
 	@PutMapping(value = "/editUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> editUser(@RequestBody UserDTO userEdit) {
-		  User user = (User) this.userDetailsService.loadUserByUsername(userEdit.getUsername());
-		  user.setPassword(this.userDetailsService.encodePassword(userEdit.getPassword())); 
-		  user.setName(userEdit.getName());
-		  user.setSurname(userEdit.getSurname()); 
-		  user.setEmail(userEdit.getEmail());
-		  this.userDetailsService.saveUser(user);
-		return new ResponseEntity<>(user, HttpStatus.OK);
+		return new ResponseEntity<>(userDetailsService.editUser(userEdit), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/user/{userId}")
