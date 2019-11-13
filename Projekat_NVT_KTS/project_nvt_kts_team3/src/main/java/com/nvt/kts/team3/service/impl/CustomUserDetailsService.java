@@ -1,8 +1,15 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,7 +20,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.nvt.kts.team3.dto.MessageDTO;
+import com.nvt.kts.team3.dto.UserDTO;
+import com.nvt.kts.team3.model.Authority;
+import com.nvt.kts.team3.model.RegularUser;
+import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.User;
+import com.nvt.kts.team3.model.UserRoleName;
 import com.nvt.kts.team3.repository.UserRepository;
 
 @Service
@@ -96,4 +109,41 @@ public class CustomUserDetailsService implements UserDetailsService {
 		userRepository.save(user);
 
 	}
+	
+	public boolean registerUser(UserDTO user, UserRoleName userRole) {
+		if (this.usernameTaken(user.getUsername())) {
+			return false;
+		}
+		RegularUser regularUser = new RegularUser();
+		regularUser.setId(user.getId());
+		regularUser.setEmail(user.getEmail());
+		regularUser.setUsername(user.getUsername());
+		regularUser.setPassword(this.encodePassword(user.getPassword()));
+		List<Authority> authorities = new ArrayList<>();
+		Authority a = new Authority();
+		if (userRole.equals(UserRoleName.ROLE_USER)) {
+			a.setName(UserRoleName.ROLE_USER);
+		}else {
+			a.setName(UserRoleName.ROLE_ADMIN);
+		}
+		authorities.add(a);
+		regularUser.setAuthorities(authorities);
+		regularUser.setEnabled(true);
+		regularUser.setName(user.getName());
+		regularUser.setSurname(user.getSurname());
+		regularUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
+		regularUser.setReservations(new HashSet<Reservation>());
+		return true;
+	}
+	
+	public boolean editUser(UserDTO userDto) {
+		 User user = (User) this.loadUserByUsername(userDto.getUsername());
+		 user.setPassword(this.encodePassword(userDto.getPassword())); 
+		 user.setName(userDto.getName());
+		 user.setSurname(userDto.getSurname()); 
+		 user.setEmail(userDto.getEmail());
+		 saveUser(user);
+		 return true;
+	}
+
 }
