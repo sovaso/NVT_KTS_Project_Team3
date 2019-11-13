@@ -227,9 +227,14 @@ public class LocationController {
 	
 	@GetMapping(value = "/getLocationReport/{location_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<LocationReportDTO> getLocationReport(@PathVariable long location_id) throws ParseException {
+	public ResponseEntity<?> getLocationReport(@PathVariable long location_id) throws ParseException {
 		LocationReportDTO retVal=this.locationService.getLocationReport(location_id);
-		return new ResponseEntity<>(retVal, HttpStatus.OK);
+		if(retVal!=null) {
+			return new ResponseEntity<>(retVal, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location with this ID does not exist."), HttpStatus.NOT_FOUND);
+			//return ResponseEntity.badRequest().body("Location with given id does not exist");
+		}
 		
 	}
 }

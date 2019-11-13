@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.EventDTO;
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
+import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.MaintenanceDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
@@ -38,6 +40,7 @@ import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
+import com.nvt.kts.team3.dto.EventReportDTO;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -387,6 +390,20 @@ public class EventController {
 			}
 		}
 		return new ResponseEntity<Double>(income,HttpStatus.OK);
+		
+	}
+	
+	@GetMapping(value = "/getEventReport/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> getEventReport(@PathVariable long event_id) throws ParseException {
+		EventReportDTO retVal=this.eventService.getEventReport(event_id);
+		if (retVal != null) {
+			return new ResponseEntity<>(retVal, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Event with this ID does not exist."), HttpStatus.NOT_FOUND);
+			//return ResponseEntity.badRequest().body("Event with given id does not exist");
+		}
+	
 		
 	}
 	
