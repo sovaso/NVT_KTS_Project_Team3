@@ -37,7 +37,7 @@ public class Reservation {
 	private double totalPrice;
 
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
 	@JoinColumn(name = "user_id")
 	private RegularUser user;
 
@@ -47,7 +47,7 @@ public class Reservation {
 	private Set<Ticket> reservedTickets = new HashSet<>();
 
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
 	@JoinColumn(name = "event_id")
 	private Event event;
 

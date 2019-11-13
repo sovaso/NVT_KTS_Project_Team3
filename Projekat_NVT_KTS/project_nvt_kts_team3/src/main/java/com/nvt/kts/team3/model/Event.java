@@ -42,7 +42,7 @@ public class Event {
 	private Set<Reservation> reservations = new HashSet<>();
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<Maintenance> maintenances = new HashSet<>();
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -60,6 +60,20 @@ public class Event {
 			ArrayList<String> pictures, ArrayList<String> videos) {
 		super();
 		this.id = id;
+		this.name = name;
+		this.status = status;
+		this.type = type;
+		this.reservations = reservations;
+		this.maintenances = maintenances;
+		this.locationInfo = locationInfo;
+		this.pictures = pictures;
+		this.videos = videos;
+	}
+	
+	public Event(String name, boolean status,
+			EventType type, Set<Reservation> reservations, Set<Maintenance> maintenances, Location locationInfo,
+			ArrayList<String> pictures, ArrayList<String> videos) {
+		super();
 		this.name = name;
 		this.status = status;
 		this.type = type;

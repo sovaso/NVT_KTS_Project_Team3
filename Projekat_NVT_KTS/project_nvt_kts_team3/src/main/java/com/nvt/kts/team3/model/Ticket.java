@@ -33,12 +33,12 @@ public class Ticket {
 	private boolean reserved;
 
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
 	@JoinColumn(name = "reservation_id")
 	private Reservation reservation;
 
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
 	@JoinColumn(name = "leased_zone_id")
 	private LeasedZone zone;
 
@@ -49,6 +49,16 @@ public class Ticket {
 	public Ticket(long id, int row, int col, double price, boolean reserved, Reservation reservation, LeasedZone zone) {
 		super();
 		this.id = id;
+		this.row = row;
+		this.col = col;
+		this.price = price;
+		this.reserved = reserved;
+		this.reservation = reservation;
+		this.zone = zone;
+	}
+	
+	public Ticket(int row, int col, double price, boolean reserved, Reservation reservation, LeasedZone zone) {
+		super();
 		this.row = row;
 		this.col = col;
 		this.price = price;
