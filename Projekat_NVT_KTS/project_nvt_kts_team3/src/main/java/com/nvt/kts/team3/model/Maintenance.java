@@ -44,10 +44,10 @@ public class Maintenance {
 
 	// one to many
 	@JsonIgnore
-	@OneToMany(mappedBy = "maintenance", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	@OneToMany(mappedBy = "maintenance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<LeasedZone> leasedZones = new HashSet<>();
 
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "event_id")
 	private Event event;
 
@@ -58,6 +58,16 @@ public class Maintenance {
 		this.maintenanceEndTime = maintenanceEndTime;
 		this.reservationExpiry = reservationExpiry;
 		this.id = id;
+		this.leasedZones = leasedZones;
+		this.event = event;
+	}
+	
+	public Maintenance(Date maintenanceDate, Date maintenanceEndTime, Date reservationExpiry,
+			Set<LeasedZone> leasedZones, Event event) {
+		super();
+		this.maintenanceDate = maintenanceDate;
+		this.maintenanceEndTime = maintenanceEndTime;
+		this.reservationExpiry = reservationExpiry;
 		this.leasedZones = leasedZones;
 		this.event = event;
 	}

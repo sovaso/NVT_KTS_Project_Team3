@@ -52,7 +52,7 @@ public class LocationZone {
 	}
 
 	// many to one...
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	@JoinColumn(name = "location_id")
 	private Location location;
 
@@ -64,6 +64,18 @@ public class LocationZone {
 			Set<LeasedZone> leasedZone, Location location) {
 		super();
 		this.id = id;
+		this.rowNumber = rowNumber;
+		this.name = name;
+		this.capacity = capacity;
+		this.matrix = matrix;
+		this.colNumber = colNumber;
+		this.leasedZone = leasedZone;
+		this.location = location;
+	}
+	
+	public LocationZone(int rowNumber, String name, int capacity, boolean matrix, int colNumber,
+			Set<LeasedZone> leasedZone, Location location) {
+		super();
 		this.rowNumber = rowNumber;
 		this.name = name;
 		this.capacity = capacity;

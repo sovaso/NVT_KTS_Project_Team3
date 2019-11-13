@@ -5,36 +5,97 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
+import com.nvt.kts.team3.dto.LocationZoneDTO;
 import com.nvt.kts.team3.model.Event;
+import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Location;
+import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.repository.LocationRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
 import com.nvt.kts.team3.service.LocationService;
 
+import exception.InvalidLocationZone;
+import exception.LocationExists;
+import exception.LocationNotChangeable;
+import exception.LocationNotFound;
+
 @Service
-public class LocationServiceImpl implements LocationService {
+public class LocationServiceImpl implements LocationService{
 
 	@Autowired
 	private LocationRepository locationRepository;
-
+	
+	@Autowired
+	private LocationService locationService;
+	
 	@Autowired
 	private ReservationRepository reservationRepository;
-
+	
 	@Override
 	public Location findById(Long id) {
 		return locationRepository.getOne(id);
 	}
 
 	@Override
-	public Location save(Location location) {
+	public Location save(LocationDTO locationDTO) {
+		if(locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress()) != null){
+			throw new LocationExists();
+		}
+		
+		if(locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()){
+			throw new InvalidLocationZone();
+		}
+		
+		Location location = new Location(locationDTO.getName(),locationDTO.getAddress(),
+				locationDTO.getDescription(),true,new HashSet<Event>(),new HashSet<LocationZone>());
+		
+		for(LocationZoneDTO lz : locationDTO.getLocationZone()){
+			if(lz.isMatrix() && lz.getCol() > 0 && lz.getRow() > 0){
+				int capacity = lz.getCol() * lz.getRow();
+				LocationZone newZone = new LocationZone(lz.getRow(),lz.getName(),
+						capacity,true,lz.getCol(),new HashSet<LeasedZone>(),location);
+				location.getLocationZones().add(newZone);
+			}
+			else if(lz.isMatrix() == false && lz.getCapacity() > 0){
+				LocationZone newZone = new LocationZone(0,lz.getName(),
+						lz.getCapacity(),false,0,new HashSet<LeasedZone>(),location);
+				location.getLocationZones().add(newZone);
+			}
+			else{
+				throw new InvalidLocationZone();
+			}
+		}
+		return locationRepository.save(location);
+	}
+	
+	@Override
+	public Location update(LocationDTO locationDTO) {
+		Location location = locationService.findById(locationDTO.getId());
+		if(location == null || location.isStatus() == false){
+			throw new LocationNotFound();
+		}
+		
+		Location testName = locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress());
+		if(testName != null && testName.getId() != locationDTO.getId()){
+			throw new LocationExists();
+		}
+		location.setDescription(locationDTO.getDescription());
+		location.setName(locationDTO.getName());
+		location.setAddress(locationDTO.getAddress());
+		
+		if(locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()){
+			return locationRepository.save(location);
+		}
 		return locationRepository.save(location);
 	}
 
@@ -45,7 +106,17 @@ public class LocationServiceImpl implements LocationService {
 
 	@Override
 	public void remove(Long id) {
-		locationRepository.deleteById(id);
+		List<Event> activeEvents = getActiveEvents(id);
+		Location location = findById(id);
+		if(location == null || !(location.isStatus())){
+			throw new LocationNotFound();
+		}
+		if(activeEvents != null && activeEvents.isEmpty() == false){
+			throw new LocationNotChangeable();
+		}
+		
+		location.setStatus(false);
+		locationRepository.save(location);
 	}
 
 	@Override
@@ -67,7 +138,7 @@ public class LocationServiceImpl implements LocationService {
 	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate) {
 		return locationRepository.checkIfAvailable(locationId, startDate, endDate);
 	}
-
+	
 	@Override
 	public LocationReportDTO getLocationReport(Long id) {
 		LocationReportDTO retVal = new LocationReportDTO();
