@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,6 +28,9 @@ public class LeasedZone {
 	// cena sedista unutar zone
 	@Column(name = "seat_price")
 	private double seatPrice;
+
+	@Version
+	private Long version;
 
 	// many to one
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -54,7 +58,7 @@ public class LeasedZone {
 		this.maintenance = maintenance;
 		this.tickets = tickets;
 	}
-	
+
 	public LeasedZone(double seatPrice, LocationZone zone, Maintenance maintenance, Set<Ticket> tickets) {
 		super();
 		this.seatPrice = seatPrice;
@@ -101,6 +105,14 @@ public class LeasedZone {
 
 	public void setTickets(Set<Ticket> tickets) {
 		this.tickets = tickets;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 }

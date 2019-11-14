@@ -1,15 +1,10 @@
 package com.nvt.kts.team3.controller;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,9 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.UserDTO;
 import com.nvt.kts.team3.model.Administrator;
-import com.nvt.kts.team3.model.Authority;
-import com.nvt.kts.team3.model.RegularUser;
-import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.model.UserRoleName;
 import com.nvt.kts.team3.model.UserTokenState;

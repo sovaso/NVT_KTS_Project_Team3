@@ -3,22 +3,19 @@ package com.nvt.kts.team3.service.impl;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
-import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.repository.EventRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
 import com.nvt.kts.team3.repository.TicketRepository;
@@ -26,6 +23,7 @@ import com.nvt.kts.team3.repository.UserRepository;
 import com.nvt.kts.team3.service.ReservationService;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationServiceImpl implements ReservationService {
 
 	@Autowired
@@ -46,6 +44,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Reservation create(Reservation reservation) {
 		Optional<Event> eventOpt = eventRepository.findById(reservation.getEvent().getId());
 		Event e = eventOpt.get();
@@ -103,6 +102,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean remove(Long id) {
 		Reservation r = findById(id);
 		if (r != null) {
@@ -144,9 +144,10 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean payReservation(Long id) {
 		Reservation r = findById(id);
-		if (r.getEvent().isStatus() == true && r.isPaid()==false) {
+		if (r.getEvent().isStatus() == true && r.isPaid() == false) {
 			int noSuccess = 0;
 			for (Ticket t : r.getReservedTickets()) {
 				if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {

@@ -1,26 +1,18 @@
 package com.nvt.kts.team3.service.impl;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.nvt.kts.team3.dto.MessageDTO;
-import com.nvt.kts.team3.dto.UserDTO;
-import com.nvt.kts.team3.model.Authority;
-import com.nvt.kts.team3.model.RegularUser;
-import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.User;
-import com.nvt.kts.team3.model.UserRoleName;
 import com.nvt.kts.team3.repository.UserRepository;
 import com.nvt.kts.team3.service.UserService;
 
 @Service
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
 	@Autowired
@@ -30,10 +22,12 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByToken(token);
 	}
 
+	@Transactional(readOnly = false)
 	public void save(User user) {
 		userRepository.save(user);
 	}
 
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public String editProfile(User user) {
 		User userToEdit = userRepository.findOneByUsername(user.getUsername());
 		if (userToEdit == null) {
@@ -73,6 +67,5 @@ public class UserServiceImpl implements UserService {
 	public List<User> findAll() {
 		return userRepository.findAll();
 	}
-
 
 }

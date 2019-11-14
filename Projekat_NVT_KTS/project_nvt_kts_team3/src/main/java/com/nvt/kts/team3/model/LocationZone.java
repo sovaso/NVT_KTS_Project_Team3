@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,6 +39,9 @@ public class LocationZone {
 
 	@Column(name = "number_col")
 	private int colNumber;
+
+	@Version
+	private Long version;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "zone", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -72,7 +76,7 @@ public class LocationZone {
 		this.leasedZone = leasedZone;
 		this.location = location;
 	}
-	
+
 	public LocationZone(int rowNumber, String name, int capacity, boolean matrix, int colNumber,
 			Set<LeasedZone> leasedZone, Location location) {
 		super();
@@ -139,6 +143,14 @@ public class LocationZone {
 
 	public void setMatrix(boolean matrix) {
 		this.matrix = matrix;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 }

@@ -2,7 +2,6 @@ package com.nvt.kts.team3.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,16 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.ReservationDTO;
-import com.nvt.kts.team3.dto.TicketDTO;
+import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
-import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 import com.nvt.kts.team3.service.UserService;
-
-import com.nvt.kts.team3.model.Event;
-import com.nvt.kts.team3.model.RegularUser;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)

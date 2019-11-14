@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
@@ -13,20 +15,22 @@ import com.nvt.kts.team3.repository.TicketRepository;
 import com.nvt.kts.team3.service.TicketService;
 
 @Service
-public class TicketServiceImpl implements TicketService{
+@Transactional(readOnly = true)
+public class TicketServiceImpl implements TicketService {
 
 	@Autowired
 	private TicketRepository ticketRepository;
-	
+
 	@Autowired
 	private ReservationRepository reservationRepository;
-	
+
 	@Override
 	public Ticket findById(Long id) {
 		return ticketRepository.getOne(id);
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public Ticket save(Ticket ticket) {
 		return ticketRepository.save(ticket);
 	}
@@ -37,11 +41,13 @@ public class TicketServiceImpl implements TicketService{
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		ticketRepository.deleteById(id);
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Ticket saveAndFlush(Ticket ticket) {
 		return ticketRepository.saveAndFlush(ticket);
 	}
@@ -50,7 +56,7 @@ public class TicketServiceImpl implements TicketService{
 	public List<Ticket> getMaintenanceReservedTickets(long maintenanceID) {
 		return ticketRepository.getMaintenanceReservedTickets(maintenanceID);
 	}
-	
+
 	@Override
 	public List<Ticket> getMaintenanceSoldTickets(long maintenanceID) {
 		return ticketRepository.getMaintenanceSoldTickets(maintenanceID);
@@ -92,11 +98,13 @@ public class TicketServiceImpl implements TicketService{
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<Ticket> deleteByZoneId(long zoneId) {
 		return ticketRepository.deleteByZoneId(zoneId);
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean cancelTicket(Long id) {
 		Ticket t = findById(id);
 		Reservation r = t.getReservation();
@@ -109,7 +117,7 @@ public class TicketServiceImpl implements TicketService{
 			save(t);
 			if (r.getReservedTickets().size() == 0) {
 				reservationRepository.deleteById(r.getId());
-				
+
 			}
 		} else {
 			return false;
