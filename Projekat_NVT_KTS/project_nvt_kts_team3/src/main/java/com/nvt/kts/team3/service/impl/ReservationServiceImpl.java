@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -13,14 +14,27 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.model.Event;
+import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.repository.EventRepository;
+import com.nvt.kts.team3.repository.LocationRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
 import com.nvt.kts.team3.repository.TicketRepository;
 import com.nvt.kts.team3.repository.UserRepository;
 import com.nvt.kts.team3.service.ReservationService;
+
+import exception.EventNotActive;
+import exception.EventNotFound;
+import exception.LocationNotFound;
+import exception.NoLoggedUser;
+import exception.ReservationAlreadyPaid;
+import exception.ReservationCannotBeCancelled;
+import exception.ReservationCannotBeCreated;
+import exception.ReservationExpired;
+import exception.ReservationNotFound;
+import exception.TooManyTicketsReserved;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,6 +52,9 @@ public class ReservationServiceImpl implements ReservationService {
 	@Autowired
 	private EventRepository eventRepository;
 
+	@Autowired
+	private LocationRepository locationRepository;
+
 	@Override
 	public Reservation findById(Long id) {
 		return reservationRepository.getOne(id);
@@ -47,52 +64,59 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Reservation create(Reservation reservation) {
 		Optional<Event> eventOpt = eventRepository.findById(reservation.getEvent().getId());
-		Event e = eventOpt.get();
-		if (e.isStatus() == false || e == null) {
-			return null;
-		}
-		reservation.setEvent(e);
-		RegularUser logged = (RegularUser) userRepository
-				.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-		if (logged == null) {
-			return null;
-		}
-		List<Reservation> userReservations = findByUserAndPaid(logged, false);
-		int numTickets = 0;
-		for (Reservation r : userReservations) {
-			numTickets += r.getReservedTickets().size();
-		}
-		if (numTickets > 100) {
-			return null;
-		}
-		boolean created = false;
-		Set<Ticket> old = reservation.getReservedTickets();
-		Set<Ticket> resTickets = new HashSet<Ticket>();
-		reservation.setReservedTickets(resTickets);
-		for (Ticket t : old) {
-			Optional<Ticket> ticketOpt = this.ticketRepository.findById(t.getId());
-			if (ticketOpt.isPresent()) {
-				Ticket ticket = ticketOpt.get();
-				if (ticket.isReserved() == false
-						&& ticket.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
-					if (created == false) {
-						reservationRepository.save(reservation);
-						created = true;
+		if (!eventOpt.isPresent()) {
+			throw new EventNotFound();
+		} else {
+			Event e = eventOpt.get();
+			if (e.isStatus() == false) {
+				throw new EventNotActive();
+			} else {
+				reservation.setEvent(e);
+				RegularUser logged = (RegularUser) userRepository
+						.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+				if (logged == null) {
+					throw new NoLoggedUser();
+				} else {
+					List<Reservation> userReservations = findByUserAndPaid(logged, false);
+					int numTickets = 0;
+					for (Reservation r : userReservations) {
+						numTickets += r.getReservedTickets().size();
 					}
-					reservation.getReservedTickets().add(ticket);
-					ticket.setReserved(true);
-					ticket.setReservation(reservation);
-					ticketRepository.save(ticket);
-					reservation.setTotalPrice(reservation.getTotalPrice() + ticket.getPrice());
+					if (numTickets > 100) {
+						throw new TooManyTicketsReserved();
+					}
+					boolean created = false;
+					Set<Ticket> old = reservation.getReservedTickets();
+					Set<Ticket> resTickets = new HashSet<Ticket>();
+					reservation.setReservedTickets(resTickets);
+					for (Ticket t : old) {
+						Optional<Ticket> ticketOpt = this.ticketRepository.findById(t.getId());
+						if (ticketOpt.isPresent()) {
+							Ticket ticket = ticketOpt.get();
+							if (ticket.isReserved() == false
+									&& ticket.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
+								if (created == false) {
+									reservationRepository.save(reservation);
+									created = true;
+								}
+								reservation.getReservedTickets().add(ticket);
+								ticket.setReserved(true);
+								ticket.setReservation(reservation);
+								ticketRepository.save(ticket);
+								reservation.setTotalPrice(reservation.getTotalPrice() + ticket.getPrice());
+							}
+						}
+					}
+					if (created == false) {
+						throw new ReservationCannotBeCreated();
+					} else {
+						reservation.setUser(logged);
+						reservation.setReservedTickets(resTickets);
+						return this.reservationRepository.save(reservation);
+					}
 				}
 			}
 		}
-		if (created == false) {
-			return null;
-		}
-		reservation.setUser(logged);
-		reservation.setReservedTickets(resTickets);
-		return this.reservationRepository.save(reservation);
 
 	}
 
@@ -104,8 +128,9 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean remove(Long id) {
-		Reservation r = findById(id);
-		if (r != null) {
+		Optional<Reservation> res = reservationRepository.findById(id);
+		if (res.isPresent()) {
+			Reservation r=res.get();
 			int noSuccess = 0;
 			for (Ticket t : r.getReservedTickets()) {
 				if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())
@@ -120,11 +145,11 @@ public class ReservationServiceImpl implements ReservationService {
 				reservationRepository.deleteById(id);
 				return true;
 			} else {
-				return false;
+				throw new ReservationCannotBeCancelled();
 			}
 
 		} else {
-			return false;
+			throw new ReservationNotFound();
 		}
 	}
 
@@ -146,23 +171,49 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean payReservation(Long id) {
-		Reservation r = findById(id);
-		if (r.getEvent().isStatus() == true && r.isPaid() == false) {
-			int noSuccess = 0;
-			for (Ticket t : r.getReservedTickets()) {
-				if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
-					noSuccess++;
+		Optional<Reservation> res = reservationRepository.findById(id);
+		if (res.isPresent()) {
+			Reservation r=res.get();
+			if (r.isPaid() == false) {
+				if (r.getEvent().isStatus() == true) {
+					int noSuccess = 0;
+					for (Ticket t : r.getReservedTickets()) {
+						if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
+							noSuccess++;
+						}
+					}
+					if (noSuccess < r.getReservedTickets().size()) {
+						r.setPaid(true);
+						reservationRepository.save(r);
+						return true;
+					} else {
+						throw new ReservationExpired();
+					}
+				} else {
+					throw new EventNotActive();
 				}
-			}
-			if (noSuccess == 0) {
-				r.setPaid(true);
-				reservationRepository.save(r);
-				return true;
 			} else {
-				return false;
+				throw new ReservationAlreadyPaid();
 			}
 		} else {
-			return false;
+			throw new ReservationNotFound();
+		}
+	}
+
+	@Override
+	public List<Reservation> getLocationReservations(Long id) {
+		Optional<Location> loc = this.locationRepository.findById(id);
+		if (loc.isPresent()) {
+			List<Reservation> res = findAll();
+			List<Reservation> ret = new ArrayList<Reservation>();
+			for (Reservation r : res) {
+				if (r.getEvent().getLocationInfo().getId() == id) {
+					ret.add(r);
+				}
+			}
+			return ret;
+		} else {
+			throw new LocationNotFound();
 		}
 	}
 

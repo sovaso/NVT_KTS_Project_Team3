@@ -388,7 +388,25 @@ public class EventServiceImpl implements EventService {
 			}
 			return retVal;
 		} else {
-			return null;
+			throw new EventNotFound();
+		}
+	}
+
+	@Override
+	public double getEventIncome(Long id) {
+		Optional<Event> eventOpt = eventRepository.findById(id);
+		if (eventOpt.isPresent()) {
+			Event e=eventOpt.get();
+			List<Reservation> reservations = this.reservationRepository.findByEvent(e);
+			double income = 0;
+			for (Reservation r : reservations) {
+				if (r.isPaid() == true) {
+					income += r.getTotalPrice();
+				}
+			}
+			return income;
+		} else {
+			throw new EventNotFound();
 		}
 	}
 }
