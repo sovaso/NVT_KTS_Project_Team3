@@ -25,10 +25,14 @@ import com.nvt.kts.team3.dto.ReservationDTO;
 import com.nvt.kts.team3.dto.TicketDTO;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
+import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 import com.nvt.kts.team3.service.UserService;
+
+import exception.EventNotFound;
+import exception.ReservationNotFound;
 
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
@@ -64,14 +68,10 @@ public class ReservationController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> createReservation(@RequestBody ReservationDTO reservationDTO) {
 		Reservation r = this.reservationService.create(new Reservation(reservationDTO));
-		if (r == null) {
-			return new ResponseEntity<>(new MessageDTO("No success", "Reservation could not be done!"),
-					HttpStatus.BAD_REQUEST);
-		}
-		if (r.getReservedTickets().size() > reservationDTO.getTickets().size()) {
+		if (r.getReservedTickets().size() < reservationDTO.getTickets().size()) {
 			return new ResponseEntity<>(
 					new MessageDTO("Partly success", "Some tickets could not be reserved, but reservation is created!"),
-					HttpStatus.BAD_REQUEST);
+					HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly created!"),
 					HttpStatus.CREATED);
@@ -83,24 +83,16 @@ public class ReservationController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> deleteReservation(@PathVariable long reservationId) {
 		boolean message = this.reservationService.remove(reservationId);
-		if (message) {
-			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be cancelled!"),
-					HttpStatus.BAD_REQUEST);
-		}
+
+		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
+
 	}
 
 	@PutMapping(value = "/payReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> payReservation(@PathVariable long reservationId) {
 		boolean value = this.reservationService.payReservation(reservationId);
-		if (value) {
-			return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(new MessageDTO("No success", "Reservation cannot be paid!"),
-					HttpStatus.BAD_REQUEST);
-		}
+		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
 
 	}
 
@@ -113,36 +105,45 @@ public class ReservationController {
 
 	@GetMapping(value = "/getUserReservations/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public ResponseEntity<List<Reservation>> getUserReservations(@PathVariable long userId) {
-		List<Reservation> reservations = this.reservationService
-				.findByUser((RegularUser) this.userService.findById(userId));
-		return new ResponseEntity<>(reservations, HttpStatus.OK);
+	public ResponseEntity<?> getUserReservations(@PathVariable long userId) {
+		User u = this.userService.findById(userId);
+		if (u != null) {
+			List<Reservation> reservations = this.reservationService
+					.findByUser((RegularUser) this.userService.findById(userId));
+			return new ResponseEntity<>(reservations, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(new MessageDTO("No success", "User with given id does not exist!"),
+					HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@GetMapping(value = "/getReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
-	public ResponseEntity<Reservation> getReservation(@PathVariable long reservationId) {
+	public ResponseEntity<?> getReservation(@PathVariable long reservationId) {
 		Reservation res = this.reservationService.findById(reservationId);
-		return new ResponseEntity<>(res, HttpStatus.OK);
+		if (res != null) {
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} else {
+			throw new ReservationNotFound();
+		}
 	}
 
 	@GetMapping(value = "/getEventReservations/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Reservation>> getEventReservations(@PathVariable long eventId) {
-		List<Reservation> res = this.reservationService.findByEvent(this.eventService.findById(eventId));
-		return new ResponseEntity<>(res, HttpStatus.OK);
+		Event e = this.eventService.findById(eventId);
+		if (e != null) {
+			List<Reservation> res = this.reservationService.findByEvent(this.eventService.findById(eventId));
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} else {
+			throw new EventNotFound();
+		}
 	}
 
 	@GetMapping(value = "/getLocationReservations/{locationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<Reservation>> getLocationReservations(@PathVariable long locationId) {
-		List<Reservation> res = this.reservationService.findAll();
-		List<Reservation> ret = new ArrayList<Reservation>();
-		for (Reservation r : res) {
-			if (r.getEvent().getLocationInfo().getId() == locationId) {
-				ret.add(r);
-			}
-		}
+	public ResponseEntity<?> getLocationReservations(@PathVariable long locationId) {
+		List<Reservation> ret = this.reservationService.getLocationReservations(locationId);
 		return new ResponseEntity<>(ret, HttpStatus.OK);
 	}
 
@@ -150,14 +151,8 @@ public class ReservationController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> cancelTicket(@PathVariable long ticketId) {
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
-		Boolean b=this.ticketService.cancelTicket(ticketId);
-		if(!b) {
-			return new ResponseEntity<>(new MessageDTO("No success", "Ticket cannot be cancelled!"),
-					HttpStatus.BAD_REQUEST);
-		}
+		Boolean b = this.ticketService.cancelTicket(ticketId);
 		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
 	}
-	
-	
 
 }

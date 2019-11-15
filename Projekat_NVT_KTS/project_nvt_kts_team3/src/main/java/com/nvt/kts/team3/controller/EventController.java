@@ -104,15 +104,8 @@ public class EventController {
 	
 	@GetMapping(value = "/getEventIncome/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<Double> getEventIncome(@PathVariable long event_id) {
-		Event e=this.eventService.findById(event_id);
-		List<Reservation> reservations=this.reservationService.findByEvent(e);
-		double income=0;
-		for(Reservation r:reservations) {
-			if(r.isPaid()==true) {
-				income+=r.getTotalPrice();
-			}
-		}
+	public ResponseEntity<?> getEventIncome(@PathVariable long event_id) {
+		Double income=this.eventService.getEventIncome(event_id);
 		return new ResponseEntity<Double>(income,HttpStatus.OK);
 		
 	}
@@ -121,14 +114,7 @@ public class EventController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventReport(@PathVariable long event_id) throws ParseException {
 		EventReportDTO retVal=this.eventService.getEventReport(event_id);
-		if (retVal != null) {
-			return new ResponseEntity<>(retVal, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Event with this ID does not exist."), HttpStatus.NOT_FOUND);
-			//return ResponseEntity.badRequest().body("Event with given id does not exist");
-		}
-	
-		
+		return new ResponseEntity<>(retVal, HttpStatus.OK);
 	}
 	
 	

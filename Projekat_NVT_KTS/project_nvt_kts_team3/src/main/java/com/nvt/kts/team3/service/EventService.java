@@ -19,4 +19,5 @@ public interface EventService {
 	public List<Event> getActiveEvents();
 	boolean eventIsActive(long eventId);
 	public EventReportDTO getEventReport(Long id);
+	public double getEventIncome(Long id);
 }

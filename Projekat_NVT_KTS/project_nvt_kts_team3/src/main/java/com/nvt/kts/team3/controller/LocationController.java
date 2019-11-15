@@ -84,12 +84,6 @@ public class LocationController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getLocationReport(@PathVariable long location_id) throws ParseException {
 		LocationReportDTO retVal=this.locationService.getLocationReport(location_id);
-		if(retVal!=null) {
-			return new ResponseEntity<>(retVal, HttpStatus.OK);
-		}else {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Location with this ID does not exist."), HttpStatus.NOT_FOUND);
-			//return ResponseEntity.badRequest().body("Location with given id does not exist");
-		}
-		
+		return new ResponseEntity<>(retVal, HttpStatus.OK);
 	}
 }

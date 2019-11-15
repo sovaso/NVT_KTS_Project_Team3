@@ -2,7 +2,7 @@ package com.nvt.kts.team3.service.impl;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat; 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,28 +45,28 @@ import exception.LocationNotFound;
 import exception.LocationZoneNotAvailable;
 
 @Service
-public class EventServiceImpl implements EventService{
+public class EventServiceImpl implements EventService {
 
 	@Autowired
 	private MaintenanceService maintenanceService;
-	
+
 	@Autowired
 	private TicketService ticketService;
-	
+
 	@Autowired
 	private LocationService locationService;
-	
+
 	@Autowired
 	private LocationZoneService locationZoneService;
-    
+
 	@Autowired
 	private ReservationRepository reservationRepository;
-	
+
 	@Autowired
 	private EventRepository eventRepository;
-	
+
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	
+
 	@Override
 	public Event findById(Long id) {
 		return eventRepository.getOne(id);
@@ -74,18 +74,18 @@ public class EventServiceImpl implements EventService{
 
 	@Override
 	public Event save(EventDTO eventDTO) throws ParseException {
-		if(EventType.valueOf(eventDTO.getEventType()) == null){
+		if (EventType.valueOf(eventDTO.getEventType()) == null) {
 			throw new InvalidEventType();
 		}
 		Location location = locationService.findById(eventDTO.getLocationId());
-		if(location == null || location.isStatus() == false){
+		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
-		
-		Event event = new Event(eventDTO.getName(), true,
-				EventType.valueOf(eventDTO.getEventType()), new HashSet<Reservation>(), new HashSet<Maintenance>(), location,
-				new ArrayList<String>(), new ArrayList<String>());
-		
+
+		Event event = new Event(eventDTO.getName(), true, EventType.valueOf(eventDTO.getEventType()),
+				new HashSet<Reservation>(), new HashSet<Maintenance>(), location, new ArrayList<String>(),
+				new ArrayList<String>());
+
 		Date maintenanceStartDate = null;
 		Date maintenanceEndDate = null;
 		Date today = new Date();
@@ -94,52 +94,54 @@ public class EventServiceImpl implements EventService{
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DATE, 7);
 		Date validDate = calendar.getTime();
-		for(MaintenanceDTO dates : eventDTO.getMaintenance()){
+		for (MaintenanceDTO dates : eventDTO.getMaintenance()) {
 			maintenanceStartDate = null;
 			maintenanceStartDate = sdf.parse(dates.getStartDate());
 			maintenanceEndDate = sdf.parse(dates.getEndDate());
-			if(maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)){
+			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
 				throw new InvalidDate();
 			}
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
-			//long dateDifferenceHours = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime())/(60 * 60 * 1000);
-			//long dateDifferenceMinutes = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime())/(60 * 1000) % 60; 
-			//if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
-			//	throw new InvalidDate();
-			//}
+			// long dateDifferenceHours = (maintenanceEndDate.getTime() -
+			// maintenanceStartDate.getTime())/(60 * 60 * 1000);
+			// long dateDifferenceMinutes = (maintenanceEndDate.getTime() -
+			// maintenanceStartDate.getTime())/(60 * 1000) % 60;
+			// if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
+			// throw new InvalidDate();
+			// }
 			Maintenance maintenance = new Maintenance(maintenanceStartDate, maintenanceEndDate, expiry.getTime(),
 					new HashSet<LeasedZone>(), event);
 			event.getMaintenances().add(maintenance);
-			
-			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate, maintenanceEndDate);
-			if(locationEvents.isEmpty() == false){
+
+			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
+					maintenanceEndDate);
+			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
-			
-			for(LeasedZoneDTO lz : eventDTO.getLocationZones()){
+
+			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
-				if(locationZone == null || locationZone.getLocation().getId() != location.getId()){
+				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
 					throw new LocationZoneNotAvailable();
 				}
-				
-				if(lz.getPrice() < 1 || lz.getPrice() > 10000){
+
+				if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
 					throw new InvalidPrice();
 				}
-				
+
 				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance, new HashSet<Ticket>());
-				
-				if(locationZone.isMatrix()){
-					for(int i = 1; i <= locationZone.getColNumber(); i++){
-						for(int j = 1; j <= locationZone.getRowNumber(); j++){
-							Ticket ticket = new Ticket(i,j,lz.getPrice(),false,null,newZone);
+
+				if (locationZone.isMatrix()) {
+					for (int i = 1; i <= locationZone.getColNumber(); i++) {
+						for (int j = 1; j <= locationZone.getRowNumber(); j++) {
+							Ticket ticket = new Ticket(i, j, lz.getPrice(), false, null, newZone);
 							newZone.getTickets().add(ticket);
 						}
 					}
-				}
-				else{
-					for(int i = 0; i < locationZone.getCapacity(); i++){
-						Ticket ticket = new Ticket(0,0,lz.getPrice(),false,null,newZone);
+				} else {
+					for (int i = 0; i < locationZone.getCapacity(); i++) {
+						Ticket ticket = new Ticket(0, 0, lz.getPrice(), false, null, newZone);
 						newZone.getTickets().add(ticket);
 					}
 				}
@@ -148,38 +150,37 @@ public class EventServiceImpl implements EventService{
 		}
 		return eventRepository.save(event);
 	}
-	
+
 	@Override
 	public Event update(EventDTO eventDTO) throws ParseException {
 		Event event = eventRepository.getOne(eventDTO.getId());
-		if(event == null){
+		if (event == null) {
 			throw new EventNotFound();
 		}
-		if(!(event.isStatus()) || !(eventIsActive(event.getId()))){
+		if (!(event.isStatus()) || !(eventIsActive(event.getId()))) {
 			throw new EventNotChangeable();
 		}
-		if(eventDTO.getName() != null){
+		if (eventDTO.getName() != null) {
 			event.setName(eventDTO.getName());
 		}
-		
+
 		event.setType(EventType.valueOf(eventDTO.getEventType()));
-		if(event.getType() == null){
+		if (event.getType() == null) {
 			throw new InvalidEventType();
 		}
-		
+
 		Location location = locationService.findById(eventDTO.getLocationId());
-		if(location == null || location.isStatus() == false){
+		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
-		if(location.getId() == event.getLocationInfo().getId()){
+		if (location.getId() == event.getLocationInfo().getId()) {
 			return eventRepository.save(event);
 		}
-		
-		if(ticketService.getEventReservedTickets(event.getId()).isEmpty() == false){
-			if(eventDTO.getLocationId() != event.getLocationInfo().getId()){
+
+		if (ticketService.getEventReservedTickets(event.getId()).isEmpty() == false) {
+			if (eventDTO.getLocationId() != event.getLocationInfo().getId()) {
 				throw new LocationNotChangeable();
-			}
-			else{
+			} else {
 				return eventRepository.save(event);
 			}
 		}
@@ -193,52 +194,54 @@ public class EventServiceImpl implements EventService{
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DATE, 7);
 		Date validDate = calendar.getTime();
-		for(MaintenanceDTO dates : eventDTO.getMaintenance()){
+		for (MaintenanceDTO dates : eventDTO.getMaintenance()) {
 			maintenanceStartDate = null;
 			maintenanceStartDate = sdf.parse(dates.getStartDate());
 			maintenanceEndDate = sdf.parse(dates.getEndDate());
-			if(maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)){
+			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
 				throw new InvalidDate();
 			}
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
-			//long dateDifferenceHours = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime())/(60 * 60 * 1000);
-			//long dateDifferenceMinutes = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime())/(60 * 1000) % 60; 
-			//if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
-			//	throw new InvalidDate();
-			//}
+			// long dateDifferenceHours = (maintenanceEndDate.getTime() -
+			// maintenanceStartDate.getTime())/(60 * 60 * 1000);
+			// long dateDifferenceMinutes = (maintenanceEndDate.getTime() -
+			// maintenanceStartDate.getTime())/(60 * 1000) % 60;
+			// if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
+			// throw new InvalidDate();
+			// }
 			Maintenance maintenance = new Maintenance(maintenanceStartDate, maintenanceEndDate, expiry.getTime(),
 					new HashSet<LeasedZone>(), event);
 			newMaintenances.add(maintenance);
-			
-			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate, maintenanceEndDate);
-			if(locationEvents.isEmpty() == false){
+
+			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
+					maintenanceEndDate);
+			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
-			
-			for(LeasedZoneDTO lz : eventDTO.getLocationZones()){
+
+			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
-				if(locationZone == null || locationZone.getLocation().getId() != location.getId()){
+				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
 					throw new LocationZoneNotAvailable();
 				}
-				
-				if(lz.getPrice() < 1 || lz.getPrice() > 10000){
+
+				if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
 					throw new InvalidPrice();
 				}
-				
+
 				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance, new HashSet<Ticket>());
-				
-				if(locationZone.isMatrix()){
-					for(int i = 1; i <= locationZone.getColNumber(); i++){
-						for(int j = 1; j <= locationZone.getRowNumber(); j++){
-							Ticket ticket = new Ticket(i,j,lz.getPrice(),false,null,newZone);
+
+				if (locationZone.isMatrix()) {
+					for (int i = 1; i <= locationZone.getColNumber(); i++) {
+						for (int j = 1; j <= locationZone.getRowNumber(); j++) {
+							Ticket ticket = new Ticket(i, j, lz.getPrice(), false, null, newZone);
 							newZone.getTickets().add(ticket);
 						}
 					}
-				}
-				else{
-					for(int i = 0; i < locationZone.getCapacity(); i++){
-						Ticket ticket = new Ticket(0,0,lz.getPrice(),false,null,newZone);
+				} else {
+					for (int i = 0; i < locationZone.getCapacity(); i++) {
+						Ticket ticket = new Ticket(0, 0, lz.getPrice(), false, null, newZone);
 						newZone.getTickets().add(ticket);
 					}
 				}
@@ -258,16 +261,16 @@ public class EventServiceImpl implements EventService{
 	@Override
 	public void remove(Long id) {
 		Event event = eventRepository.getOne(id);
-		if(event == null || event.isStatus() == false){
+		if (event == null || event.isStatus() == false) {
 			throw new EventNotFound();
 		}
-		if(!(getSoldTickets(event.getId()).isEmpty()) && eventIsActive(event.getId())){
+		if (!(getSoldTickets(event.getId()).isEmpty()) && eventIsActive(event.getId())) {
 			throw new EventNotChangeable();
 		}
 		event.setStatus(false);
 		eventRepository.save(event);
 	}
-	
+
 	@Override
 	public ArrayList<Event> getReservedTickets(Long eventId) {
 		return eventRepository.getReservedTickets(eventId);
@@ -284,14 +287,14 @@ public class EventServiceImpl implements EventService{
 	}
 
 	@Override
-	public boolean eventIsActive(long eventId){
+	public boolean eventIsActive(long eventId) {
 		Maintenance maintenance = maintenanceService.getLastMaintenanceOfEvent(eventId);
-		if(maintenance.getMaintenanceDate().before(new Date()) || maintenance.getEvent().isStatus() == false){
+		if (maintenance.getMaintenanceDate().before(new Date()) || maintenance.getEvent().isStatus() == false) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	@Override
 	public EventReportDTO getEventReport(Long id) {
 		Optional<Event> eventOpt = eventRepository.findById(id);
@@ -378,8 +381,26 @@ public class EventServiceImpl implements EventService{
 				}
 			}
 			return retVal;
-		}else {
-			return null;
+		} else {
+			throw new EventNotFound();
+		}
+	}
+
+	@Override
+	public double getEventIncome(Long id) {
+		Optional<Event> eventOpt = eventRepository.findById(id);
+		if (eventOpt.isPresent()) {
+			Event e=eventOpt.get();
+			List<Reservation> reservations = this.reservationRepository.findByEvent(e);
+			double income = 0;
+			for (Reservation r : reservations) {
+				if (r.isPaid() == true) {
+					income += r.getTotalPrice();
+				}
+			}
+			return income;
+		} else {
+			throw new EventNotFound();
 		}
 	}
 }

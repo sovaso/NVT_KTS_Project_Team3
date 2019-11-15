@@ -226,7 +226,7 @@ public class LocationServiceImpl implements LocationService{
 			}
 			return retVal;
 		} else {
-			return null;
+			throw new LocationNotFound();
 		}
 	}
 
