@@ -16,11 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.sym.Name;
 import com.nvt.kts.team3.dto.UserDTO;
 
 @Entity
@@ -52,13 +52,16 @@ public abstract class User implements UserDetails {
 
 	@Column(name = "password")
 	private String password;
-	
+
 	@Column(name = "last_password_reset_date")
 	private Timestamp lastPasswordResetDate;
-	
+
 	@Column(name = "enabled")
 	private boolean enabled;
-	
+
+	@Version
+	private Long version;
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "authority_id", referencedColumnName = "id"))
 	private List<Authority> authorities;
@@ -76,12 +79,13 @@ public abstract class User implements UserDetails {
 		this.id = userDto.getId();
 		this.name = userDto.getName();
 		this.surname = userDto.getSurname();
-		this.username=userDto.getUsername();
+		this.username = userDto.getUsername();
 		this.email = userDto.getEmail();
-		this.password =userDto.getPassword();
+		this.password = userDto.getPassword();
 	}
+
 	public User() {
-		
+
 	}
 
 	public String getName() {
@@ -131,7 +135,7 @@ public abstract class User implements UserDetails {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
@@ -181,6 +185,14 @@ public abstract class User implements UserDetails {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 }

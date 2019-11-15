@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,12 +24,15 @@ public class Maintenance {
 
 	@Column(name = "maintenance_date")
 	private Date maintenanceDate;
-	
+
 	@Column(name = "maintenance_end_time")
 	private Date maintenanceEndTime;
-	
+
 	@Column(name = "reservation_expiry")
 	private Date reservationExpiry;
+
+	@Version
+	private Long version;
 
 	public Event getEvent() {
 		return event;
@@ -61,7 +65,7 @@ public class Maintenance {
 		this.leasedZones = leasedZones;
 		this.event = event;
 	}
-	
+
 	public Maintenance(Date maintenanceDate, Date maintenanceEndTime, Date reservationExpiry,
 			Set<LeasedZone> leasedZones, Event event) {
 		super();
@@ -114,5 +118,13 @@ public class Maintenance {
 
 	public void setMaintenanceEndTime(Date maintenanceEndTime) {
 		this.maintenanceEndTime = maintenanceEndTime;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 }

@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
@@ -30,70 +32,71 @@ import exception.LocationNotChangeable;
 import exception.LocationNotFound;
 
 @Service
-public class LocationServiceImpl implements LocationService{
+@Transactional(readOnly = true)
+public class LocationServiceImpl implements LocationService {
 
 	@Autowired
 	private LocationRepository locationRepository;
-	
+
 	@Autowired
 	private LocationService locationService;
-	
+
 	@Autowired
 	private ReservationRepository reservationRepository;
-	
+
 	@Override
 	public Location findById(Long id) {
 		return locationRepository.getOne(id);
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location save(LocationDTO locationDTO) {
-		if(locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress()) != null){
+		if (locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress()) != null) {
 			throw new LocationExists();
 		}
-		
-		if(locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()){
+
+		if (locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()) {
 			throw new InvalidLocationZone();
 		}
-		
-		Location location = new Location(locationDTO.getName(),locationDTO.getAddress(),
-				locationDTO.getDescription(),true,new HashSet<Event>(),new HashSet<LocationZone>());
-		
-		for(LocationZoneDTO lz : locationDTO.getLocationZone()){
-			if(lz.isMatrix() && lz.getCol() > 0 && lz.getRow() > 0){
+
+		Location location = new Location(locationDTO.getName(), locationDTO.getAddress(), locationDTO.getDescription(),
+				true, new HashSet<Event>(), new HashSet<LocationZone>());
+
+		for (LocationZoneDTO lz : locationDTO.getLocationZone()) {
+			if (lz.isMatrix() && lz.getCol() > 0 && lz.getRow() > 0) {
 				int capacity = lz.getCol() * lz.getRow();
-				LocationZone newZone = new LocationZone(lz.getRow(),lz.getName(),
-						capacity,true,lz.getCol(),new HashSet<LeasedZone>(),location);
+				LocationZone newZone = new LocationZone(lz.getRow(), lz.getName(), capacity, true, lz.getCol(),
+						new HashSet<LeasedZone>(), location);
 				location.getLocationZones().add(newZone);
-			}
-			else if(lz.isMatrix() == false && lz.getCapacity() > 0){
-				LocationZone newZone = new LocationZone(0,lz.getName(),
-						lz.getCapacity(),false,0,new HashSet<LeasedZone>(),location);
+			} else if (lz.isMatrix() == false && lz.getCapacity() > 0) {
+				LocationZone newZone = new LocationZone(0, lz.getName(), lz.getCapacity(), false, 0,
+						new HashSet<LeasedZone>(), location);
 				location.getLocationZones().add(newZone);
-			}
-			else{
+			} else {
 				throw new InvalidLocationZone();
 			}
 		}
 		return locationRepository.save(location);
 	}
-	
+
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location update(LocationDTO locationDTO) {
 		Location location = locationService.findById(locationDTO.getId());
-		if(location == null || location.isStatus() == false){
+		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
-		
+
 		Location testName = locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress());
-		if(testName != null && testName.getId() != locationDTO.getId()){
+		if (testName != null && testName.getId() != locationDTO.getId()) {
 			throw new LocationExists();
 		}
 		location.setDescription(locationDTO.getDescription());
 		location.setName(locationDTO.getName());
 		location.setAddress(locationDTO.getAddress());
-		
-		if(locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()){
+
+		if (locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()) {
 			return locationRepository.save(location);
 		}
 		return locationRepository.save(location);
@@ -105,16 +108,17 @@ public class LocationServiceImpl implements LocationService{
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		List<Event> activeEvents = getActiveEvents(id);
 		Location location = findById(id);
-		if(location == null || !(location.isStatus())){
+		if (location == null || !(location.isStatus())) {
 			throw new LocationNotFound();
 		}
-		if(activeEvents != null && activeEvents.isEmpty() == false){
+		if (activeEvents != null && activeEvents.isEmpty() == false) {
 			throw new LocationNotChangeable();
 		}
-		
+
 		location.setStatus(false);
 		locationRepository.save(location);
 	}
@@ -138,7 +142,7 @@ public class LocationServiceImpl implements LocationService{
 	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate) {
 		return locationRepository.checkIfAvailable(locationId, startDate, endDate);
 	}
-	
+
 	@Override
 	public LocationReportDTO getLocationReport(Long id) {
 		LocationReportDTO retVal = new LocationReportDTO();

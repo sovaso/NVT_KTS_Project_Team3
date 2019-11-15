@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,6 +38,9 @@ public class Event {
 	@Column(name = "type")
 	private EventType type;
 
+	@Version
+	private Long version;
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
 	private Set<Reservation> reservations = new HashSet<>();
@@ -55,9 +59,9 @@ public class Event {
 	@Column(name = "videos")
 	private ArrayList<String> videos;
 
-	public Event(long id, String name, boolean status,
-			EventType type, Set<Reservation> reservations, Set<Maintenance> maintenances, Location locationInfo,
-			ArrayList<String> pictures, ArrayList<String> videos) {
+	public Event(long id, String name, boolean status, EventType type, Set<Reservation> reservations,
+			Set<Maintenance> maintenances, Location locationInfo, ArrayList<String> pictures,
+			ArrayList<String> videos) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -69,10 +73,10 @@ public class Event {
 		this.pictures = pictures;
 		this.videos = videos;
 	}
-	
-	public Event(String name, boolean status,
-			EventType type, Set<Reservation> reservations, Set<Maintenance> maintenances, Location locationInfo,
-			ArrayList<String> pictures, ArrayList<String> videos) {
+
+	public Event(String name, boolean status, EventType type, Set<Reservation> reservations,
+			Set<Maintenance> maintenances, Location locationInfo, ArrayList<String> pictures,
+			ArrayList<String> videos) {
 		super();
 		this.name = name;
 		this.status = status;
@@ -158,5 +162,13 @@ public class Event {
 
 	public void setReservations(Set<Reservation> reservations) {
 		this.reservations = reservations;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 }

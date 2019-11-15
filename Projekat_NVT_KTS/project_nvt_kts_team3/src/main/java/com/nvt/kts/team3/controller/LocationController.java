@@ -1,10 +1,6 @@
 package com.nvt.kts.team3.controller;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +20,6 @@ import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Location;
-import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.ReservationService;
 

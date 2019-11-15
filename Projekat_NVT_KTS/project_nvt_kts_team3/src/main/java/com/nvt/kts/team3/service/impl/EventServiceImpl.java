@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.dto.EventDTO;
 import com.nvt.kts.team3.dto.EventReportDTO;
@@ -45,6 +47,7 @@ import exception.LocationNotFound;
 import exception.LocationZoneNotAvailable;
 
 @Service
+@Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
 	@Autowired
@@ -73,6 +76,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event save(EventDTO eventDTO) throws ParseException {
 		if (EventType.valueOf(eventDTO.getEventType()) == null) {
 			throw new InvalidEventType();
@@ -152,6 +156,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event update(EventDTO eventDTO) throws ParseException {
 		Event event = eventRepository.getOne(eventDTO.getId());
 		if (event == null) {
@@ -259,6 +264,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		Event event = eventRepository.getOne(id);
 		if (event == null || event.isStatus() == false) {

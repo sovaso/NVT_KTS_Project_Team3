@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,9 +31,12 @@ public class Location {
 
 	@Column(name = "description")
 	private String description;
-	
+
 	@Column(name = "status")
 	private boolean status;
+
+	@Version
+	private Long version;
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "locationInfo", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
@@ -41,8 +45,6 @@ public class Location {
 	@JsonIgnore
 	@OneToMany(mappedBy = "location", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<LocationZone> locationZones = new HashSet<>();
-
-	
 
 	public Location(long id, String name, String address, String description, boolean status, Set<Event> events,
 			Set<LocationZone> locationZones) {
@@ -55,7 +57,7 @@ public class Location {
 		this.events = events;
 		this.locationZones = locationZones;
 	}
-	
+
 	public Location(String name, String address, String description, boolean status, Set<Event> events,
 			Set<LocationZone> locationZones) {
 		super();
@@ -126,5 +128,13 @@ public class Location {
 	public void setStatus(boolean status) {
 		this.status = status;
 	}
-	
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+
 }

@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nvt.kts.team3.dto.ReservationDTO;
@@ -36,8 +37,11 @@ public class Reservation {
 	@Column(name = "total_price")
 	private double totalPrice;
 
+	@Version
+	private Long version;
+
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinColumn(name = "user_id")
 	private RegularUser user;
 
@@ -47,7 +51,7 @@ public class Reservation {
 	private Set<Ticket> reservedTickets = new HashSet<>();
 
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinColumn(name = "event_id")
 	private Event event;
 
@@ -73,16 +77,17 @@ public class Reservation {
 	}
 
 	public Reservation(ReservationDTO reservationDTO) {
-		this.dateOfReservation=new Date();
-		this.paid=false;
-		this.totalPrice=0;
-		this.reservedTickets=new HashSet<>();
-		for(TicketDTO ticket: reservationDTO.getTickets()) {
+		this.dateOfReservation = new Date();
+		this.paid = false;
+		this.totalPrice = 0;
+		this.reservedTickets = new HashSet<>();
+		for (TicketDTO ticket : reservationDTO.getTickets()) {
 			this.reservedTickets.add(new Ticket(ticket));
 		}
-		this.event=reservationDTO.getEvent();
-		this.qrCode=reservationDTO.getQrCode();
+		this.event = reservationDTO.getEvent();
+		this.qrCode = reservationDTO.getQrCode();
 	}
+
 	public String getQrCode() {
 		return qrCode;
 	}
@@ -145,6 +150,14 @@ public class Reservation {
 
 	public void setReservedTickets(Set<Ticket> reservedTickets) {
 		this.reservedTickets = reservedTickets;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 
 }

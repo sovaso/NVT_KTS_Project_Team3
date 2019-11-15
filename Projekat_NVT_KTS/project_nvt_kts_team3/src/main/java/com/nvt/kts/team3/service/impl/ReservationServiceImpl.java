@@ -4,23 +4,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
-import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.repository.EventRepository;
 import com.nvt.kts.team3.repository.LocationRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
@@ -40,6 +37,7 @@ import exception.ReservationNotFound;
 import exception.TooManyTicketsReserved;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationServiceImpl implements ReservationService {
 
 	@Autowired
@@ -63,6 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Reservation create(Reservation reservation) {
 		Optional<Event> eventOpt = eventRepository.findById(reservation.getEvent().getId());
 		if (!eventOpt.isPresent()) {
@@ -127,6 +126,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean remove(Long id) {
 		Optional<Reservation> res = reservationRepository.findById(id);
 		if (res.isPresent()) {
@@ -169,6 +169,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean payReservation(Long id) {
 		Optional<Reservation> res = reservationRepository.findById(id);
 		if (res.isPresent()) {

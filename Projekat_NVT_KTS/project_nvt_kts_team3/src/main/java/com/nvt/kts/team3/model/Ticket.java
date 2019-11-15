@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import com.nvt.kts.team3.dto.TicketDTO;
 
@@ -32,13 +33,16 @@ public class Ticket {
 	@Column(name = "reserved")
 	private boolean reserved;
 
+	@Version
+	private Long version;
+
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinColumn(name = "reservation_id")
 	private Reservation reservation;
 
 	// many to one
-	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinColumn(name = "leased_zone_id")
 	private LeasedZone zone;
 
@@ -56,7 +60,7 @@ public class Ticket {
 		this.reservation = reservation;
 		this.zone = zone;
 	}
-	
+
 	public Ticket(int row, int col, double price, boolean reserved, Reservation reservation, LeasedZone zone) {
 		super();
 		this.row = row;
@@ -66,9 +70,9 @@ public class Ticket {
 		this.reservation = reservation;
 		this.zone = zone;
 	}
-	
+
 	public Ticket(TicketDTO ticketDTO) {
-		this.id=ticketDTO.getId();
+		this.id = ticketDTO.getId();
 	}
 
 	public long getId() {
@@ -125,5 +129,13 @@ public class Ticket {
 
 	public void setReservation(Reservation reservation) {
 		this.reservation = reservation;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 }

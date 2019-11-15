@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mysql.cj.x.protobuf.MysqlxCrud.FindOrBuilder;
 import com.nvt.kts.team3.model.Reservation;
@@ -19,6 +21,7 @@ import exception.TicketNotFound;
 import exception.TicketNotReserved;
 
 @Service
+@Transactional(readOnly = true)
 public class TicketServiceImpl implements TicketService {
 
 	@Autowired
@@ -33,6 +36,7 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
+	@Transactional(readOnly = false)
 	public Ticket save(Ticket ticket) {
 		return ticketRepository.save(ticket);
 	}
@@ -43,11 +47,13 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		ticketRepository.deleteById(id);
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Ticket saveAndFlush(Ticket ticket) {
 		return ticketRepository.saveAndFlush(ticket);
 	}
@@ -98,11 +104,13 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<Ticket> deleteByZoneId(long zoneId) {
 		return ticketRepository.deleteByZoneId(zoneId);
 	}
 
 	@Override
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean cancelTicket(Long id) {
 		Optional<Ticket> tic = this.ticketRepository.findById(id);
 		if (tic.isPresent()) {
