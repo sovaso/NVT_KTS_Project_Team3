@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nvt.kts.team3.dto.ReservationDTO;
 import com.nvt.kts.team3.dto.TicketDTO;
@@ -25,7 +27,8 @@ import com.nvt.kts.team3.dto.TicketDTO;
 public class Reservation {
 
 	@Id
-	@GeneratedValue
+	@GenericGenerator(name="generator" , strategy="increment")
+	@GeneratedValue(generator="generator")
 	private long id;
 
 	@Column(name = "date_of_reservation")

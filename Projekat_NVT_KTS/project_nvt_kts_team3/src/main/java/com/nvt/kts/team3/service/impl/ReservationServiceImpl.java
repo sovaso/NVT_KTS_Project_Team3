@@ -29,6 +29,7 @@ import exception.EventNotActive;
 import exception.EventNotFound;
 import exception.LocationNotFound;
 import exception.NoLoggedUser;
+import exception.NotUserReservation;
 import exception.ReservationAlreadyPaid;
 import exception.ReservationCannotBeCancelled;
 import exception.ReservationCannotBeCreated;
@@ -130,24 +131,33 @@ public class ReservationServiceImpl implements ReservationService {
 	public boolean remove(Long id) {
 		Optional<Reservation> res = reservationRepository.findById(id);
 		if (res.isPresent()) {
-			Reservation r=res.get();
-			int noSuccess = 0;
-			for (Ticket t : r.getReservedTickets()) {
-				if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())
-						&& t.getReservation().getId() == r.getId() && t.isReserved() == true) {
-					t.setReserved(false);
-					t.setReservation(null);
+			Reservation r = res.get();
+			if (!r.isPaid()) {
+				RegularUser logged = (RegularUser) userRepository
+						.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+				if (logged.getId() == r.getUser().getId()) {
+					int noSuccess = 0;
+					for (Ticket t : r.getReservedTickets()) {
+						if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())
+								&& t.getReservation().getId() == r.getId() && t.isReserved() == true) {
+							t.setReserved(false);
+							t.setReservation(null);
+						} else {
+							noSuccess++;
+						}
+					}
+					if (noSuccess == 0) {
+						reservationRepository.deleteById(id);
+						return true;
+					} else {
+						throw new ReservationCannotBeCancelled();
+					}
 				} else {
-					noSuccess++;
+					throw new NotUserReservation();
 				}
-			}
-			if (noSuccess == 0) {
-				reservationRepository.deleteById(id);
-				return true;
 			} else {
-				throw new ReservationCannotBeCancelled();
+				throw new ReservationAlreadyPaid();
 			}
-
 		} else {
 			throw new ReservationNotFound();
 		}
@@ -173,27 +183,33 @@ public class ReservationServiceImpl implements ReservationService {
 	public boolean payReservation(Long id) {
 		Optional<Reservation> res = reservationRepository.findById(id);
 		if (res.isPresent()) {
-			Reservation r=res.get();
-			if (r.isPaid() == false) {
-				if (r.getEvent().isStatus() == true) {
-					int noSuccess = 0;
-					for (Ticket t : r.getReservedTickets()) {
-						if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
-							noSuccess++;
+			Reservation r = res.get();
+			RegularUser logged = (RegularUser) userRepository
+					.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+			if (logged.getId() == r.getUser().getId()) {
+				if (r.isPaid() == false) {
+					if (r.getEvent().isStatus() == true) {
+						int noSuccess = 0;
+						for (Ticket t : r.getReservedTickets()) {
+							if (!t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
+								noSuccess++;
+							}
 						}
-					}
-					if (noSuccess < r.getReservedTickets().size()) {
-						r.setPaid(true);
-						reservationRepository.save(r);
-						return true;
+						if (noSuccess < r.getReservedTickets().size()) {
+							r.setPaid(true);
+							reservationRepository.save(r);
+							return true;
+						} else {
+							throw new ReservationExpired();
+						}
 					} else {
-						throw new ReservationExpired();
+						throw new EventNotActive();
 					}
 				} else {
-					throw new EventNotActive();
+					throw new ReservationAlreadyPaid();
 				}
 			} else {
-				throw new ReservationAlreadyPaid();
+				throw new NotUserReservation();
 			}
 		} else {
 			throw new ReservationNotFound();
