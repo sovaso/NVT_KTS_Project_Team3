@@ -29,6 +29,7 @@ import exception.LocationZoneNotFound;
 import exception.MaintenanceNotChangeable;
 import exception.MaintenanceNotFound;
 import exception.NoLoggedUser;
+import exception.NotUserReservation;
 import exception.ReservationAlreadyPaid;
 import exception.ReservationCannotBeCancelled;
 import exception.ReservationCannotBeCreated;
@@ -184,5 +185,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(value = ReservationCannotBeCreated.class)
     protected ResponseEntity<MessageDTO> handleReservationCannotBeCreated() {
 		return new ResponseEntity<>(new MessageDTO("Reservation cannot be created", "None of the tickets you chose is available."), HttpStatus.NOT_ACCEPTABLE);
+    }
+	
+	@ExceptionHandler(value = NotUserReservation.class)
+    protected ResponseEntity<MessageDTO> handleNotUserReservation() {
+		return new ResponseEntity<>(new MessageDTO("Not user reservation", "Reservation does not belong to logged user."), HttpStatus.FORBIDDEN);
     }
 }

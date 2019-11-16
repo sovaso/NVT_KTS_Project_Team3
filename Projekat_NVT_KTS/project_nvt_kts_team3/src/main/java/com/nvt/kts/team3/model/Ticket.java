@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.nvt.kts.team3.dto.TicketDTO;
 
 @Entity
@@ -18,7 +20,8 @@ import com.nvt.kts.team3.dto.TicketDTO;
 public class Ticket {
 
 	@Id
-	@GeneratedValue
+	@GenericGenerator(name="generator" , strategy="increment")
+	@GeneratedValue(generator="generator")
 	private long id;
 
 	@Column(name = "number_row")

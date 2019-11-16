@@ -5,17 +5,21 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysql.cj.x.protobuf.MysqlxCrud.FindOrBuilder;
+import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.repository.ReservationRepository;
 import com.nvt.kts.team3.repository.TicketRepository;
+import com.nvt.kts.team3.repository.UserRepository;
 import com.nvt.kts.team3.service.TicketService;
 
+import exception.NotUserReservation;
 import exception.TicketExpired;
 import exception.TicketNotFound;
 import exception.TicketNotReserved;
@@ -29,6 +33,9 @@ public class TicketServiceImpl implements TicketService {
 
 	@Autowired
 	private ReservationRepository reservationRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	@Override
 	public Ticket findById(Long id) {
@@ -114,23 +121,31 @@ public class TicketServiceImpl implements TicketService {
 	public boolean cancelTicket(Long id) {
 		Optional<Ticket> tic = this.ticketRepository.findById(id);
 		if (tic.isPresent()) {
-			Ticket t=tic.get();
+			Ticket t = tic.get();
 			Reservation r = t.getReservation();
-			if (r != null) {
-				if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
-					t.setReserved(false);
-					t.setReservation(null);
-					r.getReservedTickets().remove(t);
-					reservationRepository.save(r);
-					save(t);
-					if (r.getReservedTickets().size() == 0) {
-						reservationRepository.deleteById(r.getId());
+			RegularUser logged = (RegularUser) userRepository
+					.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 
+			if (r != null) {
+				if (logged.getId() == r.getUser().getId()) {
+					if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
+						t.setReserved(false);
+						t.setReservation(null);
+						r.getReservedTickets().remove(t);
+						reservationRepository.save(r);
+						save(t);
+						if (r.getReservedTickets().size() == 0) {
+							reservationRepository.deleteById(r.getId());
+
+						}
+					} else {
+						throw new TicketExpired();
 					}
+					return true;
 				} else {
-					throw new TicketExpired();
+					throw new NotUserReservation();
+
 				}
-				return true;
 			} else {
 				throw new TicketNotReserved();
 			}

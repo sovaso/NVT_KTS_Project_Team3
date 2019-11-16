@@ -130,6 +130,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		regularUser.setSurname(user.getSurname());
 		regularUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
 		regularUser.setReservations(new HashSet<Reservation>());
+		this.userRepository.save(regularUser);
 		return true;
 	}
 	

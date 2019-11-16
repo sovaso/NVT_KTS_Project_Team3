@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -43,7 +45,8 @@ public class Maintenance {
 	}
 
 	@Id
-	@GeneratedValue
+	@GenericGenerator(name="generator" , strategy="increment")
+	@GeneratedValue(generator="generator")
 	private long id;
 
 	// one to many
