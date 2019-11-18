@@ -1,5 +1,7 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,18 +10,28 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.Permission;
 import com.nvt.kts.team3.dto.EventDTO;
 import com.nvt.kts.team3.dto.EventReportDTO;
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
 import com.nvt.kts.team3.dto.MaintenanceDTO;
+import com.nvt.kts.team3.dto.UploadFileDTO;
+import com.nvt.kts.team3.model.DriveQuickstart;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.model.LeasedZone;
@@ -45,10 +57,14 @@ import exception.LocationNotAvailable;
 import exception.LocationNotChangeable;
 import exception.LocationNotFound;
 import exception.LocationZoneNotAvailable;
+import exception.WrongPath;
 
 @Service
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
+
+	private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
+	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
 	@Autowired
 	private MaintenanceService maintenanceService;
@@ -396,7 +412,7 @@ public class EventServiceImpl implements EventService {
 	public double getEventIncome(Long id) {
 		Optional<Event> eventOpt = eventRepository.findById(id);
 		if (eventOpt.isPresent()) {
-			Event e=eventOpt.get();
+			Event e = eventOpt.get();
 			List<Reservation> reservations = this.reservationRepository.findByEvent(e);
 			double income = 0;
 			for (Reservation r : reservations) {
@@ -407,6 +423,35 @@ public class EventServiceImpl implements EventService {
 			return income;
 		} else {
 			throw new EventNotFound();
+		}
+	}
+
+	@Override
+	public String uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException {
+		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+		File item = new File();
+
+		Permission permission = new Permission();
+		permission.setRole("reader");
+		permission.setType("anyone");
+		List<Permission> permis = new ArrayList<Permission>();
+		// permis.add(permission);
+		File fileMetadata = new File();
+		fileMetadata.setName(uploadFileDTO.getName());
+		java.io.File filePath = new java.io.File(uploadFileDTO.getPathToFile());
+		if (!filePath.exists()) {
+			throw new WrongPath();
+		} else {
+			FileContent mediaContent = new FileContent("image/jpeg", filePath);
+			Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+					DriveQuickstart.getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME).build();
+
+			item = service.files().create(fileMetadata, mediaContent).setFields("id,webViewLink").execute();
+			Permission perm = service.permissions().create(item.getId(), permission).execute();
+			permis.add(perm);
+			System.out.println("File ID: " + item.getWebViewLink());
+			item.setPermissions(permis);
+			return item.getWebViewLink();
 		}
 	}
 }

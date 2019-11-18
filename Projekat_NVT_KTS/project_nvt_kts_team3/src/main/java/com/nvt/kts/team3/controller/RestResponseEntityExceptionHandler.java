@@ -39,6 +39,7 @@ import exception.TicketExpired;
 import exception.TicketNotFound;
 import exception.TicketNotReserved;
 import exception.TooManyTicketsReserved;
+import exception.WrongPath;
 
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -190,5 +191,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(value = NotUserReservation.class)
     protected ResponseEntity<MessageDTO> handleNotUserReservation() {
 		return new ResponseEntity<>(new MessageDTO("Not user reservation", "Reservation does not belong to logged user."), HttpStatus.FORBIDDEN);
+    }
+	
+	@ExceptionHandler(value = WrongPath.class)
+    protected ResponseEntity<MessageDTO> handleWrongPath() {
+		return new ResponseEntity<>(new MessageDTO("Wrong path", "Given path does not exist."), HttpStatus.NOT_FOUND);
     }
 }

@@ -1,7 +1,6 @@
 package com.nvt.kts.team3.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,18 +19,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.ReservationDTO;
+import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
-import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 import com.nvt.kts.team3.service.UserService;
+
 import exception.EventNotFound;
 import exception.ReservationNotFound;
-import com.nvt.kts.team3.model.Event;
-import com.nvt.kts.team3.model.RegularUser;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
