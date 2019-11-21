@@ -77,6 +77,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/getActiveLocations/**").permitAll()
 			.antMatchers("/sendEmail").permitAll()
 			.antMatchers("/auth/registerAdmin/**").permitAll()
+			.antMatchers("/createEvent/**").permitAll()
+			.antMatchers("/findEvent/{field}/{startDate}/{endDate}").permitAll()
+			.antMatchers("/sortByName").permitAll()
+			.antMatchers("/api/sortByDateAcs").permitAll()
 			// svaki zahtev mora biti autorizovan
 			.anyRequest().authenticated().and()
 			

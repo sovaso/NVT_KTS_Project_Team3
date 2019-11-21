@@ -3,9 +3,13 @@ package com.nvt.kts.team3.controller;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.EventDTO;
@@ -23,9 +28,11 @@ import com.nvt.kts.team3.dto.EventReportDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.UploadFileDTO;
 import com.nvt.kts.team3.model.Event;
+import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.EventService;
+import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.TicketService;
 
 @RestController
@@ -122,6 +129,55 @@ public class EventController {
 		String path = this.eventService.uploadFile(uploadFileDTO);
 		return new ResponseEntity<>(path, HttpStatus.OK);
 
+	}
+	
+	@GetMapping(value = "/findEvent/{field}/{startDate}/{endDate}")
+	public ResponseEntity<?> findRentacars(
+			@RequestParam(name = "endDate") @DateTimeFormat(iso = ISO.DATE) LocalDate endDate,
+			@RequestParam(name = "field") String field,
+			@RequestParam(name = "startDate")  @DateTimeFormat(iso = ISO.DATE) LocalDate startDate
+			) {
+		List<Event> events  = eventService.searchEvent(field, startDate, endDate);
+		if (events.size() != 0) {
+			return new ResponseEntity<>(events, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Event with desired criterias does not exist."), HttpStatus.NOT_FOUND);
+		}
+		
+		
+	}
+	
+	@GetMapping(value = "/sortByName")
+	public ResponseEntity<?> sortByName() {
+		List<Event> events  = eventService.findAllSortedName();
+		if (events.size() != 0) {
+			return new ResponseEntity<>(events, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(new MessageDTO("Not found", "No events in database."), HttpStatus.NOT_FOUND);
+		}
+		
+	}
+	
+	@GetMapping(value = "/sortByDateAcs")
+	public ResponseEntity<?> sortByDateAcs() {
+		List<Event> events  = eventService.findAllSortedDateAcs();
+		if (events.size() != 0) {
+			return new ResponseEntity<>(events, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(new MessageDTO("Not found", "No events in database."), HttpStatus.NOT_FOUND);
+		}
+		
+	}
+	
+	@GetMapping(value = "/sortByDateDesc")
+	public ResponseEntity<?> sortByDateDesc() {
+		List<Event> events  = eventService.findAllSortedDateAcs();
+		if (events.size() != 0) {
+			return new ResponseEntity<>(events, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>(new MessageDTO("Not found", "No events in database."), HttpStatus.NOT_FOUND);
+		}
+		
 	}
 
 }

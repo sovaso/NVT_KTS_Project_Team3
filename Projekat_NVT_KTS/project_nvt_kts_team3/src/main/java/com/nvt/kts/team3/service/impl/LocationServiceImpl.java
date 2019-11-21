@@ -52,17 +52,22 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location save(LocationDTO locationDTO) {
+		
+		//Ne sme biti dvojnica
 		if (locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress()) != null) {
 			throw new LocationExists();
 		}
 
+		//moras da navedes zone koje location treba da ima
 		if (locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()) {
 			throw new InvalidLocationZone();
 		}
 
+		
 		Location location = new Location(locationDTO.getName(), locationDTO.getAddress(), locationDTO.getDescription(),
 				true, new HashSet<Event>(), new HashSet<LocationZone>());
 
+		//Pravis location zone
 		for (LocationZoneDTO lz : locationDTO.getLocationZone()) {
 			if (lz.isMatrix() && lz.getCol() > 0 && lz.getRow() > 0) {
 				int capacity = lz.getCol() * lz.getRow();
@@ -84,10 +89,13 @@ public class LocationServiceImpl implements LocationService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location update(LocationDTO locationDTO) {
 		Location location = locationService.findById(locationDTO.getId());
+		
+		//mozes menjati samo postojeci
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
 
+		//izmenis i sacuvas
 		Location testName = locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress());
 		if (testName != null && testName.getId() != locationDTO.getId()) {
 			throw new LocationExists();
@@ -112,9 +120,13 @@ public class LocationServiceImpl implements LocationService {
 	public void remove(Long id) {
 		List<Event> activeEvents = getActiveEvents(id);
 		Location location = findById(id);
+		
+		//ne mozes da brises neposojece
 		if (location == null || !(location.isStatus())) {
 			throw new LocationNotFound();
 		}
+		
+		//ako ima vec rezervisanih dogadjaja ne mozes da ih brises
 		if (activeEvents != null && activeEvents.isEmpty() == false) {
 			throw new LocationNotChangeable();
 		}
@@ -232,6 +244,11 @@ public class LocationServiceImpl implements LocationService {
 		} else {
 			throw new LocationNotFound();
 		}
+	}
+	
+	@Override
+	public Location findByAddress(String address){
+		return locationRepository.findByAddress(address);
 	}
 
 }

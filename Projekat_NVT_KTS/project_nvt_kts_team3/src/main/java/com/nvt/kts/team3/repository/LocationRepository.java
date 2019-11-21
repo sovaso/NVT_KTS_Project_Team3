@@ -33,5 +33,7 @@ public interface LocationRepository extends JpaRepository<Location, Long>{
 				"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3) " +
 				"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3))")
 	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate);
+	
+	public Location findByAddress(String address);
 }
 

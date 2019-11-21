@@ -2,6 +2,8 @@ package com.nvt.kts.team3.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -71,10 +73,13 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Maintenance save(MaintenanceDTO maintenanceDTO) throws ParseException {
 		Event event = eventService.findById(maintenanceDTO.getEventId());
+		
+		//Mora biti postojeci event i mora biti aktivan
 		if (event == null || !(eventService.eventIsActive(event.getId()))) {
 			throw new EventNotFound();
 		}
 
+		//Mora biti postojeca lokacija i mora biti aktivna
 		Location location = locationService.findById(event.getLocationInfo().getId());
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
@@ -89,18 +94,24 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		Date validDate = calendar.getTime();
 		maintenanceStartDate = sdf.parse(maintenanceDTO.getStartDate());
 		maintenanceEndDate = sdf.parse(maintenanceDTO.getEndDate());
+		
+		//Proveravas validnost datuma
 		if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)
 				|| maintenanceEndDate.before(maintenanceStartDate)) {
 			throw new InvalidDate();
 		}
+		//Postvljas expiry date
 		expiry.setTime(maintenanceStartDate);
 		expiry.add(Calendar.DATE, -3);
+		
+		//Neka provera pocetka i kraja odrzavanja
 		long dateDifferenceHours = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 60 * 1000);
 		long dateDifferenceMinutes = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 1000) % 60;
 		if (dateDifferenceHours > 24 || dateDifferenceMinutes < 30) {
 			throw new InvalidDate();
 		}
 
+		//Proveravas da li je lokacija na kojoj zelimo odrzavanje dostupna u zeljenom periodu.
 		ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
 				maintenanceEndDate);
 		if (locationEvents.isEmpty() == false) {
@@ -108,9 +119,12 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		}
 
 		Maintenance maintenance = new Maintenance();
-		maintenance.setMaintenanceDate(maintenanceStartDate);
-		maintenance.setMaintenanceEndTime(maintenanceEndDate);
+		
+		maintenance.setMaintenanceDate(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ));
+		maintenance.setMaintenanceEndTime(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ));
 		maintenance.setEvent(event);
+		
+		//Moras da navedes koje zone zelis da zakupis za dogadjaj
 		if (maintenanceDTO.getLocationZones() == null || maintenanceDTO.getLocationZones().isEmpty()) {
 			throw new InvalidLocationZone();
 		}
@@ -119,12 +133,12 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 		for (LeasedZoneDTO lz : maintenanceDTO.getLocationZones()) {
 			LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
-
+			//Proveravas da li postoji locationZone
 			if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
 				throw new LocationZoneNotAvailable();
 			}
 
-			if (choosenZones.contains(lz.getZoneId()) == false) {
+			if (choosenZones.contains(lz.getZoneId()) == false) {//Jednom mozes zakupiti jednu locationZone
 				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance, new HashSet<Ticket>());
 				choosenZones.add(lz.getZoneId());
 				if (locationZone.isMatrix()) {
@@ -140,6 +154,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 						newZone.getTickets().add(ticket);
 					}
 				}
+				
+				//Dodajes u maintenance u zakupljene zone tu zonu
 				maintenance.getLeasedZones().add(newZone);
 			}
 		}
@@ -151,6 +167,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	public Maintenance updateMaintenance(MaintenanceDTO maintenanceDTO) throws ParseException {
 		Maintenance maintenance = findById(maintenanceDTO.getId());
 
+		//Ne mozes updateovat nepostojeci maintenance
 		if (maintenance == null) {
 			throw new MaintenanceNotFound();
 		}
@@ -164,40 +181,50 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 		maintenanceStartDate = sdf.parse(maintenanceDTO.getStartDate());
 		maintenanceEndDate = sdf.parse(maintenanceDTO.getEndDate());
+		//Provervas validnost posledjenog vremena
 		if (maintenanceStartDate.before(today) || maintenanceEndDate.before(maintenanceStartDate)) {
 			throw new InvalidDate();
 		}
+		
+		//Setujes expiry date
 		expiry.setTime(maintenanceStartDate);
 		expiry.add(Calendar.DATE, -3);
+		
+		//Neka provera izmedju pocetka i kraja
 		long dateDifferenceHours = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 60 * 1000);
 		long dateDifferenceMinutes = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 1000) % 60;
 		if (dateDifferenceHours > 24 || dateDifferenceMinutes < 30) {
 			throw new InvalidDate();
 		}
-		maintenance.setMaintenanceDate(maintenanceStartDate);
-		maintenance.setMaintenanceEndTime(maintenanceEndDate);
-		maintenance.setReservationExpiry(expiry.getTime());
+		maintenance.setMaintenanceDate(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ));
+		maintenance.setMaintenanceEndTime(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ));
+		maintenance.setReservationExpiry(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(expiry.getTime()) ));
 
 		Location location = locationService.findById(event.getLocationInfo().getId());
+		//Ne mozes da postvis nepostojecu ili neaktivnu lokaciju
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
 
 		if (location.getId() != maintenance.getEvent().getId()) {
+			//Ne mozes da menjas lokaciju ako imas prodatih karata vec
 			if (!(ticketService.getMaintenanceReservedTickets(maintenance.getId()).isEmpty())) {
 				throw new MaintenanceNotChangeable();
 			}
+			
+			//Cak i ako nema prodatih karata i mozes da promenis lokaciju, moras da proveris da li je ta lokacija slobodna
 			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
 					maintenanceEndDate);
 			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
 
-			leasedZoneService.deleteByMaintenanceId(maintenance.getId());
+			leasedZoneService.deleteByMaintenanceId(maintenance.getId());//Oslobodile smo zone koje su bile zakupljena
 			ArrayList<Long> choosenZones = new ArrayList<Long>();
 			for (LeasedZoneDTO lz : maintenanceDTO.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
 
+				//Specificirala si zone koje hoces da zakupis i sad to sredjujes
 				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
 					throw new LocationZoneNotAvailable();
 				}
@@ -238,6 +265,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		if (maintenance == null) {
 			throw new MaintenanceNotFound();
 		}
+		
+		//Ne mozes da obrises ako ima rezervisanih karata
 		if (!(ticketService.getMaintenanceReservedTickets(id).isEmpty())) {
 			throw new MaintenanceNotChangeable();
 		}

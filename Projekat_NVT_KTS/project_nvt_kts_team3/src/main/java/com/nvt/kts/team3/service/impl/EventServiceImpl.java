@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,6 +15,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +61,7 @@ import exception.LocationNotChangeable;
 import exception.LocationNotFound;
 import exception.LocationZoneNotAvailable;
 import exception.WrongPath;
+import org.springframework.data.domain.Sort;
 
 @Service
 @Transactional(readOnly = true)
@@ -94,18 +98,23 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event save(EventDTO eventDTO) throws ParseException {
+		// Ne sme da se ne unese tip dogadjaja
 		if (EventType.valueOf(eventDTO.getEventType()) == null) {
 			throw new InvalidEventType();
 		}
+		
+		//Mora da se unese postojeca lokacija
 		Location location = locationService.findById(eventDTO.getLocationId());
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
 
+		//Napravi event
 		Event event = new Event(eventDTO.getName(), true, EventType.valueOf(eventDTO.getEventType()),
 				new HashSet<Reservation>(), new HashSet<Maintenance>(), location, new ArrayList<String>(),
 				new ArrayList<String>());
 
+		//Posto svaki dogajdaj moze na primer da se odrzava dva vikenda, moras i ovim da se pozabavis.
 		Date maintenanceStartDate = null;
 		Date maintenanceEndDate = null;
 		Date today = new Date();
@@ -114,13 +123,19 @@ public class EventServiceImpl implements EventService {
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DATE, 7);
 		Date validDate = calendar.getTime();
+		
+		//Znaci prosledila sam i maintainace, ono ore sam samo napravila praznu lisu u konsturkotru za njegove potrebe
 		for (MaintenanceDTO dates : eventDTO.getMaintenance()) {
 			maintenanceStartDate = null;
 			maintenanceStartDate = sdf.parse(dates.getStartDate());
 			maintenanceEndDate = sdf.parse(dates.getEndDate());
+			
+			//Ako smo uneli da se odrzava pre danas
 			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
 				throw new InvalidDate();
 			}
+			
+			//Postavljas da je expiry tri dana pre pocetka rezervacije
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
 			// long dateDifferenceHours = (maintenanceEndDate.getTime() -
@@ -130,28 +145,40 @@ public class EventServiceImpl implements EventService {
 			// if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
 			// throw new InvalidDate();
 			// }
-			Maintenance maintenance = new Maintenance(maintenanceStartDate, maintenanceEndDate, expiry.getTime(),
+			
+			//Napravili smo maintainance
+			Maintenance maintenance = new Maintenance(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ),
+					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ),
+					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(expiry.getTime()) ),
 					new HashSet<LeasedZone>(), event);
+			//U onu praznu listu maintainenance-a smo dodali maintaince
 			event.getMaintenances().add(maintenance);
 
+			//Proverila si da li lokacija postoji, sad proveravas da li je slobodna u tom periodu
 			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
 					maintenanceEndDate);
 			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
 
+			//U EventDTO klasi imas leased zone imas leasedZoneDTO set
 			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
+				
+				//Ako smo prosledili nevalidan id za zonu ili leasedZone lokacija nije isto sto i uneta lokacija
 				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
 					throw new LocationZoneNotAvailable();
 				}
 
+				//Moras i validnu cenu uneti
 				if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
 					throw new InvalidPrice();
 				}
 
+				//Napravili smo leasedZone
 				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance, new HashSet<Ticket>());
 
+				//Ako je matrica svaka karta ce imati tacno svoje mesto a ako nije onda su svi na primer u parteru.
 				if (locationZone.isMatrix()) {
 					for (int i = 1; i <= locationZone.getColNumber(); i++) {
 						for (int j = 1; j <= locationZone.getRowNumber(); j++) {
@@ -178,26 +205,35 @@ public class EventServiceImpl implements EventService {
 		if (event == null) {
 			throw new EventNotFound();
 		}
+		
+		//Dogadjaj nije aktivan i nema sta da se menja
 		if (!(event.isStatus()) || !(eventIsActive(event.getId()))) {
 			throw new EventNotChangeable();
 		}
+		
+		//Ime dogadjaja mora da se unese
 		if (eventDTO.getName() != null) {
 			event.setName(eventDTO.getName());
 		}
 
+		//Tip dogadjaja mora da se unese
 		event.setType(EventType.valueOf(eventDTO.getEventType()));
 		if (event.getType() == null) {
 			throw new InvalidEventType();
 		}
 
+		//Mora da se unese lokacija koja postoji i koja je aktivna
 		Location location = locationService.findById(eventDTO.getLocationId());
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
+		
+		//Ako je lokacija dogadjaja ista nema potrebe da menjas karte, jer su one pravljene po lokaciji
 		if (location.getId() == event.getLocationInfo().getId()) {
 			return eventRepository.save(event);
 		}
 
+		//Ako ima prodatih tiketa ne sme da se menja lokacija
 		if (ticketService.getEventReservedTickets(event.getId()).isEmpty() == false) {
 			if (eventDTO.getLocationId() != event.getLocationInfo().getId()) {
 				throw new LocationNotChangeable();
@@ -205,6 +241,8 @@ public class EventServiceImpl implements EventService {
 				return eventRepository.save(event);
 			}
 		}
+		
+		//Sacuvala si novu lokaciju sad ides odrzavanja
 		Set<Maintenance> newMaintenances = new HashSet<Maintenance>();
 		event.setLocationInfo(location);
 		Date maintenanceStartDate = null;
@@ -215,6 +253,8 @@ public class EventServiceImpl implements EventService {
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DATE, 7);
 		Date validDate = calendar.getTime();
+		
+		//Prolazis opet kroz odrzavanja i proveravas validnost datuma, u principu ne moze u proslosti biti
 		for (MaintenanceDTO dates : eventDTO.getMaintenance()) {
 			maintenanceStartDate = null;
 			maintenanceStartDate = sdf.parse(dates.getStartDate());
@@ -222,6 +262,7 @@ public class EventServiceImpl implements EventService {
 			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
 				throw new InvalidDate();
 			}
+			//Postavljas expiry
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
 			// long dateDifferenceHours = (maintenanceEndDate.getTime() -
@@ -231,16 +272,24 @@ public class EventServiceImpl implements EventService {
 			// if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
 			// throw new InvalidDate();
 			// }
-			Maintenance maintenance = new Maintenance(maintenanceStartDate, maintenanceEndDate, expiry.getTime(),
+			
+			//Pravis maintenance
+			Maintenance maintenance = new Maintenance(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ),
+					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ),
+					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(expiry.getTime()) ),
 					new HashSet<LeasedZone>(), event);
 			newMaintenances.add(maintenance);
 
+			//Proveravas da li je lokacija dostupna u periodu maintance
 			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
 					maintenanceEndDate);
 			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
-
+			
+			
+			//Prolazis kroz LeasedZone i iz eventDTO klase. Proveravas da li postoji locationZone sa tim id-em. I
+			//da li si dobru cenu prosledili
 			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
 				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
@@ -251,8 +300,10 @@ public class EventServiceImpl implements EventService {
 					throw new InvalidPrice();
 				}
 
+				//Kreiras LeasedZone
 				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance, new HashSet<Ticket>());
 
+				//Pravis karte u zavisnosti od toga jel matrica ili ne
 				if (locationZone.isMatrix()) {
 					for (int i = 1; i <= locationZone.getColNumber(); i++) {
 						for (int j = 1; j <= locationZone.getRowNumber(); j++) {
@@ -269,6 +320,7 @@ public class EventServiceImpl implements EventService {
 				maintenance.getLeasedZones().add(newZone);
 			}
 		}
+		//Cuvas izmene
 		maintenanceService.removeByEventId(event.getId());
 		event.setMaintenances(newMaintenances);
 		return eventRepository.save(event);
@@ -283,6 +335,7 @@ public class EventServiceImpl implements EventService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		Event event = eventRepository.getOne(id);
+		//Ne mozes da uklonis dogadjaj koji ne postoji ili koji nije aktivan
 		if (event == null || event.isStatus() == false) {
 			throw new EventNotFound();
 		}
@@ -311,7 +364,8 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public boolean eventIsActive(long eventId) {
 		Maintenance maintenance = maintenanceService.getLastMaintenanceOfEvent(eventId);
-		if (maintenance.getMaintenanceDate().before(new Date()) || maintenance.getEvent().isStatus() == false) {
+		//Ako je odrzavanje u proslosti ili ako je maintainance otkazan onda je false
+		if (maintenance.getMaintenanceDate().isBefore(LocalDate.now()) || maintenance.getEvent().isStatus() == false) {
 			return false;
 		}
 		return true;
@@ -410,6 +464,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public double getEventIncome(Long id) {
+		//Cena svih prodatih karata
 		Optional<Event> eventOpt = eventRepository.findById(id);
 		if (eventOpt.isPresent()) {
 			Event e = eventOpt.get();
@@ -454,4 +509,78 @@ public class EventServiceImpl implements EventService {
 			return item.getWebViewLink();
 		}
 	}
+	
+	
+	@Override
+	public List<Event> findByLocation(Location location){
+		return eventRepository.findByLocationInfo(location);
+	}
+	
+	@Override
+	public List<Event> findByName(String name){
+		return eventRepository.findByName(name);
+	}
+	
+	public List<Event> findByLocationAddress(String locationAddress){
+		Location location = locationService.findByAddress(locationAddress);
+		return findByLocation(location);
+	}
+	
+	public List<Event> findByType(EventType type){
+		return eventRepository.findByType(type);
+	}
+	
+	
+	public List<Event> findByField(String field){
+		List<Event> events  = findByName(field);
+		if (events.size() == 0) {
+			events = findByLocationAddress(field);
+		}
+		if (events.size() == 0) {
+			if (field.toUpperCase() == "SPORTS" || field.toUpperCase() == "ENTERTAINMENT" || field.toUpperCase() == "CULTURAL") {
+				events = findByType(EventType.valueOf(field.toUpperCase()));
+			}
+		}
+		return events;
+	}
+	
+	@Override
+	public List<Event> searchEvent(String field, LocalDate startDate, LocalDate endDate){
+		System.out.println("POZVAN SEARCH EVENT");
+		List<Event> events = new ArrayList<Event>();
+		if (startDate == null) {
+			events = eventRepository.searchEventOnlyField(field);
+		}else if (startDate != null && endDate == null && field == null){
+			events = eventRepository.searchEventSpecDate(startDate);
+		}else if (startDate != null && endDate != null && field == null){
+			events = eventRepository.searchEventPeriod(startDate, endDate);
+		}else if (field != null && startDate!= null && endDate == null) {
+			events = eventRepository.searchEventFieldSpecDate(field, startDate);
+		}else  {
+			events = eventRepository.searchEventFieldPeriod(field, startDate, endDate);
+		}
+		
+		return events;
+	}
+	
+	public List<Event> findAllSortedName(){
+		return eventRepository.findAll(sortByIdAsc());
+	}
+	
+	private Sort sortByIdAsc() {
+		return new Sort(Sort.Direction.ASC, "name");
+	}
+	
+	public List<Event> findAllSortedDateAcs(){
+		return eventRepository.findAllSortedDateAcs();
+	}
+	
+	public List<Event> findAllSortedDateDesc(){
+		return eventRepository.findAllSortedDateDesc();
+	}
+
+	
+	
+
+	
 }

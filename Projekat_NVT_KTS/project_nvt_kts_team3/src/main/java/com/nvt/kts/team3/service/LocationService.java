@@ -20,4 +20,5 @@ public interface LocationService {
 	public ArrayList<Event> getActiveEvents(long locationId);
 	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate);
 	public LocationReportDTO getLocationReport(Long id);
+	public Location findByAddress(String address);
 }

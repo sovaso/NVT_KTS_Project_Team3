@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -128,7 +129,7 @@ public class TicketServiceImpl implements TicketService {
 
 			if (r != null) {
 				if (logged.getId() == r.getUser().getId()) {
-					if (t.getZone().getMaintenance().getReservationExpiry().after(new Date())) {
+					if (t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDate.now())) {
 						t.setReserved(false);
 						t.setReservation(null);
 						r.getReservedTickets().remove(t);
