@@ -118,7 +118,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 		regularUser.setPassword(this.encodePassword(user.getPassword()));
 		List<Authority> authorities = new ArrayList<>();
 		Authority a = new Authority();
-		if (userRole.equals(UserRoleName.ROLE_USER)) {
+		System.out.println("******");
+		System.out.println(userRole);
+		System.out.println("******");
+		if (userRole.equals(UserRoleName.ROLE_USER)){
+			System.out.println("Role je user");
 			a.setName(UserRoleName.ROLE_USER);
 		}else {
 			a.setName(UserRoleName.ROLE_ADMIN);

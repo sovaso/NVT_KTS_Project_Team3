@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,7 @@ import com.nvt.kts.team3.security.auth.JwtAuthenticationRequest;
 import com.nvt.kts.team3.service.impl.CustomUserDetailsService;
 
 @RestController
+@CrossOrigin(origins="http://localhost:4200", allowedHeaders = "*")
 public class AuthenticationController {
 	@Autowired
 	TokenHelper tokenUtils;
@@ -52,7 +54,7 @@ public class AuthenticationController {
 	}
 
 	@PostMapping(value = "auth/registerAdmin")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> registerAdmin(@RequestBody UserDTO user) {
 		boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_ADMIN);
 		if (result == true) {
