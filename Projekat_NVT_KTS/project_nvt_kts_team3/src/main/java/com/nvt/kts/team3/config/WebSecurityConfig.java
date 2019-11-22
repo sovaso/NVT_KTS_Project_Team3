@@ -59,6 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+			.cors().and()
 			// komunikacija izmedju klijenta i servera je stateless
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
 			
@@ -77,6 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/getActiveLocations/**").permitAll()
 			.antMatchers("/sendEmail").permitAll()
 			.antMatchers("/auth/registerAdmin/**").permitAll()
+			.antMatchers("/auth/registerUser/**").permitAll()
 			.antMatchers("/createEvent/**").permitAll()
 			.antMatchers("/findEvent/{field}/{startDate}/{endDate}").permitAll()
 			.antMatchers("/sortByName").permitAll()
