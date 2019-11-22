@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,8 @@ import com.nvt.kts.team3.dto.EventReportDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.UploadFileDTO;
 import com.nvt.kts.team3.model.Event;
-import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.model.Location;
-import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.EventService;
-import com.nvt.kts.team3.service.LocationService;
-import com.nvt.kts.team3.service.TicketService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,9 +36,6 @@ public class EventController {
 
 	@Autowired
 	private EventService eventService;
-
-	@Autowired
-	private TicketService ticketService;
 
 	@PostMapping(value = "/createEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MessageDTO> createEvent(@RequestBody EventDTO eventDTO) throws ParseException {
@@ -83,21 +75,6 @@ public class EventController {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(event.getLocationInfo(), HttpStatus.OK);
-	}
-
-	@GetMapping(value = "/getEventTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Ticket>> getEventTickets(@PathVariable(value = "id") Long eventId) {
-		return new ResponseEntity<>(ticketService.getEventTickets(eventId), HttpStatus.OK);
-	}
-
-	@GetMapping(value = "/getEventReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Ticket>> getEventReservedTickets(@PathVariable(value = "id") Long eventId) {
-		return new ResponseEntity<>(ticketService.getEventReservedTickets(eventId), HttpStatus.OK);
-	}
-
-	@GetMapping(value = "/getEventSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Ticket>> getEventSoldTickets(@PathVariable(value = "id") Long eventId) {
-		return new ResponseEntity<>(ticketService.getEventSoldTickets(eventId), HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "/deleteEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
