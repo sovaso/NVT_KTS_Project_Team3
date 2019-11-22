@@ -1,7 +1,6 @@
 package com.nvt.kts.team3.controller;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +19,8 @@ import com.nvt.kts.team3.dto.MaintenanceDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Maintenance;
-import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.MaintenanceService;
-import com.nvt.kts.team3.service.TicketService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,9 +31,6 @@ public class MaintenanceController {
 	
 	@Autowired
 	private MaintenanceService maintenanceService;
-	
-	@Autowired
-	private TicketService ticketService;
 	
 	@PostMapping(value = "/createMaintenance", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MessageDTO> createMaintenance(@RequestBody MaintenanceDTO maintenanceDTO) throws ParseException{
@@ -63,21 +57,6 @@ public class MaintenanceController {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(maintenance, HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/getMaintenanceTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Ticket>> getMaintenanceTickets(@PathVariable(value = "id") Long maintenanceId){
-		return new ResponseEntity<>(ticketService.getMaintenanceTickets(maintenanceId), HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/getMaintenanceReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Ticket>> getMaintenanceReservedTickets(@PathVariable(value = "id") Long maintenanceId){
-		return new ResponseEntity<>(ticketService.getMaintenanceReservedTickets(maintenanceId), HttpStatus.OK);
-	}
-	
-	@GetMapping(value = "/getMaintenanceSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Ticket>> getMaintenanceSoldTickets(@PathVariable(value = "id") Long maintenanceId){
-		return new ResponseEntity<>(ticketService.getMaintenanceSoldTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenances/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
