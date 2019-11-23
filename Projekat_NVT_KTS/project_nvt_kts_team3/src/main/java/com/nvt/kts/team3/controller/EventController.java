@@ -3,7 +3,7 @@ package com.nvt.kts.team3.controller;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,9 +110,9 @@ public class EventController {
 	
 	@GetMapping(value = "/findEvent/{field}/{startDate}/{endDate}")
 	public ResponseEntity<?> findRentacars(
-			@RequestParam(name = "endDate") @DateTimeFormat(iso = ISO.DATE) LocalDate endDate,
+			@RequestParam(name = "endDate") @DateTimeFormat(iso = ISO.DATE) LocalDateTime endDate,
 			@RequestParam(name = "field") String field,
-			@RequestParam(name = "startDate")  @DateTimeFormat(iso = ISO.DATE) LocalDate startDate
+			@RequestParam(name = "startDate")  @DateTimeFormat(iso = ISO.DATE) LocalDateTime startDate
 			) {
 		List<Event> events  = eventService.searchEvent(field, startDate, endDate);
 		if (events.size() != 0) {

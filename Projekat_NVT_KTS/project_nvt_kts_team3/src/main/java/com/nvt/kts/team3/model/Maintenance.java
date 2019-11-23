@@ -1,7 +1,6 @@
 package com.nvt.kts.team3.model;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,13 +25,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Maintenance {
 
 	@Column(name = "maintenance_date")
-	private LocalDate maintenanceDate;
+	private LocalDateTime maintenanceDate;
 
 	@Column(name = "maintenance_end_time")
-	private LocalDate maintenanceEndTime;
+	private LocalDateTime maintenanceEndTime;
 
 	@Column(name = "reservation_expiry")
-	private LocalDate reservationExpiry;
+	private LocalDateTime reservationExpiry;
 
 	@Version
 	private Long version;
@@ -59,7 +58,7 @@ public class Maintenance {
 	@JoinColumn(name = "event_id")
 	private Event event;
 
-	public Maintenance(LocalDate maintenanceDate, LocalDate maintenanceEndTime, LocalDate reservationExpiry, long id,
+	public Maintenance(LocalDateTime maintenanceDate, LocalDateTime maintenanceEndTime, LocalDateTime reservationExpiry, long id,
 			Set<LeasedZone> leasedZones, Event event) {
 		super();
 		this.maintenanceDate = maintenanceDate;
@@ -70,7 +69,7 @@ public class Maintenance {
 		this.event = event;
 	}
 
-	public Maintenance(LocalDate maintenanceDate, LocalDate maintenanceEndTime, LocalDate reservationExpiry,
+	public Maintenance(LocalDateTime maintenanceDate, LocalDateTime maintenanceEndTime, LocalDateTime reservationExpiry,
 			Set<LeasedZone> leasedZones, Event event) {
 		super();
 		this.maintenanceDate = maintenanceDate;
@@ -100,27 +99,27 @@ public class Maintenance {
 		this.leasedZones = leasedZones;
 	}
 
-	public LocalDate getMaintenanceDate() {
+	public LocalDateTime getMaintenanceDate() {
 		return maintenanceDate;
 	}
 
-	public void setMaintenanceDate(LocalDate maintenanceDate) {
+	public void setMaintenanceDate(LocalDateTime maintenanceDate) {
 		this.maintenanceDate = maintenanceDate;
 	}
 
-	public LocalDate getReservationExpiry() {
+	public LocalDateTime getReservationExpiry() {
 		return reservationExpiry;
 	}
 
-	public void setReservationExpiry(LocalDate reservationExpiry) {
+	public void setReservationExpiry(LocalDateTime reservationExpiry) {
 		this.reservationExpiry = reservationExpiry;
 	}
 
-	public LocalDate getMaintenanceEndTime() {
+	public LocalDateTime getMaintenanceEndTime() {
 		return maintenanceEndTime;
 	}
 
-	public void setMaintenanceEndTime(LocalDate maintenanceEndTime) {
+	public void setMaintenanceEndTime(LocalDateTime maintenanceEndTime) {
 		this.maintenanceEndTime = maintenanceEndTime;
 	}
 

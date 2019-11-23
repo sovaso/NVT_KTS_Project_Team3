@@ -50,17 +50,13 @@ public class Reservation {
 
 	// one to many
 	@JsonIgnore
-	@OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	@OneToMany(mappedBy = "reservation", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<Ticket> reservedTickets = new HashSet<>();
 
 	// many to one
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinColumn(name = "event_id")
 	private Event event;
-
-	// QR kod...
-	@Column(name = "qr_code")
-	private String qrCode;
 
 	public Reservation() {
 		super();
@@ -76,7 +72,6 @@ public class Reservation {
 		this.user = user;
 		this.reservedTickets = reservedTickets;
 		this.event = event;
-		this.qrCode = qrCode;
 	}
 
 	public Reservation(ReservationDTO reservationDTO) {
@@ -88,15 +83,6 @@ public class Reservation {
 			this.reservedTickets.add(new Ticket(ticket));
 		}
 		this.event = reservationDTO.getEvent();
-		this.qrCode = reservationDTO.getQrCode();
-	}
-
-	public String getQrCode() {
-		return qrCode;
-	}
-
-	public void setQrCode(String qrCode) {
-		this.qrCode = qrCode;
 	}
 
 	public Date getDateOfReservation() {

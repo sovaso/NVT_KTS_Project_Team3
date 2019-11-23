@@ -1,7 +1,7 @@
 package com.nvt.kts.team3.repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,7 +32,7 @@ public interface LocationRepository extends JpaRepository<Location, Long>{
 				"		OR (m.maintenanceDate <= ?2 AND m.maintenanceEndTime >= ?3) " +
 				"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3) " +
 				"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3))")
-	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate);
+	public ArrayList<Event> checkIfAvailable(Long locationId, LocalDateTime startDate, LocalDateTime endDate);
 	
 	public Location findByAddress(String address);
 }

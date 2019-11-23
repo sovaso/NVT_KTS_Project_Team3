@@ -2,6 +2,9 @@ package com.nvt.kts.team3.controller;
 
 import java.text.ParseException;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -196,5 +199,15 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	@ExceptionHandler(value = WrongPath.class)
     protected ResponseEntity<MessageDTO> handleWrongPath() {
 		return new ResponseEntity<>(new MessageDTO("Wrong path", "Given path does not exist."), HttpStatus.NOT_FOUND);
+    }
+	
+	@ExceptionHandler(value = AddressException.class)
+    protected void handleAddressException() {
+		
+    }
+	
+	@ExceptionHandler(value = MessagingException.class)
+    protected void handleMessagingException() {
+		
     }
 }

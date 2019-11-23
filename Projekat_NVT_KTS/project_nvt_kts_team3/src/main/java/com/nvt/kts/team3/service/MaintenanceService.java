@@ -3,6 +3,9 @@ package com.nvt.kts.team3.service;
 import java.text.ParseException;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import com.nvt.kts.team3.dto.MaintenanceDTO;
 import com.nvt.kts.team3.model.Maintenance;
 
@@ -14,4 +17,8 @@ public interface MaintenanceService {
 	public void remove(long id);
 	public Maintenance getLastMaintenanceOfEvent(long eventId);
 	public List<Maintenance> removeByEventId(long eventId);
+	public List<Maintenance> getExpieredMaintenances();
+	public List<Maintenance> save(List<Maintenance> maintenances);
+	public void checkForExpieredTickets() throws AddressException, MessagingException;
+	public void warnUsersAboutExpiry() throws AddressException, MessagingException;
 }
