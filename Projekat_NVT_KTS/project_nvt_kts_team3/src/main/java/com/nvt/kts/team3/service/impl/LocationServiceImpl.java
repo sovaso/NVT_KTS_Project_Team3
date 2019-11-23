@@ -3,6 +3,7 @@ package com.nvt.kts.team3.service.impl;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -151,7 +152,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate) {
+	public ArrayList<Event> checkIfAvailable(Long locationId, LocalDateTime startDate, LocalDateTime endDate) {
 		return locationRepository.checkIfAvailable(locationId, startDate, endDate);
 	}
 

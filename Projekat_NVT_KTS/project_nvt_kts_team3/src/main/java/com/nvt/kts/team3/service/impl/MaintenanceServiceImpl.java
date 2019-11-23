@@ -2,19 +2,25 @@ package com.nvt.kts.team3.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nvt.kts.team3.controller.EMailController;
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
 import com.nvt.kts.team3.dto.MaintenanceDTO;
 import com.nvt.kts.team3.model.Event;
@@ -22,6 +28,7 @@ import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.model.Maintenance;
+import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.repository.MaintenanceRepository;
 import com.nvt.kts.team3.service.EventService;
@@ -29,6 +36,7 @@ import com.nvt.kts.team3.service.LeasedZoneService;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
+import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 
 import exception.EventNotFound;
@@ -61,8 +69,17 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Autowired
 	private LocationZoneService locationZoneService;
+	
+	@Autowired
+	private ReservationService reservationService;
+	
+	@Autowired
+	private EMailController emailController;
 
-	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private SimpleDateFormat sdf2 = new SimpleDateFormat("dd.MM.yyyy. HH:mm");
+	private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
 
 	@Override
 	public Maintenance findById(Long id) {
@@ -105,23 +122,24 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		expiry.add(Calendar.DATE, -3);
 		
 		//Neka provera pocetka i kraja odrzavanja
-		long dateDifferenceHours = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 60 * 1000);
-		long dateDifferenceMinutes = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 1000) % 60;
-		if (dateDifferenceHours > 24 || dateDifferenceMinutes < 30) {
+		long diff = maintenanceEndDate.getTime() - maintenanceStartDate.getTime();
+		long hours = TimeUnit.MILLISECONDS.toHours(diff);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(diff); 
+		if (hours > 24 || minutes < 30) {
 			throw new InvalidDate();
 		}
 
 		//Proveravas da li je lokacija na kojoj zelimo odrzavanje dostupna u zeljenom periodu.
-		ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
-				maintenanceEndDate);
+		ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
+				LocalDateTime.parse( sdf.format(maintenanceEndDate) ));
 		if (locationEvents.isEmpty() == false) {
 			throw new LocationNotAvailable();
 		}
 
 		Maintenance maintenance = new Maintenance();
 		
-		maintenance.setMaintenanceDate(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ));
-		maintenance.setMaintenanceEndTime(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ));
+		maintenance.setMaintenanceDate(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ));
+		maintenance.setMaintenanceEndTime(LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
 		maintenance.setEvent(event);
 		
 		//Moras da navedes koje zone zelis da zakupis za dogadjaj
@@ -191,14 +209,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		expiry.add(Calendar.DATE, -3);
 		
 		//Neka provera izmedju pocetka i kraja
-		long dateDifferenceHours = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 60 * 1000);
-		long dateDifferenceMinutes = (maintenanceEndDate.getTime() - maintenanceStartDate.getTime()) / (60 * 1000) % 60;
-		if (dateDifferenceHours > 24 || dateDifferenceMinutes < 30) {
+		long diff = maintenanceEndDate.getTime() - maintenanceStartDate.getTime();
+		long hours = TimeUnit.MILLISECONDS.toHours(diff);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(diff); 
+		if (hours > 24 || minutes < 30) {
 			throw new InvalidDate();
 		}
-		maintenance.setMaintenanceDate(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ));
-		maintenance.setMaintenanceEndTime(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ));
-		maintenance.setReservationExpiry(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(expiry.getTime()) ));
+		maintenance.setMaintenanceDate(LocalDateTime.parse(sdf.format(maintenanceStartDate), df));
+		maintenance.setMaintenanceEndTime(LocalDateTime.parse(sdf.format(maintenanceEndDate), df));
+		maintenance.setReservationExpiry(LocalDateTime.parse(sdf.format(expiry.getTime()), df));
 
 		Location location = locationService.findById(event.getLocationInfo().getId());
 		//Ne mozes da postvis nepostojecu ili neaktivnu lokaciju
@@ -213,8 +232,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 			}
 			
 			//Cak i ako nema prodatih karata i mozes da promenis lokaciju, moras da proveris da li je ta lokacija slobodna
-			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
-					maintenanceEndDate);
+			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
+					LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
 			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
@@ -282,5 +301,74 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<Maintenance> removeByEventId(long eventId) {
 		return maintenanceRepository.deleteByEventId(eventId);
+	}
+
+	@Override
+	public List<Maintenance> getExpieredMaintenances() {
+		return maintenanceRepository.getExpieredMaintenances();
+	}
+
+	@Override
+	public List<Maintenance> save(List<Maintenance> maintenances) {
+		return maintenanceRepository.save(maintenances);
+	}
+
+	@Override
+	public void checkForExpieredTickets() throws AddressException, MessagingException {
+		List<Maintenance> maintenances = getExpieredMaintenances();
+		int expieredTickets = 0;
+		if(maintenances != null && !(maintenances.isEmpty())){
+			List<Long> reservationsForDelete = new ArrayList<Long>();
+			for(Maintenance m : maintenances){
+				Set<String> emails = new HashSet<String>();
+				for(LeasedZone lz : m.getLeasedZones()){
+					for(Ticket t : lz.getTickets()){
+						if(t.isReserved() && t.getReservation() != null && t.getReservation().isPaid() == false){
+							expieredTickets++;
+							Reservation r = t.getReservation();
+							if(r.getReservedTickets().size() == 1){
+								reservationsForDelete.add(r.getId());
+							}
+							emails.add(t.getReservation().getUser().getEmail());
+							t.setReservation(null);
+							t.setReserved(false);
+						}
+					}
+				}
+				String subject = "Ticket reservation has expiered";
+				String body = "Dear User,\n\nYou have reserved tickets for "+m.getEvent().getName()+ " that holds at "+ sdf2.format(m.getMaintenanceDate()) +
+						", but you didn't pay them before reservation expiry date. Therefore, we inform you that you no longer own tickets for this event." +
+						"\n\nIf you want to attend this event, you still have the opportunity to buy tickets. \n\nBest regards, \nYour Events!";
+				emailController.sendEmails(emails, subject, body);
+			}
+			save(maintenances);
+			reservationService.deleteReservations(reservationsForDelete);
+		}
+		System.out.println("[INFO] Reservation expiry handled at: " + sdf2.format(new Date())+",  "+expieredTickets+" unpaid ticked proccessed.");
+	}
+
+	@Override
+	public void warnUsersAboutExpiry() throws AddressException, MessagingException {
+		List<Maintenance> maintenances = maintenanceRepository.getWarningMaintenances();
+		int warnings = 0;
+		if(maintenances != null && !(maintenances.isEmpty())){
+			for(Maintenance m : maintenances){
+				Set<String> emails = new HashSet<String>();
+				for(LeasedZone lz : m.getLeasedZones()){
+					for(Ticket t : lz.getTickets()){
+						if(t.isReserved() && t.getReservation() != null && t.getReservation().isPaid() == false){
+							warnings++;
+							emails.add(t.getReservation().getUser().getEmail());
+						}
+					}
+				}
+				String subject = "Ticket reservation expiereres in 24 hours";
+				String body = "Dear User,\n\nYou have reserved tickets for "+m.getEvent().getName()+ " that holds at "+ sdf2.format(m.getMaintenanceDate()) +
+						". If you want to hold your tickets, please make a payment within the next 24 hours." +
+						"\n\nBest regards,\nYour Events!";
+				emailController.sendEmails(emails, subject, body);
+			}
+		}
+		System.out.println("[INFO] Users warned about reservation expiry at: " + sdf2.format(new Date())+",  "+warnings+" emails sent.");
 	}
 }

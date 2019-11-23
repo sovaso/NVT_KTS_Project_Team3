@@ -1,7 +1,6 @@
 package com.nvt.kts.team3.service.impl;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.cj.x.protobuf.MysqlxCrud.FindOrBuilder;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
@@ -129,7 +127,7 @@ public class TicketServiceImpl implements TicketService {
 
 			if (r != null) {
 				if (logged.getId() == r.getUser().getId()) {
-					if (t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDate.now())) {
+					if (t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDateTime.now())) {
 						t.setReserved(false);
 						t.setReservation(null);
 						r.getReservedTickets().remove(t);

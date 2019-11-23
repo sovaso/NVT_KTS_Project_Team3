@@ -1,6 +1,7 @@
 package com.nvt.kts.team3.controller;
 
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nvt.kts.team3.model.Mail;
+import com.nvt.kts.team3.dto.Mail;
 import com.nvt.kts.team3.security.TokenHelper;
 
 
@@ -49,6 +50,13 @@ public class EMailController {
 		transport.connect("smtp.gmail.com", "nvtktsteam3@gmail.com", "nvtktsteam3!maki");
 		transport.sendMessage(generateMailMessage, generateMailMessage.getAllRecipients());
 		transport.close();
+	}
+	
+	public void sendEmails(Set<String> emailAdresses, String subject, String body) throws AddressException, MessagingException{
+		for(String email : emailAdresses){
+			Mail mail = new Mail(email, subject, body);
+			sendEmail(mail);
+		}
 	}
 	
 }

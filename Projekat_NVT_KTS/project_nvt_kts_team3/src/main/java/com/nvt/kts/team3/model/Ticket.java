@@ -41,7 +41,7 @@ public class Ticket {
 
 	// many to one
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH, CascadeType.MERGE })
-	@JoinColumn(name = "reservation_id")
+	@JoinColumn(name = "reservation_id", nullable = true)
 	private Reservation reservation;
 
 	// many to one

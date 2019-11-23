@@ -20,5 +20,15 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long>{
 	@Transactional
 	@Modifying
 	public List<Maintenance> deleteByEventId(long eventId);
+	
+	@Query("SELECT m FROM Maintenance m "+
+			"WHERE m.reservationExpiry <= NOW() AND m.reservationExpiry >= DATEADD(HOUR, -1, GETDATE())")
+	public List<Maintenance> getExpieredMaintenances();
+
+	@Query("SELECT m FROM Maintenance m "+
+			"WHERE m.reservationExpiry >= DATEADD(HOUR, 24, GETDATE()) AND  m.reservationExpiry < DATEADD(HOUR, 25, GETDATE())")
+	public List<Maintenance> getWarningMaintenances();
+	
+	public List<Maintenance> save(List<Maintenance> maintenances);
 }
 

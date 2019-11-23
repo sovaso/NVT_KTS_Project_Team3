@@ -1,8 +1,7 @@
 package com.nvt.kts.team3.repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,26 +47,26 @@ public interface EventRepository extends JpaRepository<Event, Long>{
 			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where m.maintenanceDate = ?1")
-			public ArrayList<Event> searchEventSpecDate(LocalDate startDate);
+			public ArrayList<Event> searchEventSpecDate(LocalDateTime startDate);
 	
 	@Query(
 			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where (e.name = ?1 or l.address = ?1 or e.type = ?1) and m.maintenanceDate = ?2")
-	public ArrayList<Event> searchEventFieldSpecDate(String field, LocalDate startDate);
+	public ArrayList<Event> searchEventFieldSpecDate(String field, LocalDateTime startDate);
 
 	
 	@Query(
 			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where m.maintenanceDate between ?1 and ?2")
-	public ArrayList<Event> searchEventPeriod(LocalDate startDate, LocalDate endDate);
+	public ArrayList<Event> searchEventPeriod(LocalDateTime startDate, LocalDateTime endDate);
 	
 	@Query(
 			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where (e.name = ?1 or l.address = ?1 or e.type = ?1) and m.maintenanceDate between ?1 and ?2")
-	public ArrayList<Event> searchEventFieldPeriod(String field, LocalDate startDate, LocalDate endDate);
+	public ArrayList<Event> searchEventFieldPeriod(String field, LocalDateTime startDate, LocalDateTime endDate);
 	
 	
 	

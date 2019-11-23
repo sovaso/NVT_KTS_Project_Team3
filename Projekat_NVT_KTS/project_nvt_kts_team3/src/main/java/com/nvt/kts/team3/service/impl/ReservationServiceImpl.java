@@ -1,8 +1,7 @@
 package com.nvt.kts.team3.service.impl;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -96,7 +95,7 @@ public class ReservationServiceImpl implements ReservationService {
 						if (ticketOpt.isPresent()) {
 							Ticket ticket = ticketOpt.get();
 							if (ticket.isReserved() == false
-									&& ticket.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDate.now())) {
+									&& ticket.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDateTime.now())) {
 								if (created == false) {
 									reservationRepository.save(reservation);
 									created = true;
@@ -139,7 +138,7 @@ public class ReservationServiceImpl implements ReservationService {
 				if (logged.getId() == r.getUser().getId()) {
 					int noSuccess = 0;
 					for (Ticket t : r.getReservedTickets()) {
-						if (t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDate.now())
+						if (t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDateTime.now())
 								&& t.getReservation().getId() == r.getId() && t.isReserved() == true) {
 							t.setReserved(false);
 							t.setReservation(null);
@@ -192,7 +191,7 @@ public class ReservationServiceImpl implements ReservationService {
 					if (r.getEvent().isStatus() == true) {
 						int noSuccess = 0;
 						for (Ticket t : r.getReservedTickets()) {
-							if (!t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDate.now())) {
+							if (!t.getZone().getMaintenance().getReservationExpiry().isAfter(LocalDateTime.now())) {
 								noSuccess++;
 							}
 						}
@@ -232,6 +231,11 @@ public class ReservationServiceImpl implements ReservationService {
 		} else {
 			throw new LocationNotFound();
 		}
+	}
+
+	@Override
+	public void deleteReservations(List<Long> reservations) {
+		reservationRepository.deleteReservationsWithIds(reservations);
 	}
 
 }

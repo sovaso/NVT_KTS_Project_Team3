@@ -1,7 +1,7 @@
 package com.nvt.kts.team3.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.nvt.kts.team3.dto.LocationDTO;
@@ -18,7 +18,7 @@ public interface LocationService {
 	public void remove(Long id);
 	public Location findByNameAndAddress(String name, String address);
 	public ArrayList<Event> getActiveEvents(long locationId);
-	public ArrayList<Event> checkIfAvailable(Long locationId, Date startDate, Date endDate);
+	public ArrayList<Event> checkIfAvailable(Long locationId, LocalDateTime startDate, LocalDateTime endDate);
 	public LocationReportDTO getLocationReport(Long id);
 	public Location findByAddress(String address);
 }

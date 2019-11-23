@@ -3,6 +3,9 @@ package com.nvt.kts.team3.controller;
 import java.text.ParseException;
 import java.util.Set;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,5 +66,12 @@ public class MaintenanceController {
 	public ResponseEntity<Set<Maintenance>> getMaintenances(@PathVariable(value = "eventId") Long eventId){
 		Event event = eventService.findById(eventId);
 		return new ResponseEntity<>(event.getMaintenances(), HttpStatus.OK);
+	}
+	
+	//@Scheduled(cron = "0 0 * * * *") //the top of every hour
+	//@Scheduled(cron = "*/10 * * * * *") //every ten seconds (FOR TEST PURPOSE ONLY)
+	public void doHourlyTasks() throws AddressException, MessagingException{
+		maintenanceService.checkForExpieredTickets();
+		maintenanceService.warnUsersAboutExpiry();
 	}
 }

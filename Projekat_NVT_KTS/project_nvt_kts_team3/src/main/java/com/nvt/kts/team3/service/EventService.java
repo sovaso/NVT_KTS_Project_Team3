@@ -3,9 +3,8 @@ package com.nvt.kts.team3.service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.nvt.kts.team3.dto.EventDTO;
@@ -35,6 +34,6 @@ public interface EventService {
 	public List<Event> findAllSortedName();
 	public List<Event> findAllSortedDateDesc();
 	public List<Event> findAllSortedDateAcs();
-	public List<Event> searchEvent(String field, LocalDate startDate, LocalDate endDate);
+	public List<Event> searchEvent(String field, LocalDateTime startDate, LocalDateTime endDate);
 	
 }

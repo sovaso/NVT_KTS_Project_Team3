@@ -5,7 +5,8 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,10 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,7 +88,8 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private EventRepository eventRepository;
 
-	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	@Override
 	public Event findById(Long id) {
@@ -138,25 +139,24 @@ public class EventServiceImpl implements EventService {
 			//Postavljas da je expiry tri dana pre pocetka rezervacije
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
-			// long dateDifferenceHours = (maintenanceEndDate.getTime() -
-			// maintenanceStartDate.getTime())/(60 * 60 * 1000);
-			// long dateDifferenceMinutes = (maintenanceEndDate.getTime() -
-			// maintenanceStartDate.getTime())/(60 * 1000) % 60;
-			// if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
-			// throw new InvalidDate();
-			// }
+			long diff = maintenanceEndDate.getTime() - maintenanceStartDate.getTime();
+			long hours = TimeUnit.MILLISECONDS.toHours(diff);
+			long minutes = TimeUnit.MILLISECONDS.toMinutes(diff); 
+			if (hours > 24 || minutes < 30) {
+				throw new InvalidDate();
+			}
 			
 			//Napravili smo maintainance
-			Maintenance maintenance = new Maintenance(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ),
-					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ),
-					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(expiry.getTime()) ),
+			Maintenance maintenance = new Maintenance(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
+					LocalDateTime.parse( sdf.format(maintenanceEndDate),df ),
+					LocalDateTime.parse( sdf.format(expiry.getTime()),df ),
 					new HashSet<LeasedZone>(), event);
 			//U onu praznu listu maintainenance-a smo dodali maintaince
 			event.getMaintenances().add(maintenance);
 
 			//Proverila si da li lokacija postoji, sad proveravas da li je slobodna u tom periodu
-			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
-					maintenanceEndDate);
+			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse(sdf.format(maintenanceStartDate),df),
+					LocalDateTime.parse(sdf.format(maintenanceEndDate),df));
 			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
@@ -265,24 +265,23 @@ public class EventServiceImpl implements EventService {
 			//Postavljas expiry
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
-			// long dateDifferenceHours = (maintenanceEndDate.getTime() -
-			// maintenanceStartDate.getTime())/(60 * 60 * 1000);
-			// long dateDifferenceMinutes = (maintenanceEndDate.getTime() -
-			// maintenanceStartDate.getTime())/(60 * 1000) % 60;
-			// if(dateDifferenceHours > 24 || dateDifferenceMinutes < 30){
-			// throw new InvalidDate();
-			// }
+			long diff = maintenanceEndDate.getTime() - maintenanceStartDate.getTime();
+			long hours = TimeUnit.MILLISECONDS.toHours(diff);
+			long minutes = TimeUnit.MILLISECONDS.toMinutes(diff); 
+			if (hours > 24 || minutes < 30) {
+				throw new InvalidDate();
+			}
 			
 			//Pravis maintenance
-			Maintenance maintenance = new Maintenance(LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceStartDate) ),
-					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(maintenanceEndDate) ),
-					LocalDate.parse( new SimpleDateFormat("yyyy-MM-dd").format(expiry.getTime()) ),
+			Maintenance maintenance = new Maintenance(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
+					LocalDateTime.parse( sdf.format(maintenanceEndDate),df ),
+					LocalDateTime.parse( sdf.format(expiry.getTime()),df ),
 					new HashSet<LeasedZone>(), event);
 			newMaintenances.add(maintenance);
 
 			//Proveravas da li je lokacija dostupna u periodu maintance
-			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), maintenanceStartDate,
-					maintenanceEndDate);
+			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df),
+					LocalDateTime.parse( sdf.format(maintenanceEndDate),df));
 			if (locationEvents.isEmpty() == false) {
 				throw new LocationNotAvailable();
 			}
@@ -365,7 +364,7 @@ public class EventServiceImpl implements EventService {
 	public boolean eventIsActive(long eventId) {
 		Maintenance maintenance = maintenanceService.getLastMaintenanceOfEvent(eventId);
 		//Ako je odrzavanje u proslosti ili ako je maintainance otkazan onda je false
-		if (maintenance.getMaintenanceDate().isBefore(LocalDate.now()) || maintenance.getEvent().isStatus() == false) {
+		if (maintenance.getMaintenanceDate().isBefore(LocalDateTime.now()) || maintenance.getEvent().isStatus() == false) {
 			return false;
 		}
 		return true;
@@ -545,7 +544,7 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public List<Event> searchEvent(String field, LocalDate startDate, LocalDate endDate){
+	public List<Event> searchEvent(String field, LocalDateTime startDate, LocalDateTime endDate){
 		System.out.println("POZVAN SEARCH EVENT");
 		List<Event> events = new ArrayList<Event>();
 		if (startDate == null) {
