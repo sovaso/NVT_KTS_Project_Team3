@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -69,7 +70,7 @@ public class MaintenanceController {
 	}
 	
 	//@Scheduled(cron = "0 0 * * * *") //the top of every hour
-	//@Scheduled(cron = "*/10 * * * * *") //every ten seconds (FOR TEST PURPOSE ONLY)
+	@Scheduled(cron = "*/10 * * * * *") //every ten seconds (FOR TEST PURPOSE ONLY)
 	public void doHourlyTasks() throws AddressException, MessagingException{
 		maintenanceService.checkForExpieredTickets();
 		maintenanceService.warnUsersAboutExpiry();

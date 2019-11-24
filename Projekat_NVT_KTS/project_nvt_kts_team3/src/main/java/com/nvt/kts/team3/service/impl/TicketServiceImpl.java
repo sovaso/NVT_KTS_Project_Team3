@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,6 +44,7 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	@Transactional(readOnly = false)
+	@Modifying
 	public Ticket save(Ticket ticket) {
 		return ticketRepository.save(ticket);
 	}
@@ -152,5 +154,10 @@ public class TicketServiceImpl implements TicketService {
 			throw new TicketNotFound();
 		}
 
+	}
+
+	@Override
+	public List<Ticket> getExpieredUnpaidTickets(LocalDateTime hourAgo, LocalDateTime now) {
+		return ticketRepository.getExpieredUnpaidTickets(hourAgo, now);
 	}
 }
