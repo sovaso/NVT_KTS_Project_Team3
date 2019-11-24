@@ -15,6 +15,8 @@ export class AuthenticationService {
   constructor(private http: HttpClient, private jwtUtilsService: JwtUtilsService) { }
 
   login(username: string, password: string): Observable<boolean> {
+
+    console.log('login called');
     var headers: HttpHeaders = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(this.loginPath, JSON.stringify({ username, password }), { headers }).pipe(
       map( ((res: any) => {

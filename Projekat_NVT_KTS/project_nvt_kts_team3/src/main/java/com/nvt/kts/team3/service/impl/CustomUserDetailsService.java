@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.nvt.kts.team3.dto.UserDTO;
+import com.nvt.kts.team3.model.Administrator;
 import com.nvt.kts.team3.model.Authority;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
@@ -111,30 +112,44 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (this.usernameTaken(user.getUsername())) {
 			return false;
 		}
-		RegularUser regularUser = new RegularUser();
-		regularUser.setId(user.getId());
-		regularUser.setEmail(user.getEmail());
-		regularUser.setUsername(user.getUsername());
-		regularUser.setPassword(this.encodePassword(user.getPassword()));
-		List<Authority> authorities = new ArrayList<>();
-		Authority a = new Authority();
-		System.out.println("******");
-		System.out.println(userRole);
-		System.out.println("******");
 		if (userRole.equals(UserRoleName.ROLE_USER)){
 			System.out.println("Role je user");
+			RegularUser newUser = new RegularUser();
+			Authority a = new Authority();
 			a.setName(UserRoleName.ROLE_USER);
+			newUser.setReservations(new HashSet<Reservation>());
+			List<Authority> authorities = new ArrayList<>();
+			authorities.add(a);
+			newUser.setAuthorities(authorities);
+			newUser.setId(user.getId());
+			newUser.setEmail(user.getEmail());
+			newUser.setUsername(user.getUsername());
+			newUser.setPassword(this.encodePassword(user.getPassword()));
+			newUser.setEnabled(true);
+			newUser.setName(user.getName());
+			newUser.setSurname(user.getSurname());
+			newUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
+			this.userRepository.save(newUser);
 		}else {
-			a.setName(UserRoleName.ROLE_ADMIN);
+			System.out.println("Role je user");
+			Administrator newUser = new Administrator();
+			Authority a = new Authority();
+			a.setName(UserRoleName.ROLE_USER);
+			List<Authority> authorities = new ArrayList<>();
+			authorities.add(a);
+			newUser.setAuthorities(authorities);
+			newUser.setId(user.getId());
+			newUser.setEmail(user.getEmail());
+			newUser.setUsername(user.getUsername());
+			newUser.setPassword(this.encodePassword(user.getPassword()));
+			newUser.setEnabled(true);
+			newUser.setName(user.getName());
+			newUser.setSurname(user.getSurname());
+			newUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
+			this.userRepository.save(newUser);
 		}
-		authorities.add(a);
-		regularUser.setAuthorities(authorities);
-		regularUser.setEnabled(true);
-		regularUser.setName(user.getName());
-		regularUser.setSurname(user.getSurname());
-		regularUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
-		regularUser.setReservations(new HashSet<Reservation>());
-		this.userRepository.save(regularUser);
+		
+		
 		return true;
 	}
 	

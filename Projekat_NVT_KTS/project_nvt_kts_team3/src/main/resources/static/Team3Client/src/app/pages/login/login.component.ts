@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
         console.log("nestooo");
         if(loggedIn){
           console.log("is loggeeed in");
-          this.router.navigate(['/dashboard']);          
+          location.reload();         
         }
       }
     ,
