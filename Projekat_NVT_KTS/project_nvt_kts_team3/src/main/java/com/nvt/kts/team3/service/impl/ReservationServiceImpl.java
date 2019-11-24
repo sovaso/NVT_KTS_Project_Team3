@@ -233,9 +233,4 @@ public class ReservationServiceImpl implements ReservationService {
 		}
 	}
 
-	@Override
-	public void deleteReservations(List<Long> reservations) {
-		reservationRepository.deleteReservationsWithIds(reservations);
-	}
-
 }
