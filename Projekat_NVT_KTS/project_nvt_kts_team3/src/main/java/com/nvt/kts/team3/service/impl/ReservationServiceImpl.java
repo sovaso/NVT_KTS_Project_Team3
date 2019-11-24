@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -231,6 +232,13 @@ public class ReservationServiceImpl implements ReservationService {
 		} else {
 			throw new LocationNotFound();
 		}
+	}
+
+	@Override
+	@Transactional(readOnly = false)
+	@Modifying
+	public void delete(Long id) {
+		reservationRepository.deleteById(id);
 	}
 
 }

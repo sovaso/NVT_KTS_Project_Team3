@@ -15,13 +15,16 @@ import java.util.concurrent.TimeUnit;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.controller.EMailController;
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
+import com.nvt.kts.team3.dto.Mail;
 import com.nvt.kts.team3.dto.MaintenanceDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.LeasedZone;
@@ -79,7 +82,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	private SimpleDateFormat sdf2 = new SimpleDateFormat("dd.MM.yyyy. HH:mm");
 	private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
+	private DateTimeFormatter df2 = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm");
 
 	@Override
 	public Maintenance findById(Long id) {
@@ -309,41 +312,43 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	}
 
 	@Override
+	@Transactional
+	@Modifying
 	public void checkForExpieredTickets() throws AddressException, MessagingException {
 		Calendar hourAgo = Calendar.getInstance();
 		hourAgo.setTime(new Date());
 		hourAgo.add(Calendar.HOUR, -1);
-		List<Maintenance> maintenances = maintenanceRepository.getExpieredMaintenances(LocalDateTime.parse(sdf.format(hourAgo.getTime()), df));
+		List<Long> reservationsForDelete = new ArrayList<Long>();
+		List<Mail> emails = new ArrayList<Mail>();
+		List<Ticket> tickets = ticketService.getExpieredUnpaidTickets(LocalDateTime.parse(sdf.format(hourAgo.getTime()), df),LocalDateTime.parse(sdf.format(new Date()), df));
+		List<String> checkMails = new ArrayList<String>();
 		int expieredTickets = 0;
-		if(maintenances != null && !(maintenances.isEmpty())){
-			List<Long> reservationsForDelete = new ArrayList<Long>();
-			List<Long> ticketsForUpdate = new ArrayList<Long>();
-			for(Maintenance m : maintenances){
-				Set<String> emails = new HashSet<String>();
-				for(LeasedZone lz : m.getLeasedZones()){
-					for(Ticket t : lz.getTickets()){
-						if(t.isReserved() && t.getReservation() != null && t.getReservation().isPaid() == false){
-							expieredTickets++;
-							Reservation r = t.getReservation();
-							if(r.getReservedTickets().size() == 1){
-								reservationsForDelete.add(r.getId());
-							}
-							emails.add(t.getReservation().getUser().getEmail());
-							ticketsForUpdate.add(t.getId());
-							t.setReservation(null);
-							t.setReserved(false);
-							ticketService.save(t);
-						}
+		if(tickets != null && !(tickets.isEmpty())){
+			for(Ticket t : tickets){
+				if(t.isReserved() && t.getReservation() != null && t.getReservation().isPaid() == false){
+					expieredTickets++;
+					String subject = "Ticket reservation has expiered";
+					String body = "<html><head></head><body><p>Dear "+t.getReservation().getUser().getName()+",<br><br>You have reserved tickets for "+t.getZone().getMaintenance().getEvent().getName()+ " that holds at "+ t.getZone().getMaintenance().getMaintenanceDate().format(df2) +
+							", but you didn't pay them before expiry date. Therefore, we inform you that you no longer own these tickets.</p>" +
+							"<p>If you want to attend this event, you still have the opportunity to buy tickets on our site. </p><p>Best regards, <br>Your Events!</p></body></html>";
+					Mail email = new Mail(t.getReservation().getUser().getEmail(), subject, body);
+					Reservation r = t.getReservation();
+					if(r.getReservedTickets().size() == 1){
+						reservationsForDelete.add(r.getId());
+					}
+					Ticket updatableTicket = ticketService.findById(t.getId());
+					updatableTicket.setReservation(null);
+					updatableTicket.setReserved(false);
+					ticketService.save(updatableTicket);
+					if(!(checkMails.contains(email.getEmailAddress()))){
+						emails.add(email);
+						checkMails.add(email.getEmailAddress());
 					}
 				}
-				String subject = "Ticket reservation has expiered";
-				String body = "<html><head></head><body><p>Dear User,<br><br>You have reserved tickets for "+m.getEvent().getName()+ " that holds at "+ m.getMaintenanceDate().format(df) +
-						", but you didn't pay them before reservation expiry date. Therefore, we inform you that you no longer own these tickets.</p>" +
-						"<p>If you want to attend this event, you still have the opportunity to buy tickets. </p><p>Best regards, <br>Your Events!</p></body></html>";
-				emailController.sendEmails(emails, subject, body);
-				for(Long id : reservationsForDelete){
-					reservationService.remove(id);
-				}
+			}
+			emailController.sendEmails(emails);
+			for(Long id : reservationsForDelete){
+				reservationService.delete(id);
 			}
 		}
 		System.out.println("[INFO] Reservation expiry handled at: " + sdf2.format(new Date())+",  "+expieredTickets+" unpaid ticked proccessed.");
@@ -351,37 +356,37 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Override
 	public void warnUsersAboutExpiry() throws AddressException, MessagingException {
-		List<Maintenance> maintenances2 = maintenanceRepository.findAll();
-		for(Maintenance m : maintenances2){
-			System.out.println(sdf2.format(m.getReservationExpiry()));
-		}
-		
 		Calendar next24hours = Calendar.getInstance();
 		Calendar next25hours = Calendar.getInstance();
 		next24hours.setTime(new Date());
-		next24hours.add(Calendar.HOUR, -24);
+		next24hours.add(Calendar.HOUR, 24);
 		next25hours.setTime(new Date());
-		next25hours.add(Calendar.HOUR, -25);
+		next25hours.add(Calendar.HOUR, 25);
+		List<Mail> emails = new ArrayList<Mail>();
+		List<String> checkMails = new ArrayList<String>();
 		List<Maintenance> maintenances = maintenanceRepository.getWarningMaintenances(LocalDateTime.parse(sdf.format(next24hours.getTime()), df), LocalDateTime.parse(sdf.format(next25hours.getTime()), df));
 		int warnings = 0;
 		if(maintenances != null && !(maintenances.isEmpty())){
 			for(Maintenance m : maintenances){
-				Set<String> emails = new HashSet<String>();
 				for(LeasedZone lz : m.getLeasedZones()){
 					for(Ticket t : lz.getTickets()){
 						if(t.isReserved() && t.getReservation() != null && t.getReservation().isPaid() == false){
 							warnings++;
-							emails.add(t.getReservation().getUser().getEmail());
+							String subject = "Ticket reservation expiereres in 24 hours";
+							String body = "<html><head></head><body><p>Dear  "+t.getReservation().getUser().getName()+",<br><br> You have reserved tickets for "+m.getEvent().getName()+ " that holds at "+ m.getMaintenanceDate().format(df2) +
+									".<br><br> We remind you to make payment in next 24 hours, before reservation expiry date." +
+									"<br><br>Best regards,<br>Your Events!</p></body></html>";
+							Mail email = new Mail(t.getReservation().getUser().getEmail(), subject, body);
+							if(!(checkMails.contains(email.getEmailAddress()))){
+								emails.add(email);
+								checkMails.add(email.getEmailAddress());
+							}
 						}
 					}
 				}
-				String subject = "Ticket reservation expiereres in 24 hours";
-				String body = "Dear User,\n\nYou have reserved tickets for "+m.getEvent().getName()+ " that holds at "+ m.getMaintenanceDate().format(df) +
-						". If you want to hold your tickets, please make a payment within the next 24 hours." +
-						"\n\nBest regards,\nYour Events!";
-				emailController.sendEmails(emails, subject, body);
 			}
 		}
+		emailController.sendEmails(emails);
 		System.out.println("[INFO] Users warned about reservation expiry at: " + sdf2.format(new Date())+",  "+warnings+" emails sent.");
 	}
 }
