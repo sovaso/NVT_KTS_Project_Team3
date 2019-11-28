@@ -33,7 +33,7 @@ public class EMailController {
 
 	@PostMapping("/sendEmail")
 	public void sendEmail(@RequestBody Mail mail) throws AddressException, MessagingException {
-
+		System.out.println("Uslo u send maaaaaaail");
 		mailServerProperties = System.getProperties();
 		mailServerProperties.put("mail.smtp.port", "587");
 		mailServerProperties.put("mail.smtp.auth", "true");

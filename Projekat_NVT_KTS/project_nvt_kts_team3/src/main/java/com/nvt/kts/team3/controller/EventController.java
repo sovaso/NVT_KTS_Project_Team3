@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,23 +33,27 @@ import com.nvt.kts.team3.service.EventService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@CrossOrigin(origins="http://localhost:4200", allowedHeaders = "*")
 public class EventController {
 
 	@Autowired
 	private EventService eventService;
-
+	
+	//****
 	@PostMapping(value = "/createEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MessageDTO> createEvent(@RequestBody EventDTO eventDTO) throws ParseException {
 		eventService.save(eventDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully created."), HttpStatus.CREATED);
 	}
 
+	//***
 	@PostMapping(value = "/updateEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<MessageDTO> updateEvent(@RequestBody EventDTO eventDTO) throws ParseException {
 		eventService.update(eventDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully updated."), HttpStatus.OK);
 	}
 
+	//****
 	@GetMapping(value = "/getEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Event> getEvent(@PathVariable(value = "id") Long eventId) {
 		Event event = eventService.findById(eventId);
@@ -58,16 +63,19 @@ public class EventController {
 		return new ResponseEntity<>(event, HttpStatus.OK);
 	}
 
+	//*****
 	@GetMapping(value = "/getAllEvents", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Event>> getAllEvents() {
 		return new ResponseEntity<>(eventService.findAll(), HttpStatus.OK);
 	}
 
+	//***
 	@GetMapping(value = "/getActiveEvents", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Event>> getActiveEvents() {
 		return new ResponseEntity<>(eventService.getActiveEvents(), HttpStatus.OK);
 	}
 
+	//**
 	@GetMapping(value = "/getEventLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> getEventLocation(@PathVariable(value = "id") Long eventId) {
 		Event event = eventService.findById(eventId);
@@ -77,13 +85,16 @@ public class EventController {
 		return new ResponseEntity<>(event.getLocationInfo(), HttpStatus.OK);
 	}
 
+	//***
 	@DeleteMapping(value = "/deleteEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteEvent(@PathVariable(value = "id") Long eventId) {
+		System.out.println("Uslo u delete event");
 		eventService.remove(eventId);
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully deleted."), HttpStatus.OK);
 	}
 
+	//***
 	@GetMapping(value = "/getEventIncome/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventIncome(@PathVariable long event_id) {
@@ -92,6 +103,7 @@ public class EventController {
 
 	}
 
+	//****
 	@GetMapping(value = "/getEventReport/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventReport(@PathVariable long event_id) throws ParseException {
@@ -99,6 +111,7 @@ public class EventController {
 		return new ResponseEntity<>(retVal, HttpStatus.OK);
 	}
 
+	//****
 	@PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<?> upload(@RequestBody UploadFileDTO uploadFileDTO)
@@ -108,6 +121,7 @@ public class EventController {
 
 	}
 	
+	//****
 	@GetMapping(value = "/findEvent/{field}/{startDate}/{endDate}")
 	public ResponseEntity<?> findRentacars(
 			@RequestParam(name = "endDate") @DateTimeFormat(iso = ISO.DATE) LocalDateTime endDate,
@@ -124,6 +138,7 @@ public class EventController {
 		
 	}
 	
+	//***
 	@GetMapping(value = "/sortByName")
 	public ResponseEntity<?> sortByName() {
 		List<Event> events  = eventService.findAllSortedName();
