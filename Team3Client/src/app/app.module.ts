@@ -29,6 +29,7 @@ import { ReportsComponent } from './reports/reports.component';
 import { CreateLocationComponent } from './locations/create-location/create-location.component';
 import { EditLocationComponent } from './locations/edit-location/edit-location.component';
 import { MaintenacesComponent } from './maintenaces/maintenaces.component';
+import { CreatemaintenacesComponent } from './maintenaces/createmaintenaces/createmaintenaces.component';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { MaintenacesComponent } from './maintenaces/maintenaces.component';
     ReportsComponent,
     CreateLocationComponent,
     EditLocationComponent,
-    MaintenacesComponent
+    MaintenacesComponent,
+    CreatemaintenacesComponent
   ],
   imports: [
     NgbModule,
