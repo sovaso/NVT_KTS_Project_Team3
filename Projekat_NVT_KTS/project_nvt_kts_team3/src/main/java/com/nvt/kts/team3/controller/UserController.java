@@ -38,20 +38,23 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@GetMapping(value = "/confirmRegistration/{id}")
-	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
-	public RedirectView confirmRegistration(@PathVariable Long id) {
-		User user = (User) userDetailsService.loadUserById(id);
+	@GetMapping(value = "/confirmRegistration/{username}")
+	//@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
+	public RedirectView confirmRegistration(@PathVariable String username) {
+		System.out.println("Uslo u confirm registration");
+	
+		User user = (User) userDetailsService.loadUserByUsername(username);
+		System.out.println(user.isEnabled());
 		if (user != null) {
 			user.setEnabled(true);
 			userDetailsService.saveUser(user);
-			return new RedirectView("http://localhost:8080/confirmedAccount.html");
+			return new RedirectView("http://localhost:4200");
 		}
 		return null;
 	}
 
 	@GetMapping(value = "/getLogged", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<?> getLogged() {
 		User user = (User) this.userDetailsService
 				.loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -59,7 +62,7 @@ public class UserController {
 	}
 
 	@PutMapping(value = "/editUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public ResponseEntity<?> editUser(@RequestBody UserDTO userEdit) {
 		return new ResponseEntity<>(userDetailsService.editUser(userEdit), HttpStatus.OK);
 	}

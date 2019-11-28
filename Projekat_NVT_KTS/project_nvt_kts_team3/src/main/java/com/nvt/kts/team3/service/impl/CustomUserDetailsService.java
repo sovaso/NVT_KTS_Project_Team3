@@ -62,6 +62,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) {
 		User user = userRepository.findOneByUsername(username);
+	
 		if (user == null) {
 			throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
 		} else {
@@ -113,7 +114,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 			return false;
 		}
 		if (userRole.equals(UserRoleName.ROLE_USER)){
-			System.out.println("Role je user");
 			RegularUser newUser = new RegularUser();
 			Authority a = new Authority();
 			a.setName(UserRoleName.ROLE_USER);
@@ -125,16 +125,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 			newUser.setEmail(user.getEmail());
 			newUser.setUsername(user.getUsername());
 			newUser.setPassword(this.encodePassword(user.getPassword()));
-			newUser.setEnabled(true);
+			newUser.setEnabled(false);
 			newUser.setName(user.getName());
 			newUser.setSurname(user.getSurname());
 			newUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));
 			this.userRepository.save(newUser);
 		}else {
-			System.out.println("Role je user");
 			Administrator newUser = new Administrator();
 			Authority a = new Authority();
-			a.setName(UserRoleName.ROLE_USER);
+			a.setName(UserRoleName.ROLE_ADMIN);
 			List<Authority> authorities = new ArrayList<>();
 			authorities.add(a);
 			newUser.setAuthorities(authorities);

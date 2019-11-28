@@ -1,0 +1,37 @@
+
+<div class="container">
+    
+    <ngb-tab  title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+        <button class="btn btn-primary" (click)="newEvent()">New Event</button>
+        <div class="divider"></div>
+    </ngb-tab>
+    <button id = "sortByDate" class="btn btn-primary" (click)="newEvent()">Sort by date</button>
+    <div class="divider"></div>
+    <button id = "sortByDate"class="btn btn-primary" (click)="newEvent()">Sort by name</button>
+    <table class="table table-striped">
+        <thead>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Active</th>
+            <th>Location</th>
+           
+        </thead>
+        <tbody>
+            <tr *ngFor="let event of events">
+                <td>{{event.id}}</td>
+                <td>{{event.name}}</td>
+                <td>{{event.type.toLowerCase()}}</td>
+                <td>{{event.status}}</td>
+                <td>{{event.locationInfo.name}}</td> 
+                <td><button class="btn btn-primary" (click)="updateEvent(event)">Show details</button></td>
+                <ngb-tab title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+                <td><button class="btn btn-danger" (click)="deleteEvent(event)" >Delete</button>
+                    <button class="btn btn-primary" (click)="updateEvent(event)">Edit</button></td>
+                </ngb-tab>
+
+            </tr>
+        </tbody>
+    </table>
+   
+</div>

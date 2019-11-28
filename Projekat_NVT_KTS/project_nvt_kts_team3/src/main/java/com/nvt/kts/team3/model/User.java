@@ -82,6 +82,7 @@ public abstract class User implements UserDetails {
 		this.username = userDto.getUsername();
 		this.email = userDto.getEmail();
 		this.password = userDto.getPassword();
+		this.enabled = false;
 	}
 
 	public User() {

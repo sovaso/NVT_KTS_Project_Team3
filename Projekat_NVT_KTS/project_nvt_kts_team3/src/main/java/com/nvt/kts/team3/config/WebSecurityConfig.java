@@ -1,5 +1,7 @@
 package com.nvt.kts.team3.config;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,11 @@ import com.nvt.kts.team3.security.auth.RestAuthenticationEntryPoint;
 import com.nvt.kts.team3.security.auth.TokenAuthenticationFilter;
 import com.nvt.kts.team3.service.impl.CustomUserDetailsService;
 
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -32,6 +39,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
+
+	@Bean
+    public CorsFilter corsFilter() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+        config.setAllowCredentials(true);
+        config.setAllowedHeaders(Collections.singletonList("*"));
+        config.setAllowedMethods(Collections.singletonList("*"));
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 
 	@Autowired
 	private CustomUserDetailsService jwtUserDetailsService;
@@ -83,6 +103,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/findEvent/{field}/{startDate}/{endDate}").permitAll()
 			.antMatchers("/sortByName").permitAll()
 			.antMatchers("/api/sortByDateAcs").permitAll()
+			.antMatchers("/api/deleteEvent/{id}").permitAll()
+			.antMatchers("/confirmRegistration/{id}").permitAll()
+			//.antMatchers("api/getLogged").permitAll()
+			//.antMatchers("api/editUser").permitAll()
+			
 			// svaki zahtev mora biti autorizovan
 			.anyRequest().authenticated().and()
 			

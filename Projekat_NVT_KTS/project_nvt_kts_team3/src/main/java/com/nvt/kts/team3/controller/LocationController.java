@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ import com.nvt.kts.team3.service.ReservationService;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
+@CrossOrigin(origins="http://localhost:4200", allowedHeaders = "*")
 public class LocationController {
 
 	@Autowired
@@ -47,6 +49,7 @@ public class LocationController {
 		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);
 	}
 	
+	//***
 	@GetMapping(value = "/getLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> getLocation(@PathVariable(value = "id") Long locationId){
 		Location location = locationService.findById(locationId);
@@ -56,12 +59,14 @@ public class LocationController {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 	
+	//***
 	@GetMapping(value = "/getAllLocations", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Location>> getAllLocations(){
 		List<Location> locations = locationService.findAll();
 		return new ResponseEntity<>(locations, HttpStatus.OK);
 	}
 	
+	//***
 	@GetMapping(value = "/getActiveLocations", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Location>> getActiveLocations(){
 		List<Location> locations = locationService.findAllActive();

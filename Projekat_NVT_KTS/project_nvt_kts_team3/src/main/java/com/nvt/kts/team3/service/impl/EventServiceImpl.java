@@ -97,7 +97,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event save(EventDTO eventDTO) throws ParseException {
 		// Ne sme da se ne unese tip dogadjaja
 		if (EventType.valueOf(eventDTO.getEventType()) == null) {
@@ -199,7 +199,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event update(EventDTO eventDTO) throws ParseException {
 		Event event = eventRepository.getOne(eventDTO.getId());
 		if (event == null) {
@@ -331,18 +331,27 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
+		System.out.println(id);
+		System.out.println("11111");
 		Event event = eventRepository.getOne(id);
+		System.out.println(event.getName());
+		System.out.println(event.isStatus());
+		System.out.println("2222");
 		//Ne mozes da uklonis dogadjaj koji ne postoji ili koji nije aktivan
 		if (event == null || event.isStatus() == false) {
+			System.out.println("3333");
 			throw new EventNotFound();
 		}
 		if (!(getSoldTickets(event.getId()).isEmpty()) && eventIsActive(event.getId())) {
+			System.out.println("4444");
 			throw new EventNotChangeable();
 		}
 		event.setStatus(false);
+		System.out.println("55555");
 		eventRepository.save(event);
+		System.out.println("66666");
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -68,22 +67,28 @@ public class AuthenticationController {
 	@PostMapping(value = "auth/login")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest,
 			HttpServletResponse response) throws AuthenticationException, IOException {
-
+		
 		final Authentication authentication;
 		try {
 			authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
 					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+			
 		} catch (BadCredentialsException e) {
 			return new ResponseEntity<>(new MessageDTO("Wrong username or password.", "Error"), HttpStatus.NOT_FOUND);
 		} catch (DisabledException e) {
+			
+			return new ResponseEntity<>(new MessageDTO("Account is not verified. Check your email.", "Error"),
+					HttpStatus.FORBIDDEN);
+		}
+		
+		User user = (User) authentication.getPrincipal();
+		System.out.println("User's state: "+user.isEnabled());
+		if (user.isEnabled()==false) {
 			return new ResponseEntity<>(new MessageDTO("Account is not verified. Check your email.", "Error"),
 					HttpStatus.OK);
 		}
-		User user = (User) authentication.getPrincipal();
-
 		// Ubaci username + password u kontext
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
 		// Kreiraj token
 		String jwt = tokenUtils.generateToken(user.getUsername());
 		int expiresIn = tokenUtils.getExpiredIn();
