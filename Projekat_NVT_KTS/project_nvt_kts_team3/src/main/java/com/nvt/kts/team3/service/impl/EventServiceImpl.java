@@ -133,7 +133,7 @@ public class EventServiceImpl implements EventService {
 			
 			//Ako smo uneli da se odrzava pre danas
 			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
-				throw new InvalidDate();
+			//	throw new InvalidDate();
 			}
 			
 			//Postavljas da je expiry tri dana pre pocetka rezervacije

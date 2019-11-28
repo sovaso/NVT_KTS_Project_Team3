@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -48,6 +49,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>{
 	@Query("SELECT t FROM Ticket t " +
 		    "WHERE t.zone.id = ?1")
 	public List<Ticket> getLeasedZoneTickets(long leasedZoneID);
+	
+	@Query("SELECT t FROM Ticket t WHERE t.reserved = 1 AND t.reservation.paid = 0 AND t.zone.maintenance.id IN "+
+			"(SELECT m.id FROM Maintenance m "+
+			"WHERE m.reservationExpiry >= ?1 AND m.reservationExpiry <= ?2)")
+	public List<Ticket> getExpieredUnpaidTickets(LocalDateTime hourAgo, LocalDateTime now);
+	
+	
 	
 	@Transactional
 	@Modifying

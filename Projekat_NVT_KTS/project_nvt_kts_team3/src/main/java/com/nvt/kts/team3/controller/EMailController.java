@@ -1,7 +1,7 @@
 package com.nvt.kts.team3.controller;
 
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -52,10 +52,9 @@ public class EMailController {
 		transport.close();
 	}
 	
-	public void sendEmails(Set<String> emailAdresses, String subject, String body) throws AddressException, MessagingException{
-		for(String email : emailAdresses){
-			Mail mail = new Mail(email, subject, body);
-			sendEmail(mail);
+	public void sendEmails(List<Mail> emails) throws AddressException, MessagingException{
+		for(Mail email : emails){
+			sendEmail(email);
 		}
 	}
 	

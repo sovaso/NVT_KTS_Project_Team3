@@ -17,7 +17,6 @@ public interface MaintenanceService {
 	public void remove(long id);
 	public Maintenance getLastMaintenanceOfEvent(long eventId);
 	public List<Maintenance> removeByEventId(long eventId);
-	public List<Maintenance> getExpieredMaintenances();
 	public List<Maintenance> save(List<Maintenance> maintenances);
 	public void checkForExpieredTickets() throws AddressException, MessagingException;
 	public void warnUsersAboutExpiry() throws AddressException, MessagingException;

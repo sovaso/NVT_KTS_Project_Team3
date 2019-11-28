@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,14 +21,10 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long>{
 	@Transactional
 	@Modifying
 	public List<Maintenance> deleteByEventId(long eventId);
-	
-	@Query("SELECT m FROM Maintenance m "+
-			"WHERE m.reservationExpiry <= NOW() AND m.reservationExpiry >= DATEADD(HOUR, -1, GETDATE())")
-	public List<Maintenance> getExpieredMaintenances();
 
 	@Query("SELECT m FROM Maintenance m "+
-			"WHERE m.reservationExpiry >= DATEADD(HOUR, 24, GETDATE()) AND  m.reservationExpiry < DATEADD(HOUR, 25, GETDATE())")
-	public List<Maintenance> getWarningMaintenances();
+			"WHERE m.reservationExpiry >= ?1 AND  m.reservationExpiry <= ?2")
+	public List<Maintenance> getWarningMaintenances(LocalDateTime next24hours, LocalDateTime next25hours);
 	
 	public List<Maintenance> save(List<Maintenance> maintenances);
 }

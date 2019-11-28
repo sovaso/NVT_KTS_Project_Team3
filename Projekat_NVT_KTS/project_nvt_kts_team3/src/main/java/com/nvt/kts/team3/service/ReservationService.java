@@ -16,5 +16,5 @@ public interface ReservationService {
 	public List<Reservation> findByEvent(Event e);
 	public boolean payReservation(Long id);
 	public List<Reservation> getLocationReservations(Long id);
-	public void deleteReservations(List<Long> reservations);
+	public void delete(Long id);
 }
