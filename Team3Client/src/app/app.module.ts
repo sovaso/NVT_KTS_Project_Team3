@@ -26,6 +26,7 @@ import { EventsComponent } from './events/events.component';
 import { LocationsComponent } from './locations/locations.component';
 import { MyReservationsComponent } from './my-reservations/my-reservations.component';
 import { ReportsComponent } from './reports/reports.component';
+import { CreateLocationComponent } from './locations/create-location/create-location.component';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { ReportsComponent } from './reports/reports.component';
     EventsComponent,
     LocationsComponent,
     MyReservationsComponent,
-    ReportsComponent
+    ReportsComponent,
+    CreateLocationComponent
   ],
   imports: [
     NgbModule,
