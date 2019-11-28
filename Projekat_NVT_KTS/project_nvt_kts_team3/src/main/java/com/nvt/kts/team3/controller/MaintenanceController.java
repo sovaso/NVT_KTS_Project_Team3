@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,18 +40,21 @@ public class MaintenanceController {
 	private MaintenanceService maintenanceService;
 	
 	@PostMapping(value = "/createMaintenance", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createMaintenance(@RequestBody MaintenanceDTO maintenanceDTO) throws ParseException{
 		maintenanceService.save(maintenanceDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Maintenance successfully created."), HttpStatus.CREATED);
 	}
 	
 	@PostMapping(value = "/updateMaintenance", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateMaintenance(@RequestBody MaintenanceDTO maintenanceDTO) throws ParseException{
 		maintenanceService.updateMaintenance(maintenanceDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Maintenance successfully updated."), HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/deleteMaintenance/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteMaintenance(@PathVariable(value = "id") Long id) {
 		maintenanceService.remove(id);
 		return new ResponseEntity<>(new MessageDTO("Success", "Maintenance successfully deleted."), HttpStatus.OK);

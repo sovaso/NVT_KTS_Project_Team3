@@ -37,6 +37,7 @@ public class LocationController {
 	private ReservationService reservationService;
 	
 	@PostMapping(value = "/createLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLocation(@RequestBody LocationDTO locationDTO){
 		locationService.save(locationDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
@@ -44,6 +45,7 @@ public class LocationController {
 	
 	
 	@PostMapping(value = "/updateLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLocation(@RequestBody LocationDTO locationDTO){
 		locationService.update(locationDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);

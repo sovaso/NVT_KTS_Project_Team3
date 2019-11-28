@@ -39,7 +39,6 @@ public class UserController {
 	private UserService userService;
 
 	@GetMapping(value = "/confirmRegistration/{username}")
-	//@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
 	public RedirectView confirmRegistration(@PathVariable String username) {
 		System.out.println("Uslo u confirm registration");
 	

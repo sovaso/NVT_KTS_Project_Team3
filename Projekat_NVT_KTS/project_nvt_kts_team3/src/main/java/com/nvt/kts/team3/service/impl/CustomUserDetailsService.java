@@ -141,7 +141,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 			newUser.setEmail(user.getEmail());
 			newUser.setUsername(user.getUsername());
 			newUser.setPassword(this.encodePassword(user.getPassword()));
-			newUser.setEnabled(true);
+			newUser.setEnabled(false);
 			newUser.setName(user.getName());
 			newUser.setSurname(user.getSurname());
 			newUser.setLastPasswordResetDate(new Timestamp(System.currentTimeMillis()));

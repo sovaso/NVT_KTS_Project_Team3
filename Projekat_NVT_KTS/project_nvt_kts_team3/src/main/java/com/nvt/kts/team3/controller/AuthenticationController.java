@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -53,7 +54,7 @@ public class AuthenticationController {
 	}
 
 	@PostMapping(value = "auth/registerAdmin")
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> registerAdmin(@RequestBody UserDTO user) {
 		boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_ADMIN);
 		if (result == true) {

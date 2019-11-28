@@ -41,6 +41,7 @@ public class EventController {
 	
 	//****
 	@PostMapping(value = "/createEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createEvent(@RequestBody EventDTO eventDTO) throws ParseException {
 		eventService.save(eventDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully created."), HttpStatus.CREATED);
@@ -48,6 +49,7 @@ public class EventController {
 
 	//***
 	@PostMapping(value = "/updateEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateEvent(@RequestBody EventDTO eventDTO) throws ParseException {
 		eventService.update(eventDTO);
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully updated."), HttpStatus.OK);
@@ -87,7 +89,7 @@ public class EventController {
 
 	//***
 	@DeleteMapping(value = "/deleteEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteEvent(@PathVariable(value = "id") Long eventId) {
 		System.out.println("Uslo u delete event");
 		eventService.remove(eventId);
