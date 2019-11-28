@@ -27,6 +27,7 @@ import { LocationsComponent } from './locations/locations.component';
 import { MyReservationsComponent } from './my-reservations/my-reservations.component';
 import { ReportsComponent } from './reports/reports.component';
 import { CreateLocationComponent } from './locations/create-location/create-location.component';
+import { EditLocationComponent } from './locations/edit-location/edit-location.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { CreateLocationComponent } from './locations/create-location/create-loca
     LocationsComponent,
     MyReservationsComponent,
     ReportsComponent,
-    CreateLocationComponent
+    CreateLocationComponent,
+    EditLocationComponent
   ],
   imports: [
     NgbModule,
