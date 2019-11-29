@@ -26,6 +26,7 @@ import { EventsComponent } from './events/events.component';
 import { LocationsComponent } from './locations/locations.component';
 import { MyReservationsComponent } from './my-reservations/my-reservations.component';
 import { ReportsComponent } from './reports/reports.component';
+import { UpdateEventComponent } from './events/update-event/update-event.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { ReportsComponent } from './reports/reports.component';
     EventsComponent,
     LocationsComponent,
     MyReservationsComponent,
-    ReportsComponent
+    ReportsComponent,
+    UpdateEventComponent
   ],
   imports: [
     NgbModule,
