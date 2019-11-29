@@ -1,0 +1,172 @@
+@import 'src/variables.scss';
+
+.title:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+
+.userInfo {
+	padding-right: 10px;
+	text-align: right;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.userInfo:hover {
+	background-color: $secondary-color;
+	color: $main-color
+}
+
+.userInfo img {
+	height: 50px;
+	width: auto
+}
+
+.myStyle {
+    display: inline-block;
+    padding: 12px 18px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: white;
+    background-color: #38738f;
+    border: none;
+    border-radius: 12px;
+    
+  }
+  
+  .myStyle:hover {background-color: #999 }
+
+  .myStyle:active {
+    background-color: #38738f;
+    
+    transform: translateY(4px);}
+
+#userDropdown {
+	font-size: 20px;
+} 
+
+.content {
+	margin: 0;
+}
+.map {
+	height: 100vh;
+}
+.map-content {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.sidebar-content {
+	padding-left: 0px;
+	padding-right: 0px;
+	height: 100%;
+}
+.main {
+	background-color: $main-color;
+	color: white;
+	padding-top: 10px;
+}
+.title {
+	color: $secondary-color;
+	font-size: 20px;
+}
+.header {
+	background-color: $main-color;
+	text-align: left;
+	padding-left: 10px;
+	display: flex;
+	justify-content: space-between;
+	
+}
+.menu {
+	background-color: inherit;
+	margin: 10px;
+}
+#directions {
+	margin: 10px 10px 0 10px;
+	padding: 10px;
+	font-size: 14px;
+	color: black;
+}
+#directions input {
+	border: none; 
+}
+#directions input::placeholder {
+	font-size: 14px;
+}
+#directions input:focus {
+	box-shadow: none; 
+}
+a {
+	color: white;
+}
+.search-item {
+	border: 1px solid gray;
+	border-radius: 5px;
+	background-color: white;
+}
+.search-item > div {
+	padding: 0;
+}
+.selected {
+	color: $secondary-color;
+	border-bottom: 2px solid $secondary-color;
+}
+.search-button {
+	height: 40px;
+	width: 100px;
+	border: 2px solid white;
+	border-radius: 10px;
+	background-color: $main-color;
+	color: white;
+	font-size: 16px;
+	outline: 0;
+}
+.button-holder {
+	text-align:center;
+	margin-bottom: 5px;
+}
+.search-button:disabled {
+	cursor: not-allowed;
+}
+.search-button:hover {
+	border: 2px solid  $main-color;
+	background-color: white;
+	color: $main-color;
+}
+.legend {
+	position: absolute;
+	right: 0;
+	top: 0;
+	background-color: white;
+	width: 150px;
+	padding: 5px;
+	z-index: 1;
+	border: 1px solid $main-color;
+	color: #666;
+}
+.legend-bus {
+	border-bottom: 2px solid $bus-color;
+	text-align: center;
+	margin: 5px;
+}
+.legend-walking {
+	border-bottom: 2px dashed $walking-color;
+	text-align: center;
+	margin: 5px;
+}
+.legend-title {
+	font-weight: bold;
+}
+
+@media(max-width: 767px) {
+	.map {
+		height: 70vh;
+	}
+	.legend {
+		display: none;
+	}
+}

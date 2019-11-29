@@ -4,7 +4,7 @@
       <div class="col-md-3"></div>
       <div class="col-md-6">
         <form class="form-signin" (ngSubmit)="register()">
-          <h2 class="form-signin-heading">Register admin</h2>
+          <h2 class="form-signin-heading">Register user</h2>
           <label for="name" class="sr-only">Name</label>
           <input type="text" id="name" class="form-control" name="name" [(ngModel)]="user.name" placeholder="Name"
             required autofocus>
@@ -25,16 +25,18 @@
                                         required autofocus>
           <button class="btn btn-primary btn-block" type="submit">Register</button>
         </form>
-        <div *ngIf="message!==''">
-            <ngb-alert [type]="type" >{{message}}</ngb-alert>  
-        </div>
-        <!-- <div *ngIf=success class="alert alert-warning box-msg" role="alert">
+       <!--  <div *ngIf=success class="alert alert-warning box-msg" role="alert">
          Username already taken.
         </div>
         <div *ngIf=noInput class="alert alert-warning box-msg" role="alert">
           Please fill all fields.
-         </div>
-      </div> -->
+         </div> -->
+         <div *ngIf="message!==''">
+            <ngb-alert [type]="type" >{{message}}</ngb-alert>  
+          
+        </div>
+      </div>
+     
       <div class="col-md-3"></div>
     </div>
   </div>

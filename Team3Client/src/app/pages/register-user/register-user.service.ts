@@ -14,11 +14,19 @@ export class RegisterUserService {
   constructor(
     private http: HttpClient
   ) {
-    this.apiUrl = "http://localhost:8080/auth/registerUser";
+    
    
   }
   register = (data: UserModel): Observable<boolean> => {
-    
+
+    var user = {};
+    var loggedUser = JSON.parse(
+      localStorage.getItem('currentUser'));
+    if (loggedUser !== null) {
+      this.apiUrl = "http://localhost:8080/auth/registerAdmin";
+    }else {
+      this.apiUrl = "http://localhost:8080/auth/registerUser";
+    }
       return this.http.post<Message>(this.apiUrl, data).pipe(
         map( (res: any) => {
             return res;
