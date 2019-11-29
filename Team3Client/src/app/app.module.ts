@@ -30,6 +30,7 @@ import { CreateLocationComponent } from './locations/create-location/create-loca
 import { EditLocationComponent } from './locations/edit-location/edit-location.component';
 import { MaintenacesComponent } from './maintenaces/maintenaces.component';
 import { CreatemaintenacesComponent } from './maintenaces/createmaintenaces/createmaintenaces.component';
+import { EditMaintenanceComponent } from './maintenances/edit-maintenance/edit-maintenance.component';
 
 
 @NgModule({
@@ -50,7 +51,8 @@ import { CreatemaintenacesComponent } from './maintenaces/createmaintenaces/crea
     CreateLocationComponent,
     EditLocationComponent,
     MaintenacesComponent,
-    CreatemaintenacesComponent
+    CreatemaintenacesComponent,
+    EditMaintenanceComponent
   ],
   imports: [
     NgbModule,
