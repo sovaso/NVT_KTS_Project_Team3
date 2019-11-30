@@ -3,11 +3,15 @@ import { BehaviorSubject } from 'rxjs';
 import { EventsService } from '../events/events.service';
 import { LocationsService } from '../locations/locations.service';
 
+
+import { Observable } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
 
+  public status : boolean = false;
   private eventsSource = new BehaviorSubject<Event[]>([]);
   events = this.eventsSource.asObservable();
 
@@ -32,5 +36,35 @@ export class SharedService {
     this.updateEvents();
     this.updateLocation();
   }
+
+  sortEventsByDateAcs(){
+    this.eventService.sortByDateAcs().subscribe(data => {
+      this.eventsSource.next(data);
+    });
+  }
+  sortEventsByDateDesc(){
+    this.eventService.sortByDateDesc().subscribe(data => {
+      this.eventsSource.next(data);
+    });
+  }
+
+  sortEventsByName(){
+    this.eventService.sortByName().subscribe(data => {
+      this.eventsSource.next(data);
+    });
+  }
+
+  searchEvents(field : string, startDate : string, endDate : string) {
+    this.eventService.search(field, startDate,endDate).subscribe(data => {
+      this.eventsSource.next(data);
+    }, (err : Error)=>{
+     console.log('error');
+     this.status=false;
+    }
+      
+    );
+  }
+
+  
 
 }

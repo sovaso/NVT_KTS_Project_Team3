@@ -56,8 +56,10 @@ export class EventsService {
   uploadFile = (uploadFile: UploadFileDto): Observable<string> =>
   this.http.post<string>(`http://localhost:8080/api/upload`, uploadFile);
 
-  search = (field: string, startDate: Date, endDate: Date): Observable<any> =>
-  this.http.get<any>(`http://localhost:8080/api/findEvent/${field}/${startDate}/${endDate}`);
+  search = (field: string, startDate: string, endDate: string): Observable<any> =>
+    
+ this.http.get<any>(`http://localhost:8080/api/findEvent/${field}/${startDate}/${endDate}`);
+  
 
   sortByName = (): Observable<any> =>
   this.http.get<any>(`http://localhost:8080/api/sortByName`);

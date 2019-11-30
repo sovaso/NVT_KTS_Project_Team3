@@ -105,6 +105,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/api/sortByDateAcs").permitAll()
 			.antMatchers("/api/deleteEvent/{id}").permitAll()
 			.antMatchers("/confirmRegistration/{id}").permitAll()
+			.antMatchers("/api/findEvent/{field}/{startDate}/{endDate}/**").permitAll()
+			
 			//.antMatchers("api/getLogged").permitAll()
 			//.antMatchers("api/editUser").permitAll()
 			

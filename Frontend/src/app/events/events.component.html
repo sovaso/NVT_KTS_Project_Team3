@@ -5,9 +5,26 @@
         <button class="btn btn-primary" (click)="newEvent()">New Event</button>
         <div class="divider"></div>
     </ngb-tab>
-    <button id = "sortByDate" class="btn btn-primary" (click)="newEvent()">Sort by date</button>
+    <button id = "sortByDateAcs" class="btn btn-primary" (click)="sortByDateAcs()">Sort by date acs</button>
     <div class="divider"></div>
-    <button id = "sortByDate"class="btn btn-primary" (click)="newEvent()">Sort by name</button>
+    <button id = "sortByDateDesc" class="btn btn-primary" (click)="sortByDateDesc()">Sort by date desc</button>
+    <div class="divider"></div>
+    <button id = "sortByName"class="btn btn-primary" (click)="sortByName()">Sort by name</button>
+    <input type="text" id="field" class="form-control" name="field" [(ngModel)]="field" placeholder="Enter name, location or type of event"
+    required autofocus>
+    <label>Start date</label>
+    <div class="divider"></div>
+    <input type = "datetime-local" id = "startDate" name = "startDate" [(ngModel)]="startDate">
+    <label>End date</label>
+    <div class="divider"></div>
+    <input type = "datetime-local" id = "endDate" name = "endDate" [(ngModel)]="endDate">
+    <button id = "search"class="btn btn-primary" (click)="search()">Search</button>
+    <div class="divider"></div>
+    <button id = "reset"class="btn btn-primary" (click)="reset()">Reset</button>
+    <div *ngIf="message!==''">
+        <ngb-alert [type]="type" >{{message}}</ngb-alert>  
+    </div>
+    <div *ngIf="message===''">
     <table class="table table-striped">
         <thead>
             <th>Id</th>
@@ -33,5 +50,6 @@
             </tr>
         </tbody>
     </table>
+</div>
    
 </div>

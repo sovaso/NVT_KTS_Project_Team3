@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,6 +30,7 @@ import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.UploadFileDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Location;
+import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.service.EventService;
 
 @RestController
@@ -126,16 +128,25 @@ public class EventController {
 	//****
 	@GetMapping(value = "/findEvent/{field}/{startDate}/{endDate}")
 	public ResponseEntity<?> findRentacars(
-			@RequestParam(name = "endDate") @DateTimeFormat(iso = ISO.DATE) LocalDateTime endDate,
-			@RequestParam(name = "field") String field,
-			@RequestParam(name = "startDate")  @DateTimeFormat(iso = ISO.DATE) LocalDateTime startDate
+			@PathVariable(name = "field") String field,
+			/*@RequestParam(name = "startDate")  @DateTimeFormat(iso = ISO.DATE) LocalDateTime startDate*/
+			@PathVariable(name = "startDate") String startDate,
+			@PathVariable(name = "endDate") String endDate
+			/*@RequestParam(name = "endDate") @DateTimeFormat(iso = ISO.DATE) LocalDateTime endDate*/
 			) {
+		System.out.println("Uslo u search kontroler.");
+		
 		List<Event> events  = eventService.searchEvent(field, startDate, endDate);
 		if (events.size() != 0) {
+			System.out.println("Iz kontrolera maintaneces date");
+			Set<Maintenance> maintenances = events.get(0).getMaintenances();
+			System.out.println(maintenances.iterator().next().getMaintenanceDate());
+			System.out.println("Iz kontrolera maintaneces date");
 			return new ResponseEntity<>(events, HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(new MessageDTO("Not found", "Event with desired criterias does not exist."), HttpStatus.NOT_FOUND);
 		}
+		
 		
 		
 	}
@@ -143,6 +154,7 @@ public class EventController {
 	//***
 	@GetMapping(value = "/sortByName")
 	public ResponseEntity<?> sortByName() {
+		System.out.println("Sort by name called");
 		List<Event> events  = eventService.findAllSortedName();
 		if (events.size() != 0) {
 			return new ResponseEntity<>(events, HttpStatus.OK);
@@ -154,6 +166,7 @@ public class EventController {
 	
 	@GetMapping(value = "/sortByDateAcs")
 	public ResponseEntity<?> sortByDateAcs() {
+		System.out.println("Sort by date acs called");
 		List<Event> events  = eventService.findAllSortedDateAcs();
 		if (events.size() != 0) {
 			return new ResponseEntity<>(events, HttpStatus.OK);
@@ -165,7 +178,8 @@ public class EventController {
 	
 	@GetMapping(value = "/sortByDateDesc")
 	public ResponseEntity<?> sortByDateDesc() {
-		List<Event> events  = eventService.findAllSortedDateAcs();
+		System.out.println("Sort by date desc called");
+		List<Event> events  = eventService.findAllSortedDateDesc();
 		if (events.size() != 0) {
 			return new ResponseEntity<>(events, HttpStatus.OK);
 		}else {

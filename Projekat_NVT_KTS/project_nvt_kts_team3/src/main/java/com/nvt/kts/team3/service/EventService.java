@@ -34,6 +34,6 @@ public interface EventService {
 	public List<Event> findAllSortedName();
 	public List<Event> findAllSortedDateDesc();
 	public List<Event> findAllSortedDateAcs();
-	public List<Event> searchEvent(String field, LocalDateTime startDate, LocalDateTime endDate);
+	public List<Event> searchEvent(String field, String startDate, String endDate);
 	
 }
