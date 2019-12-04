@@ -43,8 +43,8 @@ public class AuthenticationController {
 	private CustomUserDetailsService userDetailsService;
 
 	@PostMapping(value = "auth/registerUser")
-	public ResponseEntity<?> registerUser(@RequestBody UserDTO user) {
-		boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_USER);
+	public ResponseEntity<Boolean> registerUser(@RequestBody UserDTO user) {
+		Boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_USER);
 		if (result == true) {
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}else {
@@ -54,9 +54,9 @@ public class AuthenticationController {
 	}
 
 	@PostMapping(value = "auth/registerAdmin")
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> registerAdmin(@RequestBody UserDTO user) {
-		boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_ADMIN);
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<Boolean> registerAdmin(@RequestBody UserDTO user) {
+		Boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_ADMIN);
 		if (result == true) {
 			return new ResponseEntity<>(result, HttpStatus.OK);
 		}else {

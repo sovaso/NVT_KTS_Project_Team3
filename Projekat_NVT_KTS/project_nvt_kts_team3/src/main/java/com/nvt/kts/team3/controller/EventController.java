@@ -41,7 +41,6 @@ public class EventController {
 	@Autowired
 	private EventService eventService;
 	
-	//****
 	@PostMapping(value = "/createEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createEvent(@RequestBody EventDTO eventDTO) throws ParseException {
@@ -49,7 +48,6 @@ public class EventController {
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully created."), HttpStatus.CREATED);
 	}
 
-	//***
 	@PostMapping(value = "/updateEvent", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateEvent(@RequestBody EventDTO eventDTO) throws ParseException {
@@ -57,7 +55,6 @@ public class EventController {
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully updated."), HttpStatus.OK);
 	}
 
-	//****
 	@GetMapping(value = "/getEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Event> getEvent(@PathVariable(value = "id") Long eventId) {
 		Event event = eventService.findById(eventId);
@@ -67,19 +64,16 @@ public class EventController {
 		return new ResponseEntity<>(event, HttpStatus.OK);
 	}
 
-	//*****
 	@GetMapping(value = "/getAllEvents", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Event>> getAllEvents() {
 		return new ResponseEntity<>(eventService.findAll(), HttpStatus.OK);
 	}
 
-	//***
 	@GetMapping(value = "/getActiveEvents", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Event>> getActiveEvents() {
 		return new ResponseEntity<>(eventService.getActiveEvents(), HttpStatus.OK);
 	}
 
-	//**
 	@GetMapping(value = "/getEventLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> getEventLocation(@PathVariable(value = "id") Long eventId) {
 		Event event = eventService.findById(eventId);
@@ -89,7 +83,6 @@ public class EventController {
 		return new ResponseEntity<>(event.getLocationInfo(), HttpStatus.OK);
 	}
 
-	//***
 	@DeleteMapping(value = "/deleteEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteEvent(@PathVariable(value = "id") Long eventId) {
@@ -98,7 +91,6 @@ public class EventController {
 		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully deleted."), HttpStatus.OK);
 	}
 
-	//***
 	@GetMapping(value = "/getEventIncome/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventIncome(@PathVariable long event_id) {
@@ -106,8 +98,7 @@ public class EventController {
 		return new ResponseEntity<Double>(income, HttpStatus.OK);
 
 	}
-
-	//****
+	
 	@GetMapping(value = "/getEventReport/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventReport(@PathVariable long event_id) throws ParseException {
@@ -115,7 +106,6 @@ public class EventController {
 		return new ResponseEntity<>(retVal, HttpStatus.OK);
 	}
 
-	//****
 	@PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<?> upload(@RequestBody UploadFileDTO uploadFileDTO)
@@ -125,7 +115,6 @@ public class EventController {
 
 	}
 	
-	//****
 	@GetMapping(value = "/findEvent/{field}/{startDate}/{endDate}")
 	public ResponseEntity<?> findRentacars(
 			@PathVariable(name = "field") String field,
@@ -138,20 +127,12 @@ public class EventController {
 		
 		List<Event> events  = eventService.searchEvent(field, startDate, endDate);
 		if (events.size() != 0) {
-			System.out.println("Iz kontrolera maintaneces date");
-			Set<Maintenance> maintenances = events.get(0).getMaintenances();
-			System.out.println(maintenances.iterator().next().getMaintenanceDate());
-			System.out.println("Iz kontrolera maintaneces date");
 			return new ResponseEntity<>(events, HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(new MessageDTO("Not found", "Event with desired criterias does not exist."), HttpStatus.NOT_FOUND);
 		}
-		
-		
-		
 	}
-	
-	//***
+
 	@GetMapping(value = "/sortByName")
 	public ResponseEntity<?> sortByName() {
 		System.out.println("Sort by name called");
