@@ -32,7 +32,14 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	public void testGetAll() {
 		List<Event> events = eventRepository.findAll();
-		assertEquals(0, events.size());
+		assertEquals(1, events.size());
+		
+	}
+	@Test
+	@Transactional
+	public void findByName_found() {
+		List<Event> events = eventRepository.findByName("Event1");
+		assertEquals(1, events.size());
 		
 	}
 	
