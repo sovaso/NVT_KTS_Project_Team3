@@ -21,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(catalog = "dbteam3", name = "maintenance")
+@Table(name = "maintenance")
 public class Maintenance {
 
 	@Column(name = "maintenance_date")

@@ -23,7 +23,7 @@ import com.nvt.kts.team3.dto.ReservationDTO;
 import com.nvt.kts.team3.dto.TicketDTO;
 
 @Entity
-@Table(catalog = "dbteam3", name = "reservation")
+@Table(name = "reservation")
 public class Reservation {
 
 	@Id

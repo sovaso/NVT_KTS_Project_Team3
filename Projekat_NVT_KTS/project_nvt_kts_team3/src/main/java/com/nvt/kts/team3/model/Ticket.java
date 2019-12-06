@@ -16,7 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 import com.nvt.kts.team3.dto.TicketDTO;
 
 @Entity
-@Table(catalog = "dbteam3", name = "ticket")
+@Table(name = "ticket")
 public class Ticket {
 
 	@Id

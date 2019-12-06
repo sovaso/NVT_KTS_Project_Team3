@@ -553,44 +553,32 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public List<Event> searchEvent(String field, String start, String end){
-		System.out.println("POZVAN SEARCH EVENT");
+	public List<Event> searchEvent(String field, String start, String end){;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-		System.out.println(field);
-		System.out.println(start);
-		System.out.println(end);
 		if (start.equals("***") == false) {
 			start = start.split("T")[0]+" "+start.split("T")[1];
 		}
 		if (end.equals("***")==false) {
 			end = end.split("T")[0]+" "+end.split("T")[1];
 		}
-		
-		System.out.println(start);
-		System.out.println(end);
 		List<Event> events = new ArrayList<Event>();
 		if (start.equals("***")==true) {
-			System.out.println("samo field");
 			events = eventRepository.searchEventOnlyField(field);
 		}else if (start.equals("***")==false && end.equals("***")==true && field.equals("***")==true){
-			System.out.println("samo start");
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
 			startDate = startDate.plusHours(1);
 			events = eventRepository.searchEventSpecDate(startDate);
 		}else if (start.equals("***")==false && end .equals("***")==false && field.equals("***")==true ){
-			System.out.println("start i end");
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
 			startDate = startDate.plusHours(1);
 			LocalDateTime endDate = LocalDateTime.parse(end, formatter);
 			endDate = endDate.plusHours(1);
 			events = eventRepository.searchEventPeriod(startDate, endDate);
 		}else if (field.equals("***")==false  && start.equals("***")==false && end.equals("***")==true) {
-			System.out.println("field i start");
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
 			startDate = startDate.plusHours(1);
 			events = eventRepository.searchEventFieldSpecDate(field, startDate);
 		}else  {
-			System.out.println("field start end");
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
 			startDate = startDate.plusHours(1);
 			LocalDateTime endDate = LocalDateTime.parse(end, formatter);

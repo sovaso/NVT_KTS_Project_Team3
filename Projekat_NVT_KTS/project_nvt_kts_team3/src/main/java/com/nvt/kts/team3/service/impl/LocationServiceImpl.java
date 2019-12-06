@@ -39,8 +39,6 @@ public class LocationServiceImpl implements LocationService {
 	@Autowired
 	private LocationRepository locationRepository;
 
-	@Autowired
-	private LocationService locationService;
 
 	@Autowired
 	private ReservationRepository reservationRepository;
@@ -55,7 +53,7 @@ public class LocationServiceImpl implements LocationService {
 	public Location save(LocationDTO locationDTO) {
 		
 		//Ne sme biti dvojnica
-		if (locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress()) != null) {
+		if (findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress()) != null) {
 			throw new LocationExists();
 		}
 
@@ -89,7 +87,7 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location update(LocationDTO locationDTO) {
-		Location location = locationService.findById(locationDTO.getId());
+		Location location = findById(locationDTO.getId());
 		
 		//mozes menjati samo postojeci
 		if (location == null || location.isStatus() == false) {
@@ -97,7 +95,7 @@ public class LocationServiceImpl implements LocationService {
 		}
 
 		//izmenis i sacuvas
-		Location testName = locationService.findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress());
+		Location testName = findByNameAndAddress(locationDTO.getName(), locationDTO.getAddress());
 		if (testName != null && testName.getId() != locationDTO.getId()) {
 			throw new LocationExists();
 		}
@@ -105,9 +103,6 @@ public class LocationServiceImpl implements LocationService {
 		location.setName(locationDTO.getName());
 		location.setAddress(locationDTO.getAddress());
 
-		if (locationDTO.getLocationZone() == null || locationDTO.getLocationZone().isEmpty()) {
-			return locationRepository.save(location);
-		}
 		return locationRepository.save(location);
 	}
 
@@ -136,21 +131,27 @@ public class LocationServiceImpl implements LocationService {
 		locationRepository.save(location);
 	}
 
+	
+	//**
 	@Override
 	public Location findByNameAndAddress(String name, String address) {
 		return locationRepository.findByNameAndAddress(name, address);
 	}
 
+	
+	//***
 	@Override
 	public ArrayList<Event> getActiveEvents(long locationId) {
 		return locationRepository.getActiveEvents(locationId);
 	}
 
+	//***
 	@Override
 	public ArrayList<Location> findAllActive() {
 		return locationRepository.getActiveLocations();
 	}
 
+	//**
 	@Override
 	public ArrayList<Event> checkIfAvailable(Long locationId, LocalDateTime startDate, LocalDateTime endDate) {
 		return locationRepository.checkIfAvailable(locationId, startDate, endDate);
@@ -247,6 +248,7 @@ public class LocationServiceImpl implements LocationService {
 		}
 	}
 	
+	///****
 	@Override
 	public Location findByAddress(String address){
 		return locationRepository.findByAddress(address);

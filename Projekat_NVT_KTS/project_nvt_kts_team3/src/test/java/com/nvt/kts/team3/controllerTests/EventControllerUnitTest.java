@@ -1,4 +1,4 @@
-package com.nvt.kts.team3;
+package com.nvt.kts.team3.controllerTests;
 
 
 import static org.junit.Assert.assertEquals;
@@ -49,10 +49,6 @@ import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.service.EventService;
-
-
-
-
 
 
 @RunWith(SpringRunner.class)

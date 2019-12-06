@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nvt.kts.team3.dto.UserDTO;
 
 @Entity
-@Table(catalog = "dbteam3", name = "user")
+@Table(name = "user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class User implements UserDetails {
 

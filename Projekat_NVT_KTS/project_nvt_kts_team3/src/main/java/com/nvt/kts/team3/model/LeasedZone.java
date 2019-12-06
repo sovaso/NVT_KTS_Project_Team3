@@ -20,7 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(catalog = "dbteam3", name = "leased_zone")
+@Table(name = "leased_zone")
 public class LeasedZone {
 
 	@Id

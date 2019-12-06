@@ -1,4 +1,4 @@
-package com.nvt.kts.team3;
+package com.nvt.kts.team3.controllerTests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
