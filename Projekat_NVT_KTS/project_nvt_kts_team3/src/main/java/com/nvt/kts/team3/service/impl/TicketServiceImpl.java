@@ -134,7 +134,7 @@ public class TicketServiceImpl implements TicketService {
 						t.setReservation(null);
 						r.getReservedTickets().remove(t);
 						reservationRepository.save(r);
-						save(t);
+						ticketRepository.save(t);
 						if (r.getReservedTickets().size() == 0) {
 							reservationRepository.deleteById(r.getId());
 
