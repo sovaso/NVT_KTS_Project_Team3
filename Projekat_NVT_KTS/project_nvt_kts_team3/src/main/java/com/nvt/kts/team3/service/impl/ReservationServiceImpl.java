@@ -79,7 +79,7 @@ public class ReservationServiceImpl implements ReservationService {
 				if (logged == null) {
 					throw new NoLoggedUser();
 				} else {
-					List<Reservation> userReservations = findByUserAndPaid(logged, false);
+					List<Reservation> userReservations = reservationRepository.findByUserAndPaid(logged, false);
 					int numTickets = 0;
 					for (Reservation r : userReservations) {
 						numTickets += r.getReservedTickets().size();
@@ -221,7 +221,7 @@ public class ReservationServiceImpl implements ReservationService {
 	public List<Reservation> getLocationReservations(Long id) {
 		Optional<Location> loc = this.locationRepository.findById(id);
 		if (loc.isPresent()) {
-			List<Reservation> res = findAll();
+			List<Reservation> res = reservationRepository.findAll();
 			List<Reservation> ret = new ArrayList<Reservation>();
 			for (Reservation r : res) {
 				if (r.getEvent().getLocationInfo().getId() == id) {
