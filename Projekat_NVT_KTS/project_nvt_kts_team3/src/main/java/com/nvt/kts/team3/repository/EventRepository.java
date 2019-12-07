@@ -38,34 +38,34 @@ public interface EventRepository extends JpaRepository<Event, Long>{
 	
 	
 	@Query(
-	"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
+	"SELECT DISTINCT e FROM Event e left join Maintenance m on e.id = m.event.id"
 	+ " left join Location l on e.locationInfo.id = l.id"
 	+ " where  e.name = ?1 or l.address = ?1 or e.type = ?1")
 	public ArrayList<Event> searchEventOnlyField(String field);
 	
 	@Query(
-			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
+			"SELECT DISTINCT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where m.maintenanceDate = ?1")
 			public ArrayList<Event> searchEventSpecDate(LocalDateTime startDate);
 	
 	@Query(
-			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
+			"SELECT DISTINCT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where (e.name = ?1 or l.address = ?1 or e.type = ?1) and m.maintenanceDate = ?2")
 	public ArrayList<Event> searchEventFieldSpecDate(String field, LocalDateTime startDate);
 
 	
 	@Query(
-			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
+			"SELECT DISTINCT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
 			+ " where m.maintenanceDate between ?1 and ?2")
 	public ArrayList<Event> searchEventPeriod(LocalDateTime startDate, LocalDateTime endDate);
 	
 	@Query(
-			"SELECT e FROM Event e left join Maintenance m on e.id = m.event.id"
+			"SELECT DISTINCT e FROM Event e left join Maintenance m on e.id = m.event.id"
 			+ " left join Location l on e.locationInfo.id = l.id"
-			+ " where (e.name = ?1 or l.address = ?1 or e.type = ?1) and m.maintenanceDate between ?1 and ?2")
+			+ " where ((e.name = ?1) or (l.address = ?1) or (e.type = ?1)) and (m.maintenanceDate between ?2 and ?3)")
 	public ArrayList<Event> searchEventFieldPeriod(String field, LocalDateTime startDate, LocalDateTime endDate);
 	
 	
