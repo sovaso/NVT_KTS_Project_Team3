@@ -519,39 +519,6 @@ public class EventServiceImpl implements EventService {
 	
 	
 	@Override
-	public List<Event> findByLocation(Location location){
-		return eventRepository.findByLocationInfo(location);
-	}
-	
-	@Override
-	public List<Event> findByName(String name){
-		return eventRepository.findByName(name);
-	}
-	
-	public List<Event> findByLocationAddress(String locationAddress){
-		Location location = locationService.findByAddress(locationAddress);
-		return findByLocation(location);
-	}
-	
-	public List<Event> findByType(EventType type){
-		return eventRepository.findByType(type);
-	}
-	
-	
-	public List<Event> findByField(String field){
-		List<Event> events  = findByName(field);
-		if (events.size() == 0) {
-			events = findByLocationAddress(field);
-		}
-		if (events.size() == 0) {
-			if (field.toUpperCase() == "SPORTS" || field.toUpperCase() == "ENTERTAINMENT" || field.toUpperCase() == "CULTURAL") {
-				events = findByType(EventType.valueOf(field.toUpperCase()));
-			}
-		}
-		return events;
-	}
-	
-	@Override
 	public List<Event> searchEvent(String field, String start, String end){;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		if (start.equals("***") == false) {

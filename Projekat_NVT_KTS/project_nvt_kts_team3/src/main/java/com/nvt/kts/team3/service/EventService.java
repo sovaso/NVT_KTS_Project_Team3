@@ -27,10 +27,7 @@ public interface EventService {
 	public EventReportDTO getEventReport(Long id);
 	public double getEventIncome(Long id);
 	public String uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException;
-	public List<Event> findByName(String name);
-	public List<Event> findByLocationAddress(String locationAddress);
-	public List<Event> findByLocation(Location location);
-	public List<Event> findByType(EventType type);
+
 	public List<Event> findAllSortedName();
 	public List<Event> findAllSortedDateDesc();
 	public List<Event> findAllSortedDateAcs();
