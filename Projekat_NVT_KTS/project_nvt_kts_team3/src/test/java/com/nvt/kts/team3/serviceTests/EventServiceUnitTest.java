@@ -37,7 +37,7 @@ import com.nvt.kts.team3.service.TicketService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-public class EventServiceUnitTests {
+public class EventServiceUnitTest {
 	@Autowired
 	private EventService eventService;
 	

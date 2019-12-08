@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,10 +15,12 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationZoneDTO;
@@ -30,12 +34,13 @@ import com.nvt.kts.team3.service.impl.LocationServiceImpl;
 
 import exception.InvalidLocationZone;
 import exception.LocationExists;
+import exception.LocationNotChangeable;
 import exception.LocationNotFound;
 
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LocationServiceTest {
+public class LocationServiceUnitTest {
 
 	@Autowired
 	private LocationServiceImpl locationService;
@@ -51,9 +56,6 @@ public class LocationServiceTest {
 	private static final String LOCATION_ADDRESS = "Adress 1";
 	private static final String LOCATION_DESCRIPTION = "Description 1";
 	private static final List<LocationZoneDTO> LOCATION_ZONE = new ArrayList<LocationZoneDTO>();
-	
-	
-	
 	
 	private static final long LOCATION_ZONE_ID = 2L;
 	private static final long LOCATION_ZONE_ID2 = 3L;
@@ -71,6 +73,7 @@ public class LocationServiceTest {
 	private static final int CAPACITY_INVALID = -50;
 	
 	@Test(expected = LocationExists.class)
+	@Transactional
 	public void saveLocationAlreadyExist() {
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationRepositoryMock.findByNameAndAddress(LOCATION_NAME, LOCATION_ADDRESS)).thenReturn(new Location());
@@ -79,6 +82,7 @@ public class LocationServiceTest {
 	}
 	
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationLocationZoneEmpty() {
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationRepositoryMock.findByNameAndAddress(LOCATION_NAME, LOCATION_ADDRESS)).thenReturn(null);
@@ -108,6 +112,7 @@ public class LocationServiceTest {
 	
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseTwo() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -120,6 +125,7 @@ public class LocationServiceTest {
 	
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseThree() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -130,6 +136,7 @@ public class LocationServiceTest {
 	}
 	//matrix = true, columns > 0, rows < 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseFour() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -152,6 +159,7 @@ public class LocationServiceTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseSix() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -163,6 +171,7 @@ public class LocationServiceTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseSeven() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_INVALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -214,6 +223,7 @@ public class LocationServiceTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
+	@Transactional
 	public void updateLocationNull() {
 		when(locationService.findById(LOCATION_ID)).thenReturn(null);
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
@@ -221,6 +231,7 @@ public class LocationServiceTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
+	@Transactional
 	public void updateLocationNotActive() {
 		Location location = new Location();
 		location.setStatus(false);
@@ -230,6 +241,7 @@ public class LocationServiceTest {
 	}
 	
 	@Test(expected = LocationExists.class)
+	@Transactional
 	public void updateLocationFindByNameAndAddressLocationExist() {
 		Location location = new Location();
 		location.setId(1L);
@@ -243,28 +255,197 @@ public class LocationServiceTest {
 		locationService.update(locationDto);
 	}
 	
-/*
- 	Ovo mora integracionim
+
 	@Test
 	public void updateLocationFindByNameAndAddresSuccessfull() {
 		Location location = new Location();
 		location.setId(1L);
 		location.setStatus(true);
+		Location updatedLocation = new Location();
+		updatedLocation.setId(1L);
+		updatedLocation.setName(LOCATION_NAME);
+		updatedLocation.setAddress(LOCATION_ADDRESS);
+		updatedLocation.setDescription(LOCATION_DESCRIPTION);
 		when(locationService.findById(LOCATION_ID)).thenReturn(location);
+		when(locationRepositoryMock.save(location)).thenReturn(updatedLocation);
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationService.findByNameAndAddress(locationDto.getName(), locationDto.getAddress())).thenReturn(location);
 		Location returnedLocation = locationService.update(locationDto);
-		assertEquals(locationDto.getName(), returnedLocation.getName());
-		assertEquals(locationDto.getAddress(), returnedLocation.getAddress());
-		assertEquals(locationDto.getDescription(), returnedLocation.getDescription());
+		assertEquals(1L, returnedLocation.getId());
+		assertEquals(LOCATION_NAME, returnedLocation.getName());
+		assertEquals(LOCATION_ADDRESS, returnedLocation.getAddress());
+		assertEquals(LOCATION_DESCRIPTION, returnedLocation.getDescription());
 		
 	}
-
-*/
 	
-	//Remove takodje mora integracionim
+	@Test(expected = LocationNotFound.class)
+	public void removeLocationNotFound() {
+		when(locationRepositoryMock.getOne(1L)).thenReturn(null);
+		locationService.remove(1L);
+	}
 	
-	//Report takdoje integracioni
+	@Test(expected = LocationNotFound.class)
+	public void removeLocationNotFoundcASEtWO() {
+		Location location = new Location();
+		location.setStatus(false);
+		when(locationRepositoryMock.getOne(1L)).thenReturn(location);
+		locationService.remove(1L);
+	}
+	
+	@Test(expected = LocationNotChangeable.class)
+	public void removeLocationNotChangeable() {
+		Location location = new Location();
+		location.setStatus(true);
+		ArrayList<Event> events = new ArrayList<Event>();
+		Event e1 = new Event();
+		events.add(e1);
+		when(locationRepositoryMock.getOne(1L)).thenReturn(location);
+		when(locationRepositoryMock.getActiveEvents(1L)).thenReturn(events);
+		locationService.remove(1L);
+	}
+	
+	public void removeLocationSuccessfull() {
+		Location location = new Location();
+		location.setStatus(true);
+		ArrayList<Event> events = new ArrayList<Event>();
+		when(locationRepositoryMock.getOne(1L)).thenReturn(location);
+		when(locationRepositoryMock.getActiveEvents(1L)).thenReturn(events);
+		locationService.remove(1L);
+	}
+	
+	@Test
+	@Transactional
+	public void findAll_nonFound() {
+		List<Location> locations = new ArrayList<Location>();
+		when(locationRepositoryMock.findAll()).thenReturn(locations);
+		List<Location> foundLocations = locationService.findAll();
+		assertEquals(0, foundLocations.size());
+	}
+	
+	@Test
+	@Transactional
+	public void findAll_successfull() {
+		List<Location> locations = new ArrayList<Location>();
+		Location l1 = new Location();
+		Location l2 = new Location();
+		Location l3 = new Location();
+		locations.add(l1);
+		locations.add(l2);
+		locations.add(l3);
+		when(locationRepositoryMock.findAll()).thenReturn(locations);
+		List<Location> foundLocations = locationService.findAll();
+		assertEquals(3, foundLocations.size());
+	}
+	
+	@Test
+	@Transactional
+	public void findByNameAndAddress_nonFound() {
+		when(locationRepositoryMock.findByNameAndAddress("someName", "someAddress")).thenReturn(null);
+		Location foundLocation = locationService.findByNameAndAddress("someName", "someAddress");
+		assertNull(foundLocation);
+	}
+	
+	@Test
+	public void findByNameAndAddress_successfull() {
+		Location location = new Location();
+		location.setName("someName");
+		location.setAddress("someAddress");
+		when(locationRepositoryMock.findByNameAndAddress("someName", "someAddress")).thenReturn(location);
+		Location foundLocation = locationService.findByNameAndAddress("someName", "someAddress");
+		assertEquals("someName", foundLocation.getName());
+		assertEquals("someAddress", foundLocation.getAddress());
+	}
+	
+	@Test
+	@Transactional
+	public void getActiveEvents_nonFound() {
+		ArrayList<Event> events = new ArrayList<Event>();
+		when(locationRepositoryMock.getActiveEvents(1L)).thenReturn(events);
+		List<Event> foundEvents = locationService.getActiveEvents(1L);
+		assertEquals(0, foundEvents.size());
+	}
+	
+	@Test
+	@Transactional
+	public void getActiveEvents_successfull() {
+		ArrayList<Event> events = new ArrayList<Event>();
+		Event e1 = new Event();
+		e1.setId(2L);
+		events.add(e1);
+		when(locationRepositoryMock.getActiveEvents(1L)).thenReturn(events);
+		List<Event> foundEvents = locationService.getActiveEvents(1L);
+		assertEquals(1, foundEvents.size());
+		assertEquals(2L, foundEvents.get(0).getId());
+	}
+	
+	@Test
+	@Transactional
+	public void findAllActive_nonFound() {
+		ArrayList<Location> locations = new ArrayList<Location>();
+		when(locationRepositoryMock.getActiveLocations()).thenReturn(locations);
+		ArrayList<Location> foundLocations = locationService.findAllActive();
+		assertEquals(0, foundLocations.size());
+	}
+	/*
+	
+	@Test
+	public void findAllActive_successfull() {
+		ArrayList<Location> locations = new ArrayList<Location>();
+		Location l1 = new Location();
+		l1. setId(2L);
+		when(locationRepositoryMock.getActiveLocations()).thenReturn(locations);
+		ArrayList<Location> foundLocations = locationService.findAllActive();
+		assertEquals(1, foundLocations.size());
+		assertEquals(2L, foundLocations.get(0).getId());
+	}
+	*/
+	
+	/*
+	@Test
+	@Transactional
+	public void checkIfAvailable_successfull() {
+		ArrayList<Event> events = new ArrayList<Event>();
+		Event e1 = new Event();
+		e1.setId(2L);
+		LocalDateTime startDate = LocalDateTime.of(2020, Month.SEPTEMBER, 1, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2020, Month.SEPTEMBER, 11, 10, 10, 30);
+		when(locationRepositoryMock.checkIfAvailable(1L, startDate, endDate)).thenReturn(events);
+		ArrayList<Event> foundEvents = locationService.checkIfAvailable(1L, startDate, endDate);
+		assertEquals(1, foundEvents.size());
+		assertEquals(2L, foundEvents.get(0).getId());
+	}
+	*/
+	
+	
+	@Test
+	@Transactional
+	public void checkIfAvailable_nonAvailable() {
+		ArrayList<Event> events = new ArrayList<Event>();
+		LocalDateTime startDate = LocalDateTime.of(2020, Month.SEPTEMBER, 1, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2020, Month.SEPTEMBER, 11, 10, 10, 30);
+		when(locationRepositoryMock.checkIfAvailable(1L, startDate, endDate)).thenReturn(events);
+		ArrayList<Event> foundEvents = locationService.checkIfAvailable(1L, startDate, endDate);
+		assertEquals(0, foundEvents.size());
+	}
+	
+	
+	@Test
+	@Transactional
+	public void findByAddress_nonFound() {
+		when(locationRepositoryMock.findByAddress("someAddress")).thenReturn(null);
+		Location foundLocation = locationService.findByAddress("someAddress");
+		assertNull(foundLocation);
+	}
+	
+	@Test
+	@Transactional
+	public void findByAddress_successfull() {
+		Location location = new Location();
+		location.setId(1L);
+		when(locationRepositoryMock.findByAddress("someAddress")).thenReturn(location);
+		Location foundLocation = locationService.findByAddress("someAddress");
+		assertEquals(1L, foundLocation.getId());
+	}
 	
 
 }
