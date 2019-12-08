@@ -1,5 +1,13 @@
 INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username) VALUES ('RegularUser', 1, 'a@a', 1, '2019-08-08 00:00', 'user1', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user1', 'user1') ON DUPLICATE KEY UPDATE id = 1;
 
+INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username) VALUES ('Admin', 2, 'b@b', 1, '2019-09-08 00:00', 'user2', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user2', 'user2') ON DUPLICATE KEY UPDATE id = 2;
+
+INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username) VALUES ('Admin', 3, 'c@c', 1, '2019-10-08 00:00', 'user3', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user3', 'user3') ON DUPLICATE KEY UPDATE id = 3;
+
+INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username) VALUES ('RegularUser', 4, 'd@d', 1, '2019-08-08 00:00', 'user4', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user4', 'user4') ON DUPLICATE KEY UPDATE id = 4;
+
+INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username) VALUES ('RegularUser', 5, 'e@e', 1, '2019-08-08 00:00', 'user5', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user5', 'user5') ON DUPLICATE KEY UPDATE id = 5;
+
 INSERT INTO location (id, address, description, name, status, version) VALUES (1, 'Address1', 'Description1', 'Name1', 1, 1) ON DUPLICATE KEY UPDATE id = 1;
 
 INSERT INTO location (id, address, description, name, status, version) VALUES (2, 'Address2', 'Description2', 'Name2', 1, 1) ON DUPLICATE KEY UPDATE id = 2;
