@@ -79,7 +79,8 @@ public class ReservationServiceImpl implements ReservationService {
 				if (logged == null) {
 					throw new NoLoggedUser();
 				} else {
-					List<Reservation> userReservations = reservationRepository.findByUserAndPaid(logged, false);
+					RegularUser ru=(RegularUser) userRepository.findById(logged.getId()); //OVO
+					List<Reservation> userReservations = reservationRepository.findByUserAndPaid(ru, false);
 					int numTickets = 0;
 					for (Reservation r : userReservations) {
 						numTickets += r.getReservedTickets().size();
@@ -112,7 +113,7 @@ public class ReservationServiceImpl implements ReservationService {
 					if (created == false) {
 						throw new ReservationCannotBeCreated();
 					} else {
-						reservation.setUser(logged);
+						reservation.setUser(ru); //logged
 						reservation.setReservedTickets(resTickets);
 						return this.reservationRepository.save(reservation);
 					}

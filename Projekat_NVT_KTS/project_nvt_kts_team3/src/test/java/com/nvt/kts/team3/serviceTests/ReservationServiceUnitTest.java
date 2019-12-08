@@ -153,6 +153,7 @@ public class ReservationServiceUnitTest {
 		r.setEvent(e);
 		RegularUser u=new RegularUser();
 		u.setUsername("user1");
+		u.setId(1L);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
 		Mockito.when(authentication.getName()).thenReturn("user1");
@@ -165,6 +166,7 @@ public class ReservationServiceUnitTest {
 		Mockito.when(ticketRepositoryMocked.findById(t1.getId())).thenReturn(java.util.Optional.of(t1));
 		Mockito.when(reservationRepositoryMocked.save(r)).thenReturn(r);
 		Mockito.when(ticketRepositoryMocked.save(t1)).thenReturn(t1);
+		Mockito.when(userRepositoryMocked.findById(1L)).thenReturn(u);
 		Reservation res=reservationService.create(r);
 		assertEquals(r,res);
 	}
@@ -186,6 +188,7 @@ public class ReservationServiceUnitTest {
 		r.setEvent(e);
 		RegularUser u=new RegularUser();
 		u.setUsername("user1");
+		u.setId(1L);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
 		Mockito.when(authentication.getName()).thenReturn("user1");
@@ -197,6 +200,7 @@ public class ReservationServiceUnitTest {
 		Mockito.when(reservationRepositoryMocked.findByUserAndPaid((RegularUser) u, false)).thenReturn(userReservations);
 		Mockito.when(ticketRepositoryMocked.findById(t1.getId())).thenReturn(java.util.Optional.of(t1));
 		Mockito.when(reservationRepositoryMocked.save(r)).thenReturn(r);
+		Mockito.when(userRepositoryMocked.findById(1L)).thenReturn(u);
 		Mockito.when(ticketRepositoryMocked.save(t1)).thenReturn(t1);
 		reservationService.create(r);
 	}
@@ -218,6 +222,7 @@ public class ReservationServiceUnitTest {
 		r.setEvent(e);
 		RegularUser u=new RegularUser();
 		u.setUsername("user1");
+		u.setId(1L);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
 		Mockito.when(authentication.getName()).thenReturn("user1");
@@ -230,6 +235,7 @@ public class ReservationServiceUnitTest {
 		Mockito.when(ticketRepositoryMocked.findById(t1.getId())).thenReturn(java.util.Optional.of(t1));
 		Mockito.when(reservationRepositoryMocked.save(r)).thenReturn(r);
 		Mockito.when(ticketRepositoryMocked.save(t1)).thenReturn(t1);
+		Mockito.when(userRepositoryMocked.findById(1L)).thenReturn(u);
 		reservationService.create(r);
 	}
 	
@@ -251,6 +257,7 @@ public class ReservationServiceUnitTest {
 		r.setEvent(e);
 		RegularUser u=new RegularUser();
 		u.setUsername("user1");
+		u.setId(1L);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
 		Mockito.when(authentication.getName()).thenReturn("user1");
@@ -267,6 +274,7 @@ public class ReservationServiceUnitTest {
 		Mockito.when(reservationRepositoryMocked.findByUserAndPaid((RegularUser) u, false)).thenReturn(userReservations);
 		Mockito.when(ticketRepositoryMocked.findById(t1.getId())).thenReturn(java.util.Optional.of(t1));
 		Mockito.when(reservationRepositoryMocked.save(r)).thenReturn(r);
+		Mockito.when(userRepositoryMocked.findById(1L)).thenReturn(u);
 		Mockito.when(ticketRepositoryMocked.save(t1)).thenReturn(t1);
 		reservationService.create(r);
 	}
@@ -288,6 +296,7 @@ public class ReservationServiceUnitTest {
 		r.setEvent(e);
 		RegularUser u=new RegularUser();
 		u.setUsername("user1");
+		u.setId(1L);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
 		Mockito.when(authentication.getName()).thenReturn("user1");
@@ -300,6 +309,7 @@ public class ReservationServiceUnitTest {
 		Mockito.when(ticketRepositoryMocked.findById(t1.getId())).thenReturn(java.util.Optional.of(t1));
 		Mockito.when(reservationRepositoryMocked.save(r)).thenReturn(r);
 		Mockito.when(ticketRepositoryMocked.save(t1)).thenReturn(t1);
+		Mockito.when(userRepositoryMocked.findById(1L)).thenReturn(u);
 	    reservationService.create(r);
 	 
 	}
