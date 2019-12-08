@@ -254,7 +254,7 @@ public class EventServiceImpl implements EventService {
 		calendar.add(Calendar.DATE, 7);
 		Date validDate = calendar.getTime();
 		
-		//Prolazis opet kroz odrzavanja i proveravas validnost datuma, u principu ne moze u proslosti biti
+		
 		for (MaintenanceDTO dates : eventDTO.getMaintenance()) {
 			maintenanceStartDate = null;
 			maintenanceStartDate = sdf.parse(dates.getStartDate());
@@ -262,7 +262,7 @@ public class EventServiceImpl implements EventService {
 			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
 				throw new InvalidDate();
 			}
-			//Postavljas expiry
+			
 			expiry.setTime(maintenanceStartDate);
 			expiry.add(Calendar.DATE, -3);
 			long diff = maintenanceEndDate.getTime() - maintenanceStartDate.getTime();
@@ -272,14 +272,14 @@ public class EventServiceImpl implements EventService {
 				throw new InvalidDate();
 			}
 			
-			//Pravis maintenance
+			
 			Maintenance maintenance = new Maintenance(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
 					LocalDateTime.parse( sdf.format(maintenanceEndDate),df ),
 					LocalDateTime.parse( sdf.format(expiry.getTime()),df ),
 					new HashSet<LeasedZone>(), event);
 			newMaintenances.add(maintenance);
 
-			//Proveravas da li je lokacija dostupna u periodu maintance
+			
 			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df),
 					LocalDateTime.parse( sdf.format(maintenanceEndDate),df));
 			if (locationEvents.isEmpty() == false) {
@@ -287,8 +287,7 @@ public class EventServiceImpl implements EventService {
 			}
 			
 			
-			//Prolazis kroz LeasedZone i iz eventDTO klase. Proveravas da li postoji locationZone sa tim id-em. I
-			//da li si dobru cenu prosledili
+			
 			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
 				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {

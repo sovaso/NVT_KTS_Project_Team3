@@ -1,6 +1,6 @@
 INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username) VALUES ('RegularUser', 1, 'a@a', 1, '2019-08-08 00:00', 'user1', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user1', 'user1') ON DUPLICATE KEY UPDATE id = 1;
 
-INSERT INTO location (id, address, description, name, status, version) VALUES (1, 'Address23', 'Description1', 'Name1', 1, 1) ON DUPLICATE KEY UPDATE id = 1;
+INSERT INTO location (id, address, description, name, status, version) VALUES (1, 'Address1', 'Description1', 'Name1', 1, 1) ON DUPLICATE KEY UPDATE id = 1;
 
 INSERT INTO location (id, address, description, name, status, version) VALUES (2, 'Address2', 'Description2', 'Name2', 1, 1) ON DUPLICATE KEY UPDATE id = 2;
 
@@ -14,13 +14,13 @@ INSERT INTO location (id, address, description, name, status) VALUES (6, 'Addres
 
 INSERT INTO location (id, address, description, name, status) VALUES (7, 'Address7', 'Description7', 'Name7', 0) ON DUPLICATE KEY UPDATE id = 7;
 
+INSERT INTO event (id, name, status, type, location_info_id) VALUES (1, 'Event1', 1, 'SPORTS', 1) ON DUPLICATE KEY UPDATE id = 1;
+
 INSERT INTO event (id, name, status, type, location_info_id) VALUES (2, 'Event1', 1, 'CULTURAL', 2) ON DUPLICATE KEY UPDATE id = 2;
 
 INSERT INTO event (id, name, status, type, location_info_id) VALUES (3, 'Event2', 1, 'CULTURAL', 1) ON DUPLICATE KEY UPDATE id = 3;
 
-
 INSERT INTO event (id, name, status, type, location_info_id) VALUES (4, 'Event3', 0, 'ENTERTAINMENT', 1) ON DUPLICATE KEY UPDATE id = 4;
-
 
 INSERT INTO event (id, name, status, type, location_info_id) VALUES (5, 'Event4', 1, 'SPORTS', 2) ON DUPLICATE KEY UPDATE id = 5;
 
@@ -53,17 +53,17 @@ INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation
 
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (7, '2019-08-07 00:00:00', '2019-08-14 00:00:00', '2019-09-12 00:00:00', 7) ON DUPLICATE KEY UPDATE id = 7;
 
-
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (8, '2019-12-20 00:00:00', '2019-12-28 00:00:00', '2019-12-25 00:00:00', 1) ON DUPLICATE KEY UPDATE id = 8;
-
 
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (9, '2019-05-05 00:00:00', '2019-05-15 00:00:00', '2019-05-13 00:00:00', 8) ON DUPLICATE KEY UPDATE id = 9;
 
-
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (10, '2019-01-01 00:00:00', '2019-01-20 00:00:00', '2019-01-17 00:00:00', 9) ON DUPLICATE KEY UPDATE id = 10;
 
-
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (11, '2019-02-02 00:00:00', '2019-02-12 00:00:00', '2019-02-10 00:00:00', 4) ON DUPLICATE KEY UPDATE id = 11;
+
+INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (12, '2018-01-01 00:00:00', '2018-01-15 00:00:00', '2019-01-13 00:00:00', 8) ON DUPLICATE KEY UPDATE id = 12;
+
+INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, event_id) VALUES (13, '2018-01-01 00:00:00', '2018-01-10 00:00:00', '2019-01-08 00:00:00', 7) ON DUPLICATE KEY UPDATE id = 13;
 
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (1, 200, 20, 1, 'Name1', 10, 1) ON DUPLICATE KEY UPDATE id = 1;
 
