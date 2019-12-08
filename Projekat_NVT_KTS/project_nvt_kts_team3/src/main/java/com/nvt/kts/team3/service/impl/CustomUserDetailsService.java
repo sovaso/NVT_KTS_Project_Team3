@@ -53,7 +53,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	}
 
 	public boolean usernameTaken(String username) {
-		User user = userRepository.findOneByUsername(username);
+		User user = userRepository.findByUsername(username);
 
 		return user != null;
 	}
@@ -61,7 +61,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	// Funkcija koja na osnovu username-a iz baze vraca objekat User-a
 	@Override
 	public UserDetails loadUserByUsername(String username) {
-		User user = userRepository.findOneByUsername(username);
+		User user = userRepository.findByUsername(username);
 	
 		if (user == null) {
 			throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));

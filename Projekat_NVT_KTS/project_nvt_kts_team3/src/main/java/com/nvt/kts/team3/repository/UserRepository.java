@@ -8,7 +8,7 @@ import com.nvt.kts.team3.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	User findOneByUsername(String username);
+	//User findOneByUsername(String username);
 
 	@Query(value = "select * from users u where u.id =(select t.user from verification_tokens t where t.token = ?1)", nativeQuery = true)
 	User findByToken(String token);
