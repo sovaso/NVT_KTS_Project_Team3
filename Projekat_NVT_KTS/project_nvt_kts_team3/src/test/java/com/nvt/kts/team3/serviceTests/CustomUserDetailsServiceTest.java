@@ -47,17 +47,17 @@ public class CustomUserDetailsServiceTest {
 	private static final String USERNAME = "marinamaki";
 	@Test
 	public void usernameTakenFalse() {
-		when(userRepositoryMock.findOneByUsername(USERNAME)).thenReturn(null);
+		when(userRepositoryMock.findByUsername(USERNAME)).thenReturn(null);
 		Boolean result = customUserDetailsService.usernameTaken(USERNAME);
-		verify(userRepositoryMock).findOneByUsername(USERNAME);
+		verify(userRepositoryMock).findByUsername(USERNAME);
 		assertFalse(result);
 	}
 	
 	@Test
 	public void usernameTakenTrue() {
-		when(userRepositoryMock.findOneByUsername(USERNAME)).thenReturn(new RegularUser());
+		when(userRepositoryMock.findByUsername(USERNAME)).thenReturn(new RegularUser());
 		Boolean result = customUserDetailsService.usernameTaken(USERNAME);
-		verify(userRepositoryMock).findOneByUsername(USERNAME);
+		verify(userRepositoryMock).findByUsername(USERNAME);
 		assertTrue(result);
 	}
 	
@@ -65,17 +65,17 @@ public class CustomUserDetailsServiceTest {
 	public void loadUserByUsernameUserSuccessfull() {
 		User user = new RegularUser();
 		user.setUsername(USERNAME);
-		when(userRepositoryMock.findOneByUsername(USERNAME)).thenReturn(user);
+		when(userRepositoryMock.findByUsername(USERNAME)).thenReturn(user);
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(USERNAME);
-		verify(userRepositoryMock).findOneByUsername(USERNAME);
+		verify(userRepositoryMock).findByUsername(USERNAME);
 		assertEquals(user.getUsername(), userDetails.getUsername());
 	}
 	
 	@Test(expected = UsernameNotFoundException.class)
 	public void loadUserByUsernameUserNull() {
-		when(userRepositoryMock.findOneByUsername(USERNAME)).thenReturn(null);
+		when(userRepositoryMock.findByUsername(USERNAME)).thenReturn(null);
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(USERNAME);
-		verify(userRepositoryMock).findOneByUsername(USERNAME);
+		verify(userRepositoryMock).findByUsername(USERNAME);
 		
 	}
 	
@@ -102,7 +102,7 @@ public class CustomUserDetailsServiceTest {
 	public void registerUserRegularUsernameExist() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername(USERNAME);
-		when(userRepositoryMock.findOneByUsername(USERNAME)).thenReturn(new RegularUser());
+		when(userRepositoryMock.findByUsername(USERNAME)).thenReturn(new RegularUser());
 		boolean result = customUserDetailsService.registerUser(userDto, UserRoleName.ROLE_USER);
 		assertFalse(result);
 	}

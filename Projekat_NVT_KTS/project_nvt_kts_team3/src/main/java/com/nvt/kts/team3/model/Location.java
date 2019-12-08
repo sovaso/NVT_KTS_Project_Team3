@@ -48,6 +48,10 @@ public class Location {
 	@JsonIgnore
 	@OneToMany(mappedBy = "location", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Set<LocationZone> locationZones = new HashSet<>();
+	
+	public Location(long id) {
+		this.id=id;
+	}
 
 	public Location(long id, String name, String address, String description, boolean status, Set<Event> events,
 			Set<LocationZone> locationZones) {

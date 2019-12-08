@@ -42,6 +42,7 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(9, events.size());
 		
 	}
+	
 	@Test
 	@Transactional
 	public void findByName_OneFound() {
@@ -398,4 +399,5 @@ public class EventRepositoryIntegrationTest {
 		assertEquals("Event6", events.get(0).getName());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
 	}
+	
 }

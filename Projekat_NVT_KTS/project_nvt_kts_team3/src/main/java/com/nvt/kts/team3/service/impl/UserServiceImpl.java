@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public String editProfile(User user) {
-		User userToEdit = userRepository.findOneByUsername(user.getUsername());
+		User userToEdit = userRepository.findByUsername(user.getUsername());
 		if (userToEdit == null) {
 			return "User with given username does not exist.";
 		}
