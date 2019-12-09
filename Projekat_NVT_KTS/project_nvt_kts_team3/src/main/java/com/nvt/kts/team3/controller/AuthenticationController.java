@@ -89,7 +89,9 @@ public class AuthenticationController {
 					HttpStatus.OK);
 		}
 		// Ubaci username + password u kontext
+		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+		//System.out.println("NAME"+SecurityContextHolder.getContext().getAuthentication().getName());
 		// Kreiraj token
 		String jwt = tokenUtils.generateToken(user.getUsername());
 		int expiresIn = tokenUtils.getExpiredIn();
