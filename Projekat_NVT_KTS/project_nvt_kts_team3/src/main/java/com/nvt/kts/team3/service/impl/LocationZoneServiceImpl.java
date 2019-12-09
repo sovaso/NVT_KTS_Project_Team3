@@ -35,7 +35,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 
 	@Override
 	public LocationZone findById(Long id) {
-		return locationZoneRepository.getOne(id);
+		return locationZoneRepository.findById(id).get();
 	}
 
 	@Override
