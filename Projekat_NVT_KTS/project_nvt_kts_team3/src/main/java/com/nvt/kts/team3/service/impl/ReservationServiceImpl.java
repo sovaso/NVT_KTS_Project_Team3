@@ -74,13 +74,14 @@ public class ReservationServiceImpl implements ReservationService {
 				throw new EventNotActive();
 			} else {
 				reservation.setEvent(e);
+				System.out.println("Name"+SecurityContextHolder.getContext());
 				RegularUser logged = (RegularUser) userRepository
 						.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 				if (logged == null) {
 					throw new NoLoggedUser();
 				} else {
-					RegularUser ru=(RegularUser) userRepository.findById(logged.getId()); //OVO
-					List<Reservation> userReservations = reservationRepository.findByUserAndPaid(ru, false);
+					//RegularUser ru=(RegularUser) userRepository.findById(logged.getId()); //OVO
+					List<Reservation> userReservations = reservationRepository.findByUserAndPaid(logged, false);
 					int numTickets = 0;
 					for (Reservation r : userReservations) {
 						numTickets += r.getReservedTickets().size();
@@ -113,7 +114,7 @@ public class ReservationServiceImpl implements ReservationService {
 					if (created == false) {
 						throw new ReservationCannotBeCreated();
 					} else {
-						reservation.setUser(ru); //logged
+						reservation.setUser(logged); //logged
 						reservation.setReservedTickets(resTickets);
 						return this.reservationRepository.save(reservation);
 					}

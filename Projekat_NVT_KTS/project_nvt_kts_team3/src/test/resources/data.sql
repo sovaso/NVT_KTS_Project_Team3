@@ -1,4 +1,4 @@
-INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username,version) VALUES ('RegularUser', 1, 'a@a', 1, '2019-08-08 00:00', 'user1', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user1', 'user1',0) ON DUPLICATE KEY UPDATE id = 1;
+INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username,version) VALUES ('RegularUser', 1, 'a@a', 1, '2019-08-08 00:00', 'user1', '$2a$10$xMipTNv6mB4FdLt52YK4KuzVVFx891Pr0cnWySeko67UbjbZcIAK2', 'user1', 'user1',0) ON DUPLICATE KEY UPDATE id = 1;
 
 INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username,version) VALUES ('Admin', 2, 'b@b', 1, '2019-09-08 00:00', 'user2', '$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa', 'user2', 'user2',0) ON DUPLICATE KEY UPDATE id = 2;
 
