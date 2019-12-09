@@ -121,10 +121,5 @@ public class EventControllerIntegrationTest {
 		assertEquals(2, events[1].getLocationInfo().getId());
 	}
 	
-	@Test
-	public void searchEvent_onlyField_eventNameGiven_nonFound() {
-		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event1/***/***", Event[].class);
-		Event[] events = responseEntity.getBody();
-		assertEquals(0, events.length);
-	}
+	
 }
