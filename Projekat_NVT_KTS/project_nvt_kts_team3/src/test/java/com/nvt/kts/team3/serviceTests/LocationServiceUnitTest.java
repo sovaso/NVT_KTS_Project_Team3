@@ -225,7 +225,7 @@ public class LocationServiceUnitTest {
 	@Test(expected = LocationNotFound.class)
 	@Transactional
 	public void updateLocationNull() {
-		when(locationService.findById(LOCATION_ID)).thenReturn(null);
+		when(locationRepositoryMock.findById(LOCATION_ID)).thenReturn(Optional.empty());
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		locationService.update(locationDto);
 	}
@@ -235,7 +235,7 @@ public class LocationServiceUnitTest {
 	public void updateLocationNotActive() {
 		Location location = new Location();
 		location.setStatus(false);
-		when(locationService.findById(LOCATION_ID)).thenReturn(location);
+		when(locationRepositoryMock.findById(LOCATION_ID)).thenReturn(Optional.of(location));
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		locationService.update(locationDto);
 	}
@@ -249,7 +249,7 @@ public class LocationServiceUnitTest {
 		Location location2 = new Location();
 		location2.setStatus(true);
 		location2.setId(2L);
-		when(locationService.findById(LOCATION_ID)).thenReturn(location);
+		when(locationRepositoryMock.findById(LOCATION_ID)).thenReturn(Optional.of(location));
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationService.findByNameAndAddress(locationDto.getName(), locationDto.getAddress())).thenReturn(location2);
 		locationService.update(locationDto);
@@ -266,7 +266,7 @@ public class LocationServiceUnitTest {
 		updatedLocation.setName(LOCATION_NAME);
 		updatedLocation.setAddress(LOCATION_ADDRESS);
 		updatedLocation.setDescription(LOCATION_DESCRIPTION);
-		when(locationService.findById(LOCATION_ID)).thenReturn(location);
+		when(locationRepositoryMock.findById(LOCATION_ID)).thenReturn(Optional.of(location));
 		when(locationRepositoryMock.save(location)).thenReturn(updatedLocation);
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationService.findByNameAndAddress(locationDto.getName(), locationDto.getAddress())).thenReturn(location);
@@ -299,7 +299,7 @@ public class LocationServiceUnitTest {
 		ArrayList<Event> events = new ArrayList<Event>();
 		Event e1 = new Event();
 		events.add(e1);
-		when(locationRepositoryMock.getOne(1L)).thenReturn(location);
+		when(locationRepositoryMock.findById(1L)).thenReturn(Optional.of(location));
 		when(locationRepositoryMock.getActiveEvents(1L)).thenReturn(events);
 		locationService.remove(1L);
 	}

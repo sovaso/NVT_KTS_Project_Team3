@@ -18,6 +18,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.dto.LocationDTO;
@@ -205,9 +207,9 @@ public class LocationServiceIntegrationTest {
 	}
 	
 	/*
-	Uraditi rollback nad bazom
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void saveLocationZoneOneLocationZone() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -222,6 +224,7 @@ public class LocationServiceIntegrationTest {
 		//checkResultOfSave(location.getLocationZones().iterator().next() , locationDto.getLocationZone().get(0));
 	}
 	*/
+	
 	
 	public void checkResultOfSave(LocationZone locationZone, LocationZoneDTO locationZoneDTO) {
 		assertEquals(locationZone.getName(), locationZoneDTO.getName());
