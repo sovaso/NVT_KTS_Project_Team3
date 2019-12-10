@@ -3,6 +3,7 @@
 import java.text.ParseException;
 import java.util.List;
 
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,8 +22,13 @@ import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Location;
+import com.nvt.kts.team3.model.UserTokenState;
+import com.nvt.kts.team3.security.auth.JwtAuthenticationRequest;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.ReservationService;
+
+import exception.InvalidLocationZone;
+import exception.LocationExists;
 
 
 @RestController
@@ -39,8 +45,20 @@ public class LocationController {
 	@PostMapping(value = "/createLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLocation(@RequestBody LocationDTO locationDTO){
-		locationService.save(locationDTO);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
+		
+		try {
+			locationService.save(locationDTO);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
+
+		} catch (LocationExists e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+		} catch (InvalidLocationZone e) {
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+
+		}
+		
+		
 	}
 	
 	

@@ -380,5 +380,22 @@ public class LocationServiceIntegrationTest {
 	}
 	
 	//Dodati test za checkIfAvailable
+	
+	@Test
+	@Transactional
+	public void findById_successfull() {
+		Location foundLocation = locationService.findById(1L);
+		assertEquals("Address1", foundLocation.getAddress());
+		assertEquals("Name1", foundLocation.getName());
+		assertEquals("Description1", foundLocation.getDescription());
+	}
+	
+	@Test
+	@Transactional
+	public void findById_nonFound_null() {
+		Location foundLocation = locationService.findById(100L);
+		assertNull(foundLocation);
+	}
+	
 
 }
