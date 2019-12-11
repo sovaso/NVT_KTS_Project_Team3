@@ -29,6 +29,8 @@ import com.nvt.kts.team3.service.ReservationService;
 
 import exception.InvalidLocationZone;
 import exception.LocationExists;
+import exception.LocationNotChangeable;
+import exception.LocationNotFound;
 
 
 @RestController
@@ -51,13 +53,11 @@ public class LocationController {
 			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
 
 		} catch (LocationExists e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Location with that name and address already exist."), HttpStatus.BAD_REQUEST);
 
 		} catch (InvalidLocationZone e) {
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
-
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Invalid location zone."), HttpStatus.CONFLICT);
 		}
-		
 		
 	}
 	
@@ -65,8 +65,15 @@ public class LocationController {
 	@PostMapping(value = "/updateLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLocation(@RequestBody LocationDTO locationDTO){
-		locationService.update(locationDTO);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);
+		try {
+			locationService.update(locationDTO);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);
+		} catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Location not found."), HttpStatus.BAD_REQUEST);
+		}catch (LocationExists e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location with submited name and address already exist."), HttpStatus.CONFLICT);
+		}
+		
 	}
 	
 	//***
@@ -96,14 +103,26 @@ public class LocationController {
 	@DeleteMapping(value = "/deleteLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteLocation(@PathVariable(value = "id") Long locationId){
-		locationService.remove(locationId);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully deleted."), HttpStatus.OK);
+		try {
+			locationService.remove(locationId);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully deleted."), HttpStatus.OK);
+		}catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location not found."), HttpStatus.NOT_FOUND);
+		}catch(LocationNotChangeable e) {
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location not changeable."), HttpStatus.CONFLICT);
+		}
+		
 	}
 	
 	@GetMapping(value = "/getLocationReport/{location_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getLocationReport(@PathVariable long location_id) throws ParseException {
-		LocationReportDTO retVal=this.locationService.getLocationReport(location_id);
-		return new ResponseEntity<>(retVal, HttpStatus.OK);
+		try {
+			LocationReportDTO retVal=this.locationService.getLocationReport(location_id);
+			return new ResponseEntity<>(retVal, HttpStatus.OK);
+		}catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location not found."), HttpStatus.NOT_FOUND);
+		}
+		
 	}
 }

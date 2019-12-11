@@ -161,7 +161,7 @@ public class LocationServiceImpl implements LocationService {
 	public LocationReportDTO getLocationReport(Long id) {
 		LocationReportDTO retVal = new LocationReportDTO();
 		Optional<Location> locationOpt = locationRepository.findById(id);
-		if (locationOpt.isPresent()) {
+		if (locationOpt.isPresent() && locationOpt.get()!=null) {
 			List<Reservation> res = this.reservationRepository.findAll();
 			List<Reservation> ret = new ArrayList<Reservation>();
 			for (Reservation r : res) {
@@ -169,79 +169,86 @@ public class LocationServiceImpl implements LocationService {
 					ret.add(r);
 				}
 			}
-			long DAY_IN_MILI = 86400000;
-			Date currentDate = new Date();
-			DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
-			DateFormat df2 = new SimpleDateFormat("yyyy-MM");
-			Date today = null;
-			try {
-				today = df1.parse(df1.format(currentDate));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Date thisMonth = null;
-			try {
-				thisMonth = df2.parse(df2.format(currentDate));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Date workWith = null;
-			Date workWith2 = null;
-			Date startDate = null;
-			// daily
-			for (int i = 1; i < 8; i++) {
-				int number = 0;
-				workWith = new Date(today.getTime() - i * DAY_IN_MILI);
-				retVal.getDailyLabels().add(df1.format(workWith));
-				for (Reservation r : ret) {
-					startDate = r.getDateOfReservation();
-					if (df1.format(startDate).equals(df1.format(workWith))) {
-						number += 1;
-					}
-				}
-				retVal.getDailyValues().add(number);
-			}
-			// weekly
-			for (int i = 0; i < 7; i++) {
-				int number = 0;
-				workWith = new Date(today.getTime() - (i * 7 + 1) * DAY_IN_MILI);
-				workWith2 = new Date(today.getTime() - (7 * i + 7) * DAY_IN_MILI);
-				retVal.getWeeklyLabels().add(df1.format(workWith2) + " to " + df1.format(workWith));
-				for (Reservation r : ret) {
-					startDate = r.getDateOfReservation();
-					if (!startDate.after(workWith) && !startDate.before(workWith2)) {
-						number += 1;
-					}
-				}
-				retVal.getWeeklyValues().add(number);
-			}
-			// monthly
-			for (int i = 0; i < 7; i++) {
-				int number = 0;
-				workWith = new Date(thisMonth.getTime() - DAY_IN_MILI);
+			
+			if (ret.size()>0) {
+				long DAY_IN_MILI = 86400000;
+				Date currentDate = new Date();
+				DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd");
+				DateFormat df2 = new SimpleDateFormat("yyyy-MM");
+				Date today = null;
 				try {
-					workWith2 = df2.parse(df2.format(workWith));
+					today = df1.parse(df1.format(currentDate));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				retVal.getMonthlyLabels().add(df2.format(workWith2));
-				for (Reservation r : ret) {
-					startDate = r.getDateOfReservation();
-					if (!startDate.after(workWith) && !startDate.before(workWith2)) {
-						number += 1;
-					}
-				}
-				retVal.getMonthlyValues().add(number);
+				Date thisMonth = null;
 				try {
-					thisMonth = df2.parse(df2.format(new Date(thisMonth.getTime() - DAY_IN_MILI)));
+					thisMonth = df2.parse(df2.format(currentDate));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				Date workWith = null;
+				Date workWith2 = null;
+				Date startDate = null;
+				// daily
+				//broj rezervacija na dnevnom nivou
+				for (int i = 1; i < 8; i++) {
+					int number = 0;
+					workWith = new Date(today.getTime() - i * DAY_IN_MILI);
+					retVal.getDailyLabels().add(df1.format(workWith));
+					for (Reservation r : ret) {
+						startDate = r.getDateOfReservation();
+						if (df1.format(startDate).equals(df1.format(workWith))) {
+							number += 1;
+						}
+					}
+					retVal.getDailyValues().add(number);
+				}
+				// weekly
+				//broj rezervacija u periodu od nedelju dana
+				for (int i = 0; i < 7; i++) {
+					int number = 0;
+					workWith = new Date(today.getTime() - (i * 7 + 1) * DAY_IN_MILI);
+					workWith2 = new Date(today.getTime() - (7 * i + 7) * DAY_IN_MILI);
+					retVal.getWeeklyLabels().add(df1.format(workWith2) + " to " + df1.format(workWith));
+					for (Reservation r : ret) {
+						startDate = r.getDateOfReservation();
+						if (!startDate.after(workWith) && !startDate.before(workWith2)) {
+							number += 1;
+						}
+					}
+					retVal.getWeeklyValues().add(number);
+				}
+				// monthly
+				//broj rezervacija u mesec dana
+				for (int i = 0; i < 7; i++) {
+					int number = 0;
+					workWith = new Date(thisMonth.getTime() - DAY_IN_MILI);
+					try {
+						workWith2 = df2.parse(df2.format(workWith));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					retVal.getMonthlyLabels().add(df2.format(workWith2));
+					for (Reservation r : ret) {
+						startDate = r.getDateOfReservation();
+						if (!startDate.after(workWith) && !startDate.before(workWith2)) {
+							number += 1;
+						}
+					}
+					retVal.getMonthlyValues().add(number);
+					try {
+						thisMonth = df2.parse(df2.format(new Date(thisMonth.getTime() - DAY_IN_MILI)));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
+			
 			return retVal;
 		} else {
 			throw new LocationNotFound();

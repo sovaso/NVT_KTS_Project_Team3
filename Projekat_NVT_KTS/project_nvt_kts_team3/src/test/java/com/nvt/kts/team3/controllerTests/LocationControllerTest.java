@@ -3,10 +3,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,7 +35,9 @@ import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.UserTokenState;
 import com.nvt.kts.team3.repository.EventRepository;
+import com.nvt.kts.team3.repository.LocationRepository;
 import com.nvt.kts.team3.security.auth.JwtAuthenticationRequest;
+import com.nvt.kts.team3.service.impl.LocationServiceImpl;
 
 import exception.InvalidLocationZone;
 import exception.LocationExists;
@@ -44,7 +49,14 @@ public class LocationControllerTest {
 	
 	@Autowired
 	private TestRestTemplate testRestTemplate;
+	/*
+	@MockBean
+	private LocationServiceImpl locationServiceMock;
 	
+	@MockBean
+	private LocationRepository locationRepositoryMock;
+	
+	*/
 	private String token;
 	
 
@@ -138,10 +150,13 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Bad request", messageDto.getMessage());
+		assertEquals("Location with that name and address already exist.", messageDto.getHeader());
 	}
 	
 	@Test
-	public void saveLocationLocationZoneEmpty() {
+	public void saveLocation_locationZoneEmpty() {
 		LocationDTO locationDto = new LocationDTO();
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -151,11 +166,14 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 		
 	}
 	
 	@Test
-	public void saveLocationLocationZoneNull() {
+	public void saveLocation_locationZoneNull() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setLocationZone(null);
 		HttpHeaders headers = new HttpHeaders();
@@ -165,10 +183,13 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 	}
 	
 	@Test
-	public void saveLocationZoneInvalidLocationZone() {
+	public void saveLocation_invalidLocationZone() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -185,11 +206,14 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 	}
 	
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test
-	public void saveLocationZoneInvalidLocationZoneCaseTwo() {
+	public void saveLocation_invalidLocationZoneCaseTwo() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -206,12 +230,15 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 		
 	}
 	
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test
-	public void saveLocationZoneInvalidLocationZoneCaseThree() {
+	public void saveLocation_invalidLocationZoneCaseThree() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -228,10 +255,13 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 	}
 	
 	@Test
-	public void saveLocationZoneInvalidLocationZoneCaseFour() {
+	public void saveLocationZone_invalidLocationZoneCaseFour() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -248,11 +278,14 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 	}
 	
 	//matrix = true, columns > 0, rows < 0, capacity < 0
 	@Test
-	public void saveLocationZoneInvalidLocationZoneCaseFive() {
+	public void saveLocation_invalidLocationZoneCaseFive() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -269,11 +302,14 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 	}
 	
 	//matrix = true, columns < 0, rows > 0, capacity > 0
 	@Test
-	public void saveLocationZoneInvalidLocationZoneCaseSix() {
+	public void saveLocation_invalidLocationZoneCaseSix() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -290,11 +326,14 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
 	}
 	
 	//matrix = true, columns < 0, rows > 0, capacity < 0
 	@Test
-	public void saveLocationZoneInvalidLocationZoneCaseSeven() {
+	public void saveLocation_invalidLocationZoneCaseSeven() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -311,6 +350,51 @@ public class LocationControllerTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Invalid location zone.", messageDto.getHeader());
+	}
+	
+	@Test
+	public void updateLocation_locationNull_locationNotFound() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+token);
+		LocationDTO locationDto = new LocationDTO(10000, "NewLocationn", "NewAdress", "NewDescriptionn");
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/updateLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Bad request", messageDto.getMessage());
+		assertEquals("Location not found.", messageDto.getHeader());
+	}
+	
+	@Test
+	public void updateLocation_locationNotActive_locationNotFound() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+token);
+		LocationDTO locationDto = new LocationDTO(3, "NewLocationn", "NewAdress", "NewDescriptionn");
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/updateLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Bad request", messageDto.getMessage());
+		assertEquals("Location not found.", messageDto.getHeader());
+	}
+	
+	@Test
+	public void updateLocation_locationExists() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+token);
+		LocationDTO locationDto = new LocationDTO(1, "Name2", "Address2", "Description2");
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/updateLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Not found", messageDto.getMessage());
+		assertEquals("Location with submited name and address already exist.", messageDto.getHeader());
 	}
 	/*
 	Radi samo napravi rollback
@@ -348,7 +432,47 @@ public class LocationControllerTest {
 		assertEquals("Success", messageDto.getMessage());
 		assertEquals("Location successfully deleted.", messageDto.getHeader());
 	}
+	
+	
 
 */
+	@Test
+	public void deleteLocation_locationNull_locationNotFound(){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+token);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteLocation/100", HttpMethod.DELETE,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Not found", messageDto.getMessage());
+		assertEquals("Location not found.", messageDto.getHeader());
+	}
+	
+	@Test
+	public void deleteLocation_locationNull_locationNotActive(){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+token);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteLocation/3", HttpMethod.DELETE,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Not found", messageDto.getMessage());
+		assertEquals("Location not found.", messageDto.getHeader());
+	}
+	
+	@Test
+	public void deleteLocation_locationNotChangeable(){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+token);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteLocation/1", HttpMethod.DELETE,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.CONFLICT, responseEntity.getStatusCode());
+		MessageDTO messageDto = responseEntity.getBody();
+		assertEquals("Conflict", messageDto.getMessage());
+		assertEquals("Location not changeable.", messageDto.getHeader());
+	}
 
 }
