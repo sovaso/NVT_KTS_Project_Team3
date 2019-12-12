@@ -70,7 +70,7 @@ import com.nvt.kts.team3.service.impl.CustomUserDetailsService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationControllerTest {
+public class AuthenticationControllerUnitTest {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;

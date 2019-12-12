@@ -54,7 +54,7 @@ public class AuthenticationController {
 	}
 
 	@PostMapping(value = "auth/registerAdmin")
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<Boolean> registerAdmin(@RequestBody UserDTO user) {
 		Boolean result = this.userDetailsService.registerUser(user, UserRoleName.ROLE_ADMIN);
 		if (result == true) {
@@ -83,11 +83,7 @@ public class AuthenticationController {
 		}
 		
 		User user = (User) authentication.getPrincipal();
-		System.out.println("User's state: "+user.isEnabled());
-		if (user.isEnabled()==false) {
-			return new ResponseEntity<>(new MessageDTO("Account is not verified. Check your email.", "Error"),
-					HttpStatus.OK);
-		}
+		
 		// Ubaci username + password u kontext
 		
 		SecurityContextHolder.getContext().setAuthentication(authentication);

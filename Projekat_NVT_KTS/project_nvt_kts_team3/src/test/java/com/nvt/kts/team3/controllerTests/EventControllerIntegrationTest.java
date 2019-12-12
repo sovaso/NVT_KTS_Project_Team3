@@ -35,9 +35,7 @@ public class EventControllerIntegrationTest {
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 
-	@Autowired
-	private EventRepository eventRepository;
-
+	
 	private String token;
 	
 	@Test
@@ -161,7 +159,7 @@ public class EventControllerIntegrationTest {
 	
 	@Test
 	public void searchEvent_onlyField_dateGiven_successfull() {
-		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2020-01-15T00:00/***", Event[].class);
+		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2021-01-15T00:00/***", Event[].class);
 		Event[] events = responseEntity.getBody();
 		assertEquals(1, events.length);
 		assertEquals("Event1", events[0].getName());
@@ -194,7 +192,7 @@ public class EventControllerIntegrationTest {
 	
 	@Test
 	public void searchEvent_period_successfull() {
-		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2020-01-15T00:00/2020-12-15T00:00", Event[].class);
+		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		Event[] events = responseEntity.getBody();
 		assertEquals(2, events.length);
 
@@ -219,7 +217,7 @@ public class EventControllerIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_unsuccessfull_noTypeInThatPeriod() {
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/ENTERTAINMENT/2020-01-15T00:00/2020-12-15T00:00", MessageDTO.class);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/ENTERTAINMENT/2021-01-15T00:00/2021-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Event with desired criterias does not exist.", messageDto.getHeader());
@@ -228,7 +226,7 @@ public class EventControllerIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_unsuccessfull_noAddressInThatPeriod() {
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address6/2020-01-15T00:00/2020-12-15T00:00", MessageDTO.class);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address6/2021-01-15T00:00/2021-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Event with desired criterias does not exist.", messageDto.getHeader());
@@ -237,7 +235,7 @@ public class EventControllerIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_unsuccessfull_noEventInThatPeriod() {
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event7/2020-01-15T00:00/2020-12-15T00:00", MessageDTO.class);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event7/2021-01-15T00:00/2021-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Event with desired criterias does not exist.", messageDto.getHeader());
@@ -274,7 +272,7 @@ public class EventControllerIntegrationTest {
 	
 	@Test
 	public void searchEvent_periodAndType_successfull_eventNameGivenForPeriod() {
-		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event1/2020-01-15T00:00/2020-12-15T00:00", Event[].class);
+		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event1/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		Event[] events = responseEntity.getBody();
 		assertEquals(1, events.length);
@@ -285,7 +283,7 @@ public class EventControllerIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_successfull_eventTypeGivenForPeriod() {
-		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/SPORTS/2020-01-15T00:00/2020-12-15T00:00", Event[].class);
+		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/SPORTS/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		Event[] events = responseEntity.getBody();
 		assertEquals(1, events.length);
@@ -297,7 +295,7 @@ public class EventControllerIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEvent_periodAndType_successfull_addressGivenForPeriod() {
-		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address1/2020-01-15T00:00/2020-12-15T00:00", Event[].class);
+		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address1/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		Event[] events = responseEntity.getBody();
 		assertEquals(2, events.length);
@@ -313,7 +311,7 @@ public class EventControllerIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noEventType() {
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/entertainment/2020-01-15T01:00/***", MessageDTO.class);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/entertainment/2021-01-15T01:00/***", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Event with desired criterias does not exist.", messageDto.getHeader());
@@ -323,7 +321,7 @@ public class EventControllerIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noDate() {
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/sports/2020-01-15T01:00/***", MessageDTO.class);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/sports/2021-01-15T01:00/***", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Event with desired criterias does not exist.", messageDto.getHeader());

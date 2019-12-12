@@ -28,8 +28,8 @@ INSERT INTO event (id, name, status,version, type, location_info_id) VALUES (8, 
 INSERT INTO event (id, name, status,version, type, location_info_id) VALUES (9, 'Event9', 0, 0,'SPORTS', 6) ON DUPLICATE KEY UPDATE id = 9;
 
 
-INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id) VALUES (1, '2020-01-15 00:00:00', '2020-01-20 00:00:00', '2020-01-17 00:00:00',0, 1) ON DUPLICATE KEY UPDATE id = 1;
-INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id)VALUES (2, '2020-01-25 00:00:00', '2020-01-30 00:00:00', '2020-01-27 00:00:00',0, 3) ON DUPLICATE KEY UPDATE id = 2;
+INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id) VALUES (1, '2021-01-15 00:00:00', '2021-01-20 00:00:00', '2021-01-17 00:00:00',0, 1) ON DUPLICATE KEY UPDATE id = 1;
+INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id)VALUES (2, '2021-01-25 00:00:00', '2021-01-30 00:00:00', '2021-01-27 00:00:00',0, 3) ON DUPLICATE KEY UPDATE id = 2;
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id) VALUES (3, '2019-12-01 00:00:00', '2019-12-05 00:00:00', '2019-12-03 00:00:00',0, 2) ON DUPLICATE KEY UPDATE id = 3;
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id)VALUES (4, '2019-10-01 00:00:00', '2019-10-06 00:00:00', '2019-10-04 00:00:00',0, 5) ON DUPLICATE KEY UPDATE id = 4;
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id) VALUES (5, '2019-02-10 00:00:00', '2019-02-15 00:00:00', '2019-02-12 00:00:00',0, 6) ON DUPLICATE KEY UPDATE id = 5;

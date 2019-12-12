@@ -49,14 +49,7 @@ public class LocationControllerTest {
 	
 	@Autowired
 	private TestRestTemplate testRestTemplate;
-	/*
-	@MockBean
-	private LocationServiceImpl locationServiceMock;
-	
-	@MockBean
-	private LocationRepository locationRepositoryMock;
-	
-	*/
+
 	private String token;
 	
 
