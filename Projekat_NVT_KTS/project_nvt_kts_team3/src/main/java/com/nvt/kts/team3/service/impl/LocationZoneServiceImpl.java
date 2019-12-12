@@ -35,7 +35,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 
 	@Override
 	public LocationZone findById(Long id) {
-		return locationZoneRepository.findById(id).get();
+		return locationZoneRepository.findById(id).orElse(null);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 			throw new LocationZoneNotFound();
 		}
 		List<Maintenance> activeMaintenances = getActiveMaintenances(zone.getId());
-		if (activeMaintenances != null && activeMaintenances.isEmpty() == false) {
+		if (activeMaintenances != null && activeMaintenances.size() > 0) {
 			throw new LocationZoneNotChangeable();
 		}
 		if (lz.isMatrix() && lz.getCol() > 0 && lz.getRow() > 0) {

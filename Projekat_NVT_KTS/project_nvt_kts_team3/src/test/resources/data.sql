@@ -45,6 +45,10 @@ INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation
 
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (1, 200, 20, 1, 'Name1', 10, 1) ON DUPLICATE KEY UPDATE id = 1;
 
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (2, 300, 30, 1, 'Name2', 10, 3) ON DUPLICATE KEY UPDATE id = 2;
+
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (3, 300, 30, 1, 'Name3', 10, 6) ON DUPLICATE KEY UPDATE id = 3;
+
 INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (1, 200, 1, 0,1) ON DUPLICATE KEY UPDATE id = 1;
 
 INSERT INTO reservation (id, date_of_reservation, paid, total_price,version, event_id, user_id)  VALUES (1, '2019-11-09 00:00', 0, 200,0, 2, 1) ON DUPLICATE KEY UPDATE id = 1;
