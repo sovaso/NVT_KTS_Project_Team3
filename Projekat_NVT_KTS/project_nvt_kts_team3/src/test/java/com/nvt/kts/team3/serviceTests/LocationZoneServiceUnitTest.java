@@ -70,6 +70,288 @@ public class LocationZoneServiceUnitTest {
 		locationZoneService.save(locationZoneDto);
 	}
 	
+	@Test(expected = LocationNotFound.class)
+	public void saveLocationNotActive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		Location location = new Location();
+		location.setStatus(false);
+		when(locationServiceMock.findById(100L)).thenReturn(location);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//matrix = true, row < 0, col < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void saveLocationZoneInvalidLocationZone() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//capacity > 0, matrix = true, col <  0, row < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseTwo() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//col > 0, row > 0, matrix = false, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseThree() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//matrix = true, columns > 0, rows < 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseFour() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//matrix = true, columns > 0, rows < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void saveLocationZoneInvalidLocationZoneCaseFive() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//matrix = true, columns < 0, rows > 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseSix() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//matrix = true, columns < 0, rows > 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseSeven() {
+		Location location = new Location();
+		location.setStatus(true);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	@Test
+	public void saveLocationZoneSuccessfull() {
+		Location location = new Location();
+		location.setStatus(true);
+		location.setId(ID_OF_LOCATION);
+		when(locationServiceMock.findById(1L)).thenReturn(location);
+		LocationZone newZone = new LocationZone();
+		newZone.setLocation(location);
+		newZone.setMatrix(IS_MATRIX);
+		newZone.setName(LOCATION_ZONE_NAME);
+		newZone.setRowNumber(ROW_VALID);
+		newZone.setColNumber(COL_VALID);
+		newZone.setCapacity(CAPACITY_INVALID);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(newZone);
+		LocationZone result = locationZoneService.save(locationZoneDto);
+		assertEquals(ID_OF_LOCATION, result.getLocation().getId());
+		assertEquals(IS_MATRIX, result.isMatrix());
+		assertEquals(LOCATION_ZONE_NAME, result.getName());
+		assertEquals(ROW_VALID, result.getRowNumber());
+		assertEquals(COL_VALID, result.getColNumber());
+		assertEquals(CAPACITY_INVALID, result.getCapacity());
+	}
+	
+	@Test(expected = LocationZoneNotFound.class)
+	public void updateLocationZoneNotFound() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		when(locationZoneRepositoryMock.findById(100L)).thenReturn(Optional.empty());
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	@Test(expected = LocationZoneNotFound.class)
+	public void updateLocationZoneNotFoundNotActive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		LocationZone zone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(false);
+		zone.setLocation(location);
+		when(locationZoneRepositoryMock.findById(100L)).thenReturn(Optional.of(zone));
+		locationZoneService.update(locationZoneDto);
+	}
+	/*
+	Iz nekog razlog ne radi
+	@Test(expected = LocationZoneNotChangeable.class)
+	public void updateLocationZoneNotChangeable() {
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		Maintenance m1 = new Maintenance();
+		maintenances.add(m1);
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		LocationZone zone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		zone.setLocation(location);
+		when(locationZoneRepositoryMock.findById(locationZoneDto.getId())).thenReturn(Optional.of(zone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		locationZoneService.update(locationZoneDto);
+	}
+	*/
+	
+	//matrix = true, row < 0, col < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void updateLocationZoneInvalidLocationZone() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_INVALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+
+	//capacity > 0, matrix = true, col <  0, row < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void updateLocationZoneInvalidLocationZoneCaseTwo() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//col > 0, row > 0, matrix = false, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void updateLocationZoneInvalidLocationZoneCaseThree() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//matrix = true, columns > 0, rows < 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void updateLocationZoneInvalidLocationZoneCaseFour() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+	}
+		
+	//matrix = true, columns > 0, rows < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void updateLocationZoneInvalidLocationZoneCaseFive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_INVALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//matrix = true, columns < 0, rows > 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void updateLocationZoneInvalidLocationZoneCaseSix() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	@Test
+	public void updateLocationZoneSuccessfull() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, "New location zone name", ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		LocationZone locationZone = new LocationZone();
+		Location location = new Location();
+		location.setStatus(true);
+		locationZone.setLocation(location);
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById((LOCATION_ZONE_ID))).thenReturn(Optional.of(locationZone));
+		when(locationZoneRepositoryMock.getActiveMaintenances(locationZoneDto.getId())).thenReturn(maintenances);
+		when(locationZoneRepositoryMock.save(Mockito.any())).thenReturn(locationZone);
+		locationZoneService.update(locationZoneDto);
+		
+	}
+	
+	@Test(expected = LocationZoneNotFound.class)
+	public void removeLocationZoneNotFound() {
+		when(locationZoneRepositoryMock.findById(100L)).thenReturn(Optional.empty());
+		locationZoneService.remove(100L);
+	}
+	
+	@Test(expected = LocationZoneNotChangeable.class)
+	public void removeLocationZoneNotChangeable() {
+		LocationZone lz = new LocationZone();
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		Maintenance m1 = new Maintenance();
+		maintenances.add(m1);
+		when(locationZoneRepositoryMock.findById(100L)).thenReturn(Optional.of(lz));
+		when(locationZoneRepositoryMock.getActiveMaintenances(100L)).thenReturn(maintenances);
+		locationZoneService.remove(100L);
+	}
+	
+	@Test
+	public void removeLocationZoneSuccessfull() {
+		LocationZone lz = new LocationZone();
+		ArrayList<Maintenance> maintenances = new ArrayList<Maintenance>();
+		when(locationZoneRepositoryMock.findById(100L)).thenReturn(Optional.of(lz));
+		when(locationZoneRepositoryMock.getActiveMaintenances(100L)).thenReturn(maintenances);
+		locationZoneService.remove(100L);
+	}
+	
 
 	
 }

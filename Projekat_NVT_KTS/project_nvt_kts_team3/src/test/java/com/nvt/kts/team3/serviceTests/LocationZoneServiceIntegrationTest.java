@@ -91,6 +91,182 @@ public class LocationZoneServiceIntegrationTest {
 		assertEquals(1, location.getId());
 	}
 	
+	@Transactional
+	public void findById_null() {
+		LocationZone location = locationZoneService.findById(1000L);
+		assertNull(location);
+	}
+	
+	@Test(expected = LocationNotFound.class)
+	public void saveLocationNull() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	@Test(expected = LocationNotFound.class)
+	public void saveLocationNotActive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		locationZoneDto.setLocationId(3L);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//matrix = true, row < 0, col < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void saveLocationZoneInvalidLocationZone() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+
+	
+	//capacity > 0, matrix = true, col <  0, row < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseTwo() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	
+	//col > 0, row > 0, matrix = false, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseThree() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+		
+	//matrix = true, columns > 0, rows < 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseFour() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
+		locationZoneService.save(locationZoneDto);
+	}
+		
+	//matrix = true, columns > 0, rows < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void saveLocationZoneInvalidLocationZoneCaseFive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+		
+	//matrix = true, columns < 0, rows > 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseSix() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
+		locationZoneService.save(locationZoneDto);
+	}
+		
+	//matrix = true, columns < 0, rows > 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void saveLocationZoneInvalidLocationZoneCaseSeven() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_INVALID);
+		locationZoneService.save(locationZoneDto);
+	}
+	/*
+	@Test
+	public void saveLocationZoneSuccessfull() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_VALID);
+		LocationZone result = locationZoneService.save(locationZoneDto);
+		assertEquals(ID_OF_LOCATION, result.getLocation().getId());
+		assertEquals(IS_MATRIX, result.isMatrix());
+		assertEquals(LOCATION_ZONE_NAME, result.getName());
+		assertEquals(ROW_VALID, result.getRowNumber());
+		assertEquals(COL_VALID, result.getColNumber());
+		assertEquals(CAPACITY_VALID, result.getCapacity());
+	}
+	*/
+	
+	@Test(expected = LocationZoneNotFound.class)
+	public void updateLocationZoneNotFound() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(100L);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	@Test(expected = LocationZoneNotFound.class)
+	public void updateLocationZoneNotFoundNotActive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
+		locationZoneDto.setId(2L);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//matrix = true, row < 0, col < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void updateLocationZoneInvalidLocationZone() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_INVALID);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//capacity > 0, matrix = true, col <  0, row < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void updateLocationZoneInvalidLocationZoneCaseTwo() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//col > 0, row > 0, matrix = false, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void updateLocationZoneInvalidLocationZoneCaseThree() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	//matrix = true, columns > 0, rows < 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void updateLocationZoneInvalidLocationZoneCaseFour() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
+		locationZoneService.update(locationZoneDto);
+	}
+			
+	//matrix = true, columns > 0, rows < 0, capacity < 0
+	@Test(expected = InvalidLocationZone.class)
+	public void updateLocationZoneInvalidLocationZoneCaseFive() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.update(locationZoneDto);
+	}
+		
+	//matrix = true, columns < 0, rows > 0, capacity > 0
+	@Test(expected = InvalidLocationZone.class)
+	@Transactional
+	public void updateLocationZoneInvalidLocationZoneCaseSix() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
+		locationZoneService.update(locationZoneDto);
+	}
+	
+	/*
+	Could not commit JPA transaction....
+	@Test
+	@Transactional
+	public void updateLocationZoneSuccessfull() {
+		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, "New location zone name", ROW_VALID, COL_VALID, CAPACITY_INVALID);
+		locationZoneService.update(locationZoneDto);
+		
+	}
+	*/
+	
+	@Test(expected = LocationZoneNotFound.class)
+	public void removeLocationZoneNotFound() {
+		locationZoneService.remove(100L);
+	}
+	
+	@Test(expected = LocationZoneNotChangeable.class)
+	public void removeLocationZoneNotChangeable() {
+		locationZoneService.remove(1L);
+	}
+	
+	/*
+	Uraditi rollback nad bazom
+	public void removeLocationZoneSuccessfull() {
+		locationZoneService.remove(4L);
+	}
+	
+	*/
 
 		
 	
