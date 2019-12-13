@@ -82,11 +82,12 @@ public class ReservationServiceImpl implements ReservationService {
 				} else {
 					//RegularUser ru=(RegularUser) userRepository.findById(logged.getId()); //OVO
 					List<Reservation> userReservations = reservationRepository.findByUserAndPaid(logged, false);
+					System.out.println("Korisnik "+logged.getUsername());
 					int numTickets = 0;
 					for (Reservation r : userReservations) {
 						numTickets += r.getReservedTickets().size();
 					}
-					if (numTickets > 100) {
+					if (numTickets > 10) { //100
 						throw new TooManyTicketsReserved();
 					}
 					boolean created = false;
