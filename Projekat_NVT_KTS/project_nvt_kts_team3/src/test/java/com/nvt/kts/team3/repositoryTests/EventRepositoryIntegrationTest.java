@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.model.Event;
@@ -31,7 +32,7 @@ import com.nvt.kts.team3.repository.EventRepository;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 
-public class EventRepositoryIntegrationTest {
+public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4SpringContextTests{
 
 	@Autowired
 	public EventRepository eventRepository;
@@ -42,6 +43,7 @@ public class EventRepositoryIntegrationTest {
 		assertEquals(9, events.size());
 		
 	}
+	
 	
 	@Test
 	@Transactional

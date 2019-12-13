@@ -26,7 +26,7 @@ import com.nvt.kts.team3.dto.UserDTO;
 @Entity
 @Table(name = "user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class User implements UserDetails {
+public class User implements UserDetails {
 
 	/**
 	 * 

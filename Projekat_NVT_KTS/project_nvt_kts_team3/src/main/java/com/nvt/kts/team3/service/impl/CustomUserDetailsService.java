@@ -152,7 +152,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return true;
 	}
 	
-	public boolean editUser(UserDTO userDto) {
+	public Boolean editUser(UserDTO userDto) {
 		 User user = (User) this.loadUserByUsername(userDto.getUsername());
 		 user.setPassword(this.encodePassword(userDto.getPassword())); 
 		 user.setName(userDto.getName());

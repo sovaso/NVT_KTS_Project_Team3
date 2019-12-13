@@ -6,7 +6,7 @@ INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, pas
 
 INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username,version) VALUES ('RegularUser', 4, 'd@d', 1, '2019-08-08 00:00', 'user4', '$2a$10$xMipTNv6mB4FdLt52YK4KuzVVFx891Pr0cnWySeko67UbjbZcIAK2', 'user4', 'user4',0) ON DUPLICATE KEY UPDATE id = 4;
 
-INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username,version) VALUES ('RegularUser', 5, 'e@e', 1, '2019-08-08 00:00', 'user5', '$2a$10$xMipTNv6mB4FdLt52YK4KuzVVFx891Pr0cnWySeko67UbjbZcIAK2', 'user5', 'user5',0) ON DUPLICATE KEY UPDATE id = 5;
+INSERT INTO user (dtype, id, email, enabled, last_password_reset_date, name, password, surname, username,version) VALUES ('RegularUser', 5, 'e@e', 0, '2019-08-08 00:00', 'user5', '$2a$10$xMipTNv6mB4FdLt52YK4KuzVVFx891Pr0cnWySeko67UbjbZcIAK2', 'user5', 'user5',0) ON DUPLICATE KEY UPDATE id = 5;
 
 INSERT INTO location (id, address, description, name, status, version) VALUES (1, 'Address1', 'Description1', 'Name1', 1, 1) ON DUPLICATE KEY UPDATE id = 1;
 INSERT INTO location (id, address, description, name, status, version) VALUES (2, 'Address2', 'Description2', 'Name2', 1, 1) ON DUPLICATE KEY UPDATE id = 2;
@@ -48,6 +48,8 @@ INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, l
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (2, 300, 30, 1, 'Name2', 10, 3) ON DUPLICATE KEY UPDATE id = 2;
 
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (3, 300, 30, 1, 'Name3', 10, 6) ON DUPLICATE KEY UPDATE id = 3;
+
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (4, 400, 40, 1, 'Name4', 10, 6) ON DUPLICATE KEY UPDATE id = 4;
 
 INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (1, 200, 1, 0,1) ON DUPLICATE KEY UPDATE id = 1;
 
