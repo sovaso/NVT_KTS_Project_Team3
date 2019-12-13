@@ -92,7 +92,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseTwo() {
 		Location location = new Location();
 		location.setStatus(true);
@@ -103,7 +102,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseThree() {
 		Location location = new Location();
 		location.setStatus(true);
@@ -114,7 +112,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//matrix = true, columns > 0, rows < 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseFour() {
 		Location location = new Location();
 		location.setStatus(true);
@@ -135,7 +132,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseSix() {
 		Location location = new Location();
 		location.setStatus(true);
@@ -146,7 +142,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseSeven() {
 		Location location = new Location();
 		location.setStatus(true);
@@ -250,7 +245,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void updateLocationZoneInvalidLocationZoneCaseThree() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
 		LocationZone locationZone = new LocationZone();
@@ -266,7 +260,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//matrix = true, columns > 0, rows < 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void updateLocationZoneInvalidLocationZoneCaseFour() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
 		LocationZone locationZone = new LocationZone();
@@ -297,7 +290,6 @@ public class LocationZoneServiceUnitTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void updateLocationZoneInvalidLocationZoneCaseSix() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
 		LocationZone locationZone = new LocationZone();

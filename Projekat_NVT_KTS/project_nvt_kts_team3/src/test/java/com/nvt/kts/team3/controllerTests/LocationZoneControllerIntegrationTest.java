@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.dto.LocationDTO;
@@ -56,6 +57,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void createLocationZoneLocationNotFound() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
 		Location location = new Location();
@@ -74,6 +76,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void createLocationZoneBadRequest() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(2L, 1L, true, "New location zone", -10, -4, -4);
 		Location location = new Location();
@@ -92,6 +95,8 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	/*
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void createLocationZoneSuccessfull() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(2L, 1L, true, "New location zone", 10, 4, 40);
 		Location location = new Location();
@@ -110,6 +115,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	*/
 	@Test
+	@Transactional
 	public void updateLocationZoneNotFound() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -125,6 +131,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void updateLocationZoneNotChangeable() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -140,6 +147,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void updateLocationZoneInvalidInput() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -178,6 +186,7 @@ public class LocationZoneControllerIntegrationTest {
 	*/
 	
 	@Test
+	@Transactional
 	public void getLocationZoneSuccessfull() {
 		ResponseEntity<LocationZone> responseEntity = testRestTemplate.getForEntity("/api/getLocationZone/1", LocationZone.class);
 		LocationZone foundLocationZone = responseEntity.getBody();
@@ -191,6 +200,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getLocationZonesSuccessfull() {
 		ResponseEntity<LocationZone[]> responseEntity = testRestTemplate.getForEntity("/api/getLocationZones/6", LocationZone[].class);
 		LocationZone[] foundLocationZones = responseEntity.getBody();
@@ -214,6 +224,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getLocationZoneNull() {
 		ResponseEntity<LocationZone> responseEntity = testRestTemplate.getForEntity("/api/getLocationZone/100", LocationZone.class);
 		LocationZone foundLocationZone = responseEntity.getBody();
@@ -221,6 +232,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void deleteLocationZoneNotFound() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -234,6 +246,7 @@ public class LocationZoneControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void deleteLocationZoneNotChangeable() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);

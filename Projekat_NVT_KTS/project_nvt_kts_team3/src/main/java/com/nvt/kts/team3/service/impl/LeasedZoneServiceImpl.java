@@ -29,7 +29,7 @@ import exception.LocationNotFound;
 import exception.MaintenanceNotFound;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class LeasedZoneServiceImpl implements LeasedZoneService {
 
 	@Autowired
@@ -53,7 +53,7 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LeasedZone save(LeasedZoneDTO lz) {
 		Maintenance maintenance = maintenanceService.findById(lz.getMaintenanceId());
 		if (maintenance == null || eventService.eventIsActive(maintenance.getEvent().getId()) == false) {
@@ -87,7 +87,7 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LeasedZone update(LeasedZoneDTO lz) {
 		LeasedZone newZone = findById(lz.getId());
 		if (newZone == null) {
@@ -132,7 +132,7 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		LeasedZone newZone = findById(id);
 		if (newZone == null) {
@@ -155,7 +155,7 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<LeasedZone> deleteByMaintenanceId(long maintenanceId) {
 		return leasedZoneRepository.deleteByMaintenanceId(maintenanceId);
 	}

@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.dto.LocationDTO;
@@ -110,9 +111,10 @@ public class LocationControllerTest {
 		assertEquals(5, locations.length);
 	}
 	
-	/*
-	//Radi samo moras odraditi rollback nad bazom.
+
 	@Test
+	@Transactional
+	@Rollback(true)
 	public void createLocation_successfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -127,7 +129,7 @@ public class LocationControllerTest {
 		assertEquals("Success", messageDto.getMessage());
 		assertEquals("Location successfully created.", messageDto.getHeader());
 	}
-	*/
+	
 
 	@Test
 	public void createLocation_LocationAlreadyExist() {
@@ -389,9 +391,9 @@ public class LocationControllerTest {
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Location with submited name and address already exist.", messageDto.getHeader());
 	}
-	/*
-	Radi samo napravi rollback
+/*
 	@Test
+	@Transactional
 	public void updateLocation_successfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -407,10 +409,11 @@ public class LocationControllerTest {
 		assertEquals("Location successfully updated.", messageDto.getHeader());
 	}
 	*/
+
 	
-	/*
-	 Radi samo odraditi rollback nad bazom
+	
 	@Test
+	@Transactional
 	public void deleteLocation_successfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -426,9 +429,6 @@ public class LocationControllerTest {
 		assertEquals("Location successfully deleted.", messageDto.getHeader());
 	}
 	
-	
-
-*/
 	@Test
 	public void deleteLocation_locationNull_locationNotFound(){
 		HttpHeaders headers = new HttpHeaders();

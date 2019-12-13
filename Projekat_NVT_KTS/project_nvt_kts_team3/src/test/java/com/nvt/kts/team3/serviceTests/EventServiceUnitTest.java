@@ -443,7 +443,6 @@ public class EventServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void searchEvent_periodAndType_successfull_addressGivenForPeriod() {
 		ArrayList<Event> foundEvents = new ArrayList<Event>();
 		foundEvents.add(e1);
@@ -466,7 +465,6 @@ public class EventServiceUnitTest {
 		
 		
 	@Test
-	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noEventType() {
 		ArrayList<Event> foundEvents = new ArrayList<Event>();
 		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
@@ -477,7 +475,6 @@ public class EventServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noDate() {
 		ArrayList<Event> foundEvents = new ArrayList<Event>();
 		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
@@ -488,7 +485,6 @@ public class EventServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_typeGiven() {
 		ArrayList<Event> foundEvents = new ArrayList<Event>();
 		foundEvents.add(e7);
@@ -503,7 +499,6 @@ public class EventServiceUnitTest {
 	
 	
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_addressGiven() {
 		ArrayList<Event> foundEvents = new ArrayList<Event>();
 		foundEvents.add(e7);
@@ -518,7 +513,6 @@ public class EventServiceUnitTest {
 	
 	
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_eventNameGiven() {
 		ArrayList<Event> foundEvents = new ArrayList<Event>();
 		foundEvents.add(e7);

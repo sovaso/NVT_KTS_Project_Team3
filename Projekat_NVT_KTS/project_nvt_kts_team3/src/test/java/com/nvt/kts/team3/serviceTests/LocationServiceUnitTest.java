@@ -79,7 +79,6 @@ public class LocationServiceUnitTest {
 	private static final int CAPACITY_INVALID = -50;
 	
 	@Test(expected = LocationExists.class)
-	@Transactional
 	public void saveLocation_locationalreadyExist() {
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationRepositoryMock.findByNameAndAddress(LOCATION_NAME, LOCATION_ADDRESS)).thenReturn(new Location());
@@ -88,7 +87,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocation_locationZoneEmpty() {
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		when(locationRepositoryMock.findByNameAndAddress(LOCATION_NAME, LOCATION_ADDRESS)).thenReturn(null);
@@ -118,7 +116,6 @@ public class LocationServiceUnitTest {
 	
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocation_invalidLocationZoneCaseTwo() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -131,7 +128,6 @@ public class LocationServiceUnitTest {
 	
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocation_invalidLocationZoneCaseThree() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, NOT_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_INVALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -142,7 +138,6 @@ public class LocationServiceUnitTest {
 	}
 	//matrix = true, columns > 0, rows < 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocation_invalidLocationZoneCaseFour() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_VALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -165,7 +160,6 @@ public class LocationServiceUnitTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocation_invalidLocationZoneCaseSix() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_VALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -177,7 +171,6 @@ public class LocationServiceUnitTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
-	@Transactional
 	public void saveLocation_invalidLocationZoneCaseSeven() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_INVALID);
 		LOCATION_ZONE.add(locationZoneDto);
@@ -229,7 +222,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
-	@Transactional
 	public void update_locationNull() {
 		when(locationRepositoryMock.findById(LOCATION_ID)).thenReturn(Optional.empty());
 		LocationDTO locationDto = new LocationDTO(LOCATION_ID, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
@@ -237,7 +229,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
-	@Transactional
 	public void update_locationNotActive() {
 		Location location = new Location();
 		location.setStatus(false);
@@ -247,7 +238,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test(expected = LocationExists.class)
-	@Transactional
 	public void update_locationFindByNameAndAddressLocation_exist() {
 		Location location = new Location();
 		location.setId(1L);
@@ -329,7 +319,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void findAll_successfull() {
 		List<Location> locations = new ArrayList<Location>();
 		Location l1 = new Location();
@@ -344,7 +333,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void findByNameAndAddress_nonFound() {
 		when(locationRepositoryMock.findByNameAndAddress("someName", "someAddress")).thenReturn(null);
 		Location foundLocation = locationService.findByNameAndAddress("someName", "someAddress");
@@ -363,7 +351,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void getActiveEvents_nonFound() {
 		ArrayList<Event> events = new ArrayList<Event>();
 		when(locationRepositoryMock.getActiveEvents(1L)).thenReturn(events);
@@ -372,7 +359,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void getActiveEvents_successfull() {
 		ArrayList<Event> events = new ArrayList<Event>();
 		Event e1 = new Event();
@@ -385,34 +371,34 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void findAllActive_nonFound() {
 		ArrayList<Location> locations = new ArrayList<Location>();
 		when(locationRepositoryMock.getActiveLocations()).thenReturn(locations);
 		ArrayList<Location> foundLocations = locationService.findAllActive();
 		assertEquals(0, foundLocations.size());
 	}
-	/*
+	
 	
 	@Test
 	public void findAllActive_successfull() {
 		ArrayList<Location> locations = new ArrayList<Location>();
 		Location l1 = new Location();
 		l1. setId(2L);
+		locations.add(l1);
 		when(locationRepositoryMock.getActiveLocations()).thenReturn(locations);
 		ArrayList<Location> foundLocations = locationService.findAllActive();
 		assertEquals(1, foundLocations.size());
 		assertEquals(2L, foundLocations.get(0).getId());
 	}
-	*/
 	
-	/*
+	
+
 	@Test
-	@Transactional
 	public void checkIfAvailable_successfull() {
 		ArrayList<Event> events = new ArrayList<Event>();
 		Event e1 = new Event();
 		e1.setId(2L);
+		events.add(e1);
 		LocalDateTime startDate = LocalDateTime.of(2020, Month.SEPTEMBER, 1, 10, 10, 30);
 		LocalDateTime endDate = LocalDateTime.of(2020, Month.SEPTEMBER, 11, 10, 10, 30);
 		when(locationRepositoryMock.checkIfAvailable(1L, startDate, endDate)).thenReturn(events);
@@ -420,11 +406,9 @@ public class LocationServiceUnitTest {
 		assertEquals(1, foundEvents.size());
 		assertEquals(2L, foundEvents.get(0).getId());
 	}
-	*/
 	
 	
 	@Test
-	@Transactional
 	public void checkIfAvailable_nonAvailable() {
 		ArrayList<Event> events = new ArrayList<Event>();
 		LocalDateTime startDate = LocalDateTime.of(2020, Month.SEPTEMBER, 1, 10, 10, 30);
@@ -436,7 +420,6 @@ public class LocationServiceUnitTest {
 	
 	
 	@Test
-	@Transactional
 	public void findByAddress_nonFound() {
 		when(locationRepositoryMock.findByAddress("someAddress")).thenReturn(null);
 		Location foundLocation = locationService.findByAddress("someAddress");
@@ -444,7 +427,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void findByAddress_successfull() {
 		Location location = new Location();
 		location.setId(1L);
@@ -454,7 +436,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
-	@Transactional
 	public void getLocationReport_locationNotFound() {
 		when(locationRepositoryMock.findById(100L)).thenReturn(Optional.empty());
 		LocationReportDTO report = locationService.getLocationReport(100L);
@@ -462,7 +443,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void getLocationReport_findAllNoReservations() {
 		Location location = new Location();
 		location.setId(1L);
@@ -480,7 +460,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void getLocationReport_noReservationsForLocation() {
 		Location location = new Location();
 		location.setId(1L);
@@ -505,7 +484,6 @@ public class LocationServiceUnitTest {
 	}
 	
 	@Test
-	@Transactional
 	public void getLocationReport_successfull() {
 		Location location = new Location();
 		location.setId(1L);

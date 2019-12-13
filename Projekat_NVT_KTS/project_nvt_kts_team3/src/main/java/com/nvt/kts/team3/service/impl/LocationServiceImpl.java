@@ -33,7 +33,7 @@ import exception.LocationNotChangeable;
 import exception.LocationNotFound;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class LocationServiceImpl implements LocationService {
 
 	@Autowired
@@ -49,7 +49,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location save(LocationDTO locationDTO) {
 		
 		//Ne sme biti dvojnica
@@ -85,7 +85,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Location update(LocationDTO locationDTO) {
 		Location location = findById(locationDTO.getId());
 		
@@ -112,7 +112,7 @@ public class LocationServiceImpl implements LocationService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		List<Event> activeEvents = getActiveEvents(id);
 		Location location = findById(id);

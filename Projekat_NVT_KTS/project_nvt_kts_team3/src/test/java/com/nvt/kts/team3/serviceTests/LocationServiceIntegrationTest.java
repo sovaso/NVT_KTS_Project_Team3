@@ -16,9 +16,11 @@ import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -143,7 +145,9 @@ public class LocationServiceIntegrationTest {
 		lzDto.setCol(20);
 		locationDto.getLocationZone().add(lzDto);
 		locationService.save(locationDto);
+		
 	}
+
 	
 	//matrix = true, columns > 0, rows < 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
@@ -208,7 +212,7 @@ public class LocationServiceIntegrationTest {
 		locationService.save(locationDto);
 	}
 	
-	/*
+	
 	@Test
 	@Transactional
 	@Rollback(true)
@@ -225,7 +229,7 @@ public class LocationServiceIntegrationTest {
 		assertEquals(location.getLocationZones().size(), locationDto.getLocationZone().size());
 		//checkResultOfSave(location.getLocationZones().iterator().next() , locationDto.getLocationZone().get(0));
 	}
-	*/
+	
 	
 	
 	public void checkResultOfSave(LocationZone locationZone, LocationZoneDTO locationZoneDTO) {
@@ -258,21 +262,19 @@ public class LocationServiceIntegrationTest {
 		LocationDTO locationDto = new LocationDTO(1L, "Name2", "Address2", LOCATION_DESCRIPTION, LOCATION_ZONE);
 		locationService.update(locationDto);
 	}
-	/*
-	Uvesti rollback pa uraditi sa nekim postojecim primerom
+	
 	@Test
 	@Transactional
 	public void updateLocationFindByNameAndAddresSuccessfull() {
-		LocationDTO locationDto = new LocationDTO(8L, "UpdatedName", "UpdatedAddress", "UpdatedDescription", LOCATION_ZONE);
+		LocationDTO locationDto = new LocationDTO(6L, "UpdatedName", "UpdatedAddress", "UpdatedDescription", LOCATION_ZONE);
 		Location returnedLocation = locationService.update(locationDto);
-		assertEquals(8L, returnedLocation.getId());
+		assertEquals(6L, returnedLocation.getId());
 		assertEquals("UpdatedName", returnedLocation.getName());
 		assertEquals("UpdatedAddress", returnedLocation.getAddress());
 		assertEquals("UpdatedDescription", returnedLocation.getDescription());
 		
 	}
-	*/
-	
+
 	@Test(expected = LocationNotFound.class)
 	public void remove_locationNotFound() {
 		locationService.remove(1000L);
@@ -287,24 +289,13 @@ public class LocationServiceIntegrationTest {
 	public void remove_locationNotChangeable() {
 		locationService.remove(1L);
 	}
-	/*
-	Uvesti rollback
+	
 	@Test
 	@Transactional
 	public void removeLocationSuccessfull() {
-		locationService.remove(8L);
+		locationService.remove(6L);
 	}
-	*/
 	
-	/*
-	Uvesti rollback
-	@Test
-	@Transactional
-	public void findAll_nonFound() {
-		List<Location> foundLocations = locationService.findAll();
-		assertEquals(0, foundLocations.size());
-	}
-	*/
 	
 	@Test
 	@Transactional
@@ -358,15 +349,6 @@ public class LocationServiceIntegrationTest {
 		assertEquals(5, foundLocations.size());
 	}
 	
-	/*
-	Uraditi rollback
-	@Test
-	@Transactional
-	public void findAllActive_successfull() {
-		ArrayList<Location> foundLocations = locationService.findAllActive();
-		assertEquals(5, foundLocations.size());
-	}
-	*/
 	@Test
 	@Transactional
 	public void findByAddress_nonFound() {
@@ -420,20 +402,6 @@ public class LocationServiceIntegrationTest {
 		
 	}
 	
-	/*
-	Uraditi rollback nad bazom
-	@Test
-	@Transactional
-	public void getLocationReport_findAllNoReservations() {
-		LocationReportDTO report = locationService.getLocationReport(1L);
-		assertEquals(0, report.getDailyLabels().size());
-		assertEquals(0, report.getDailyValues().size());
-		assertEquals(0, report.getWeeklyLabels().size());
-		assertEquals(0, report.getWeeklyValues().size());
-		assertEquals(0, report.getMonthlyLabels().size());
-		assertEquals(0, report.getMonthlyValues().size());
-		
-	}
-	*/
+	
 
 }

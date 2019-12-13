@@ -106,9 +106,9 @@ public class CustomUserDetailsServiceIntegrationTest {
 		boolean result = customUserDetailsService.registerUser(admin, UserRoleName.ROLE_ADMIN);
 		assertFalse(result);
 	}
-	/*
-	Obezbediti rollback nad bazom
+	
 	@Test
+	@Transactional
 	public void registerUser_regular_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("newUser");
@@ -122,6 +122,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void registerUser_admin_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("newUser");
@@ -133,10 +134,10 @@ public class CustomUserDetailsServiceIntegrationTest {
 		boolean result = customUserDetailsService.registerUser(userDto, UserRoleName.ROLE_ADMIN);
 		assertTrue(result);
 	}
-	*/
-	/*
-	Obezbediti rollback nad bazom
+	
+	
 	@Test
+	@Transactional
 	public void editUser_regular_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("user1");
@@ -150,6 +151,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 	
 	@Test
+	@Transactional
 	public void editUser_admin_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("user2");
@@ -160,7 +162,6 @@ public class CustomUserDetailsServiceIntegrationTest {
 		boolean result = customUserDetailsService.editUser(userDto);
 		assertTrue(result);
 	}
-	*/
 	
 
 }

@@ -24,7 +24,7 @@ import exception.LocationZoneNotChangeable;
 import exception.LocationZoneNotFound;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class LocationZoneServiceImpl implements LocationZoneService {
 
 	@Autowired
@@ -39,7 +39,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LocationZone save(LocationZoneDTO lz) {
 		Location location = locationService.findById(lz.getLocationId());
 
@@ -63,7 +63,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LocationZone update(LocationZoneDTO lz) {
 		LocationZone zone = findById(lz.getId());
 
@@ -99,7 +99,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		LocationZone lz = findById(id);
 		if (lz == null) {
@@ -118,7 +118,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<LocationZone> deleteByLocationId(long locationId) {
 		return locationZoneRepository.deleteByLocationId(locationId);
 	}

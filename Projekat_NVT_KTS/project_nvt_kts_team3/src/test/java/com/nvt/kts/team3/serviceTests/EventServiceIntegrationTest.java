@@ -245,7 +245,6 @@ public class EventServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	public void searchEvent_periodAndType_successfull_addressGivenForPeriod() {
 		List<Event> events = eventService.searchEvent("Address1", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(2, events.size());
@@ -266,14 +265,12 @@ public class EventServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noDate() {
 		List<Event> events = eventService.searchEvent("sports", "2020-01-15T01:00", "***");
 		assertEquals(0, events.size());
 	}
 
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_typeGiven() {
 		List<Event> events = eventService.searchEvent("sports", "2018-01-01T00:00", "***");
 		assertEquals(1, events.size());
@@ -283,7 +280,6 @@ public class EventServiceIntegrationTest {
 
 
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_addressGiven() {
 		List<Event> events = eventService.searchEvent("address5", "2018-01-01T00:00", "***");
 		assertEquals(1, events.size());
@@ -293,7 +289,6 @@ public class EventServiceIntegrationTest {
 
 
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_eventNameGiven() {
 		List<Event> events = eventService.searchEvent("event6", "2018-01-01T00:00", "***");
 		assertEquals(1, events.size());

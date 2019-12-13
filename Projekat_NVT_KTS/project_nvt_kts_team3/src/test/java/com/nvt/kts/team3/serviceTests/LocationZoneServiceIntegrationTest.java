@@ -91,6 +91,7 @@ public class LocationZoneServiceIntegrationTest {
 		assertEquals(1, location.getId());
 	}
 	
+	@Test
 	@Transactional
 	public void findById_null() {
 		LocationZone location = locationZoneService.findById(1000L);
@@ -98,6 +99,7 @@ public class LocationZoneServiceIntegrationTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
+	@Transactional
 	public void saveLocationNull() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
 		locationZoneDto.setId(100L);
@@ -105,6 +107,7 @@ public class LocationZoneServiceIntegrationTest {
 	}
 	
 	@Test(expected = LocationNotFound.class)
+	@Transactional
 	public void saveLocationNotActive() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
 		locationZoneDto.setId(100L);
@@ -114,6 +117,7 @@ public class LocationZoneServiceIntegrationTest {
 	
 	//matrix = true, row < 0, col < 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZone() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_INVALID);
 		locationZoneService.save(locationZoneDto);
@@ -146,6 +150,7 @@ public class LocationZoneServiceIntegrationTest {
 		
 	//matrix = true, columns > 0, rows < 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void saveLocationZoneInvalidLocationZoneCaseFive() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_INVALID);
 		locationZoneService.save(locationZoneDto);
@@ -166,8 +171,9 @@ public class LocationZoneServiceIntegrationTest {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_INVALID, CAPACITY_INVALID);
 		locationZoneService.save(locationZoneDto);
 	}
-	/*
+	
 	@Test
+	@Transactional
 	public void saveLocationZoneSuccessfull() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(LOCATION_ZONE_ID, ID_OF_LOCATION, IS_MATRIX, LOCATION_ZONE_NAME, ROW_VALID, COL_VALID, CAPACITY_VALID);
 		LocationZone result = locationZoneService.save(locationZoneDto);
@@ -178,9 +184,9 @@ public class LocationZoneServiceIntegrationTest {
 		assertEquals(COL_VALID, result.getColNumber());
 		assertEquals(CAPACITY_VALID, result.getCapacity());
 	}
-	*/
 	
 	@Test(expected = LocationZoneNotFound.class)
+	@Transactional
 	public void updateLocationZoneNotFound() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
 		locationZoneDto.setId(100L);
@@ -188,6 +194,7 @@ public class LocationZoneServiceIntegrationTest {
 	}
 	
 	@Test(expected = LocationZoneNotFound.class)
+	@Transactional
 	public void updateLocationZoneNotFoundNotActive() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO();
 		locationZoneDto.setId(2L);
@@ -196,6 +203,7 @@ public class LocationZoneServiceIntegrationTest {
 	
 	//matrix = true, row < 0, col < 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void updateLocationZoneInvalidLocationZone() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_INVALID);
 		locationZoneService.update(locationZoneDto);
@@ -203,6 +211,7 @@ public class LocationZoneServiceIntegrationTest {
 	
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void updateLocationZoneInvalidLocationZoneCaseTwo() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_INVALID, CAPACITY_VALID);
 		locationZoneService.update(locationZoneDto);
@@ -226,6 +235,7 @@ public class LocationZoneServiceIntegrationTest {
 			
 	//matrix = true, columns > 0, rows < 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
+	@Transactional
 	public void updateLocationZoneInvalidLocationZoneCaseFive() {
 		LocationZoneDTO locationZoneDto = new LocationZoneDTO(3l, 6l, IS_MATRIX, LOCATION_ZONE_NAME, ROW_INVALID, COL_VALID, CAPACITY_INVALID);
 		locationZoneService.update(locationZoneDto);
@@ -239,8 +249,7 @@ public class LocationZoneServiceIntegrationTest {
 		locationZoneService.update(locationZoneDto);
 	}
 	
-	/*
-	Could not commit JPA transaction....
+	
 	@Test
 	@Transactional
 	public void updateLocationZoneSuccessfull() {
@@ -248,7 +257,6 @@ public class LocationZoneServiceIntegrationTest {
 		locationZoneService.update(locationZoneDto);
 		
 	}
-	*/
 	
 	@Test(expected = LocationZoneNotFound.class)
 	public void removeLocationZoneNotFound() {
@@ -260,13 +268,12 @@ public class LocationZoneServiceIntegrationTest {
 		locationZoneService.remove(1L);
 	}
 	
-	/*
-	Uraditi rollback nad bazom
+	@Test
+	@Transactional
 	public void removeLocationZoneSuccessfull() {
 		locationZoneService.remove(4L);
 	}
 	
-	*/
 
 		
 	
