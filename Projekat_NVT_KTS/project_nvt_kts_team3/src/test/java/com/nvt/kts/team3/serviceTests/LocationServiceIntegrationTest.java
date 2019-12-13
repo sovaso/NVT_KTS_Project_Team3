@@ -16,18 +16,22 @@ import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.dto.LocationDTO;
+import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.LocationZoneDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.LocationZone;
+import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.repository.EventRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
 import com.nvt.kts.team3.service.EventService;
@@ -71,7 +75,7 @@ public class LocationServiceIntegrationTest {
 	
 	@Test(expected = LocationExists.class)
 	@Transactional
-	public void saveLocationAlreadyExist() {
+	public void save_locationAlreadyExist() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setId(1L);
 		locationDto.setName("Name1");
@@ -81,14 +85,14 @@ public class LocationServiceIntegrationTest {
 	
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationLocationZoneEmpty() {
+	public void saveLocation_locationZoneEmpty() {
 		LocationDTO locationDto = new LocationDTO();
 		locationService.save(locationDto);
 	}
 	
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationLocationZoneNull() {
+	public void saveLocation_LocationZoneNull() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setLocationZone(null);
 		locationService.save(locationDto);
@@ -97,7 +101,7 @@ public class LocationServiceIntegrationTest {
 	
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationZoneInvalidLocationZone() {
+	public void saveLocation_invalidLocationZone() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -114,7 +118,7 @@ public class LocationServiceIntegrationTest {
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationZoneInvalidLocationZoneCaseTwo() {
+	public void saveLocation_invalidLocationZone_caseTwo() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -130,7 +134,7 @@ public class LocationServiceIntegrationTest {
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationZoneInvalidLocationZoneCaseThree() {
+	public void saveLocation_invalidLocationZone_caseThree() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -141,12 +145,14 @@ public class LocationServiceIntegrationTest {
 		lzDto.setCol(20);
 		locationDto.getLocationZone().add(lzDto);
 		locationService.save(locationDto);
+		
 	}
+
 	
 	//matrix = true, columns > 0, rows < 0, capacity > 0
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationZoneInvalidLocationZoneCaseFour() {
+	public void saveLocation_invalidLocationZone_caseFour() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -161,7 +167,7 @@ public class LocationServiceIntegrationTest {
 	
 	//matrix = true, columns > 0, rows < 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
-	public void saveLocationZoneInvalidLocationZoneCaseFive() {
+	public void saveLocation_invalidLocationZone_caseFive() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -193,7 +199,7 @@ public class LocationServiceIntegrationTest {
 	//matrix = true, columns < 0, rows > 0, capacity < 0
 	@Test(expected = InvalidLocationZone.class)
 	@Transactional
-	public void saveLocationZoneInvalidLocationZoneCaseSeven() {
+	public void saveLocation_invalidLocationZone_caseSeven() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -206,7 +212,7 @@ public class LocationServiceIntegrationTest {
 		locationService.save(locationDto);
 	}
 	
-	/*
+	
 	@Test
 	@Transactional
 	@Rollback(true)
@@ -223,7 +229,7 @@ public class LocationServiceIntegrationTest {
 		assertEquals(location.getLocationZones().size(), locationDto.getLocationZone().size());
 		//checkResultOfSave(location.getLocationZones().iterator().next() , locationDto.getLocationZone().get(0));
 	}
-	*/
+	
 	
 	
 	public void checkResultOfSave(LocationZone locationZone, LocationZoneDTO locationZoneDTO) {
@@ -237,7 +243,7 @@ public class LocationServiceIntegrationTest {
 	
 	@Test(expected = LocationNotFound.class)
 	@Transactional
-	public void updateLocationNull() {
+	public void update_locationNull() {
 		long unexistingLocationId = 100L;
 		LocationDTO locationDto = new LocationDTO(unexistingLocationId, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		locationService.update(locationDto);
@@ -245,64 +251,51 @@ public class LocationServiceIntegrationTest {
 	
 	@Test(expected = LocationNotFound.class)
 	@Transactional
-	public void updateLocationNotActive() {
+	public void update_locationNotActive() {
 		LocationDTO locationDto = new LocationDTO(3L, LOCATION_NAME, LOCATION_ADDRESS, LOCATION_DESCRIPTION, LOCATION_ZONE);
 		locationService.update(locationDto);
 	}
 	
 	@Test(expected = LocationExists.class)
 	@Transactional
-	public void updateLocationFindByNameAndAddressLocationExist() {
+	public void update_findByNameAndAddressLocationExist() {
 		LocationDTO locationDto = new LocationDTO(1L, "Name2", "Address2", LOCATION_DESCRIPTION, LOCATION_ZONE);
 		locationService.update(locationDto);
 	}
-	/*
-	Uvesti rollback pa uraditi sa nekim postojecim primerom
+	
 	@Test
 	@Transactional
 	public void updateLocationFindByNameAndAddresSuccessfull() {
-		LocationDTO locationDto = new LocationDTO(8L, "UpdatedName", "UpdatedAddress", "UpdatedDescription", LOCATION_ZONE);
+		LocationDTO locationDto = new LocationDTO(6L, "UpdatedName", "UpdatedAddress", "UpdatedDescription", LOCATION_ZONE);
 		Location returnedLocation = locationService.update(locationDto);
-		assertEquals(8L, returnedLocation.getId());
+		assertEquals(6L, returnedLocation.getId());
 		assertEquals("UpdatedName", returnedLocation.getName());
 		assertEquals("UpdatedAddress", returnedLocation.getAddress());
 		assertEquals("UpdatedDescription", returnedLocation.getDescription());
 		
 	}
-	*/
-	
+
 	@Test(expected = LocationNotFound.class)
-	public void removeLocationNotFound() {
+	public void remove_locationNotFound() {
 		locationService.remove(1000L);
 	}
 	
 	@Test(expected = LocationNotFound.class)
-	public void removeLocationNotFoundLocationStatusIsFalse() {
+	public void remove_locationNotFound_locationStatusIsFalse() {
 		locationService.remove(3L);
 	}
 	
 	@Test(expected = LocationNotChangeable.class)
-	public void removeLocationNotChangeable() {
+	public void remove_locationNotChangeable() {
 		locationService.remove(1L);
 	}
-	/*
-	Uvesti rollback
+	
 	@Test
 	@Transactional
 	public void removeLocationSuccessfull() {
-		locationService.remove(8L);
+		locationService.remove(6L);
 	}
-	*/
 	
-	/*
-	Uvesti rollback
-	@Test
-	@Transactional
-	public void findAll_nonFound() {
-		List<Location> foundLocations = locationService.findAll();
-		assertEquals(0, foundLocations.size());
-	}
-	*/
 	
 	@Test
 	@Transactional
@@ -356,15 +349,6 @@ public class LocationServiceIntegrationTest {
 		assertEquals(5, foundLocations.size());
 	}
 	
-	/*
-	Uraditi rollback
-	@Test
-	@Transactional
-	public void findAllActive_successfull() {
-		ArrayList<Location> foundLocations = locationService.findAllActive();
-		assertEquals(5, foundLocations.size());
-	}
-	*/
 	@Test
 	@Transactional
 	public void findByAddress_nonFound() {
@@ -380,5 +364,44 @@ public class LocationServiceIntegrationTest {
 	}
 	
 	//Dodati test za checkIfAvailable
+	
+	@Test
+	@Transactional
+	public void findById_successfull() {
+		Location foundLocation = locationService.findById(1L);
+		assertEquals("Address1", foundLocation.getAddress());
+		assertEquals("Name1", foundLocation.getName());
+		assertEquals("Description1", foundLocation.getDescription());
+	}
+	
+	@Test
+	@Transactional
+	public void findById_nonFound_null() {
+		Location foundLocation = locationService.findById(100L);
+		assertNull(foundLocation);
+	}
+	
+	@Test(expected = LocationNotFound.class)
+	@Transactional
+	public void getLocationReport_locationNotFound() {
+		LocationReportDTO report = locationService.getLocationReport(100L);
+		assertNull(report);
+	}
+	
+	
+	@Test
+	@Transactional
+	public void getLocationReport_noReservationsForLocation() {
+		LocationReportDTO report = locationService.getLocationReport(1L);
+		assertEquals(0, report.getDailyLabels().size());
+		assertEquals(0, report.getDailyValues().size());
+		assertEquals(0, report.getWeeklyLabels().size());
+		assertEquals(0, report.getWeeklyValues().size());
+		assertEquals(0, report.getMonthlyLabels().size());
+		assertEquals(0, report.getMonthlyValues().size());
+		
+	}
+	
+	
 
 }

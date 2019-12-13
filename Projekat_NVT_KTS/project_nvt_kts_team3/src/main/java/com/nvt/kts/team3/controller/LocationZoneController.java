@@ -23,6 +23,12 @@ import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.LocationZoneService;
 
+import exception.InvalidLocationZone;
+import exception.LocationExists;
+import exception.LocationNotFound;
+import exception.LocationZoneNotChangeable;
+import exception.LocationZoneNotFound;
+
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(origins="http://localhost:4200", allowedHeaders = "*")
@@ -37,15 +43,31 @@ public class LocationZoneController {
 	@PostMapping(value = "/createLocationZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLocationZone(@RequestBody LocationZoneDTO lz){
-		locationZoneService.save(lz);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully added."), HttpStatus.CREATED);
+		try {
+			locationZoneService.save(lz);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully created."), HttpStatus.OK);
+		}catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location of location zone not found."), HttpStatus.NOT_FOUND);
+		}catch(InvalidLocationZone e) {
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Invalid inputs for location zone."), HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 	
 	@PostMapping(value = "/updateLocationZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLocationZone(@RequestBody LocationZoneDTO lz){
-		locationZoneService.update(lz);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully updated."), HttpStatus.OK);
+		try {
+			locationZoneService.update(lz);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully updated."), HttpStatus.OK);
+		}catch(LocationZoneNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location zone not found."), HttpStatus.NOT_FOUND);
+		}catch(LocationZoneNotChangeable e) {
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location zone not changeable."), HttpStatus.CONFLICT);
+		}catch(InvalidLocationZone e) {
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Invalid input for location zone."), HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 	
 	@GetMapping(value = "/getLocationZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +91,15 @@ public class LocationZoneController {
 	@DeleteMapping(value = "/deleteLocationZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteLocationZone(@PathVariable(value = "id") Long id){
-		locationZoneService.remove(id);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully deleted."), HttpStatus.OK);
+		try {
+			locationZoneService.remove(id);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully deleted."), HttpStatus.OK);
+		}catch(LocationZoneNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location zone not found."), HttpStatus.NOT_FOUND);
+		}catch(LocationZoneNotChangeable e) {
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location zone not changeable."), HttpStatus.CONFLICT);
+		}
+		
 	}
+	
 }

@@ -37,20 +37,7 @@ public class EventServiceIntegrationTest {
 
 	@Autowired
 	private EventService eventService;
-	/*
-	@MockBean
-	private MaintenanceService maintenanceService;
-	@MockBean
-	private TicketService ticketService;
-	@MockBean
-	private LocationService locationService;
-	@MockBean
-	private LocationZoneService locationZoneService;
-	@MockBean
-	private ReservationRepository reservationRepository;
-	@MockBean
-	private EventRepository eventRepository;
-	*/
+	
 
 	@Test
 	public void findAllSortedName_successfull() {
@@ -156,7 +143,7 @@ public class EventServiceIntegrationTest {
 
 	@Test
 	public void searchEvent_onlyField_dateGiven_successfull() {
-		List<Event> events = eventService.searchEvent("***", "2020-01-15T00:00", "***");
+		List<Event> events = eventService.searchEvent("***", "2021-01-15T00:00", "***");
 		assertEquals(1, events.size());
 		assertEquals("Event1", events.get(0).getName());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
@@ -184,7 +171,7 @@ public class EventServiceIntegrationTest {
 
 	@Test
 	public void searchEvent_period_successfull() {
-		List<Event> events = eventService.searchEvent("***", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("***", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(2, events.size());
 
 		assertEquals("Event1", events.get(0).getName());
@@ -205,19 +192,19 @@ public class EventServiceIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_unsuccessfull_noTypeInThatPeriod() {
-		List<Event> events = eventService.searchEvent("ENTERTAINMENT", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("ENTERTAINMENT", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(0, events.size());
 	}
 
 	@Test
 	public void searchEvent_periodAndType_unsuccessfull_noAddressInThatPeriod() {
-		List<Event> events = eventService.searchEvent("Address6", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("Address6", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(0, events.size());
 	}
 
 	@Test
 	public void searchEvent_periodAndType_unsuccessfull_noEventInThatPeriod() {
-		List<Event> events = eventService.searchEvent("Event7", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("Event7", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(0, events.size());
 	}
 
@@ -241,7 +228,7 @@ public class EventServiceIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_successfull_eventNameGivenForPeriod() {
-		List<Event> events = eventService.searchEvent("Event1", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("Event1", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(1, events.size());
 		assertEquals("Event1", events.get(0).getName());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
@@ -250,7 +237,7 @@ public class EventServiceIntegrationTest {
 
 	@Test
 	public void searchEvent_periodAndType_successfull_eventTypeGivenForPeriod() {
-		List<Event> events = eventService.searchEvent("SPORTS", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("SPORTS", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(1, events.size());
 		assertEquals("Event1", events.get(0).getName());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
@@ -258,9 +245,8 @@ public class EventServiceIntegrationTest {
 	}
 
 	@Test
-	@Transactional
 	public void searchEvent_periodAndType_successfull_addressGivenForPeriod() {
-		List<Event> events = eventService.searchEvent("Address1", "2020-01-15T00:00", "2020-12-15T00:00");
+		List<Event> events = eventService.searchEvent("Address1", "2021-01-15T00:00", "2021-12-15T00:00");
 		assertEquals(2, events.size());
 		assertEquals("Event1", events.get(0).getName());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
@@ -274,19 +260,17 @@ public class EventServiceIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noEventType() {
-		List<Event> events = eventService.searchEvent("entertainment", "2020-01-15T01:00", "***");
+		List<Event> events = eventService.searchEvent("entertainment", "2021-01-15T01:00", "***");
 		assertEquals(0, events.size());
 	}
 
 	@Test
-	@Transactional
 	public void searchEvent_fieldSpecDate_unsuccessfull_noDate() {
 		List<Event> events = eventService.searchEvent("sports", "2020-01-15T01:00", "***");
 		assertEquals(0, events.size());
 	}
 
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_typeGiven() {
 		List<Event> events = eventService.searchEvent("sports", "2018-01-01T00:00", "***");
 		assertEquals(1, events.size());
@@ -296,7 +280,6 @@ public class EventServiceIntegrationTest {
 
 
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_addressGiven() {
 		List<Event> events = eventService.searchEvent("address5", "2018-01-01T00:00", "***");
 		assertEquals(1, events.size());
@@ -306,7 +289,6 @@ public class EventServiceIntegrationTest {
 
 
 	@Test
-	@Transactional
 	public void searchEventSpecDate_successfull_eventNameGiven() {
 		List<Event> events = eventService.searchEvent("event6", "2018-01-01T00:00", "***");
 		assertEquals(1, events.size());

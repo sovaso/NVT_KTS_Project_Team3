@@ -124,8 +124,8 @@ public class LocationRepositoryIntegrationTest {
 	//CASE: (m.maintenanceDate <= ?3 AND m.maintenanceEndTime >= ?3)
 	@Test
 	public void checkIfAvailable_unsuccessfull1() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 17, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.JANUARY, 19, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 17, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.JANUARY, 19, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(1, eventsOnThatLocationInThatPeriod.size());
 		assertEquals("Event1", eventsOnThatLocationInThatPeriod.get(0).getName());
@@ -139,8 +139,8 @@ public class LocationRepositoryIntegrationTest {
 	//CASE: (m.maintenanceDate <= ?2 AND m.maintenanceEndTime >= ?3) 
 	@Test
 	public void checkIfAvailable_unsuccessfull2() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 16, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.JANUARY, 19, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 16, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.JANUARY, 19, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(1, eventsOnThatLocationInThatPeriod.size());
 		assertEquals(1, eventsOnThatLocationInThatPeriod.size());
@@ -153,8 +153,8 @@ public class LocationRepositoryIntegrationTest {
 	//CASE:  (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3)
 	@Test
 	public void checkIfAvailable_unsuccessfull3() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 14, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.JANUARY, 19, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 14, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.JANUARY, 19, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(1, eventsOnThatLocationInThatPeriod.size());
 		assertEquals(1, eventsOnThatLocationInThatPeriod.size());
@@ -167,8 +167,8 @@ public class LocationRepositoryIntegrationTest {
 	//is not active so it is possible.
 	@Test
 	public void checkIfAvailable_successfull2() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.FEBRUARY, 3, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.FEBRUARY, 10, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.FEBRUARY, 3, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.FEBRUARY, 10, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(0, eventsOnThatLocationInThatPeriod.size());
 	}
@@ -177,8 +177,8 @@ public class LocationRepositoryIntegrationTest {
 	//is not active so it is possible.
 	@Test
 	public void checkIfAvailable_successfull3() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.FEBRUARY, 2, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.FEBRUARY, 12, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.FEBRUARY, 2, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.FEBRUARY, 12, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(0, eventsOnThatLocationInThatPeriod.size());
 	}
@@ -187,8 +187,8 @@ public class LocationRepositoryIntegrationTest {
 	//is not active so it is possible.
 	@Test
 	public void checkIfAvailable_successfull4() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.FEBRUARY, 1, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.FEBRUARY, 11, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.FEBRUARY, 1, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.FEBRUARY, 11, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(0, eventsOnThatLocationInThatPeriod.size());
 	}
@@ -197,8 +197,8 @@ public class LocationRepositoryIntegrationTest {
 	//is not active so it is possible.
 	@Test
 	public void checkIfAvailable_successfull5() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.FEBRUARY, 1, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.FEBRUARY, 14, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.FEBRUARY, 1, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.FEBRUARY, 14, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(0, eventsOnThatLocationInThatPeriod.size());
 	}
@@ -207,8 +207,8 @@ public class LocationRepositoryIntegrationTest {
 //is not active so it is possible.
 	@Test
 	public void checkIfAvailable_successfull6() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.FEBRUARY, 3, 10, 10, 30);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.FEBRUARY, 13, 10, 10, 30);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.FEBRUARY, 3, 10, 10, 30);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.FEBRUARY, 13, 10, 10, 30);
 		ArrayList<Event> eventsOnThatLocationInThatPeriod =  locationRepository.checkIfAvailable(1L, startDate, endDate);
 		assertEquals(0, eventsOnThatLocationInThatPeriod.size());
 	}

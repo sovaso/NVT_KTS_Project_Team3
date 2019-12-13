@@ -3,6 +3,7 @@
 import java.text.ParseException;
 import java.util.List;
 
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,8 +22,15 @@ import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Location;
+import com.nvt.kts.team3.model.UserTokenState;
+import com.nvt.kts.team3.security.auth.JwtAuthenticationRequest;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.ReservationService;
+
+import exception.InvalidLocationZone;
+import exception.LocationExists;
+import exception.LocationNotChangeable;
+import exception.LocationNotFound;
 
 
 @RestController
@@ -39,16 +47,33 @@ public class LocationController {
 	@PostMapping(value = "/createLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLocation(@RequestBody LocationDTO locationDTO){
-		locationService.save(locationDTO);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
+		
+		try {
+			locationService.save(locationDTO);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
+
+		} catch (LocationExists e) {
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Location with that name and address already exist."), HttpStatus.BAD_REQUEST);
+
+		} catch (InvalidLocationZone e) {
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Invalid location zone."), HttpStatus.CONFLICT);
+		}
+		
 	}
 	
 	
 	@PostMapping(value = "/updateLocation", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLocation(@RequestBody LocationDTO locationDTO){
-		locationService.update(locationDTO);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);
+		try {
+			locationService.update(locationDTO);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);
+		} catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Location not found."), HttpStatus.BAD_REQUEST);
+		}catch (LocationExists e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location with submited name and address already exist."), HttpStatus.CONFLICT);
+		}
+		
 	}
 	
 	//***
@@ -78,14 +103,26 @@ public class LocationController {
 	@DeleteMapping(value = "/deleteLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteLocation(@PathVariable(value = "id") Long locationId){
-		locationService.remove(locationId);
-		return new ResponseEntity<>(new MessageDTO("Success", "Location successfully deleted."), HttpStatus.OK);
+		try {
+			locationService.remove(locationId);
+			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully deleted."), HttpStatus.OK);
+		}catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location not found."), HttpStatus.NOT_FOUND);
+		}catch(LocationNotChangeable e) {
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location not changeable."), HttpStatus.CONFLICT);
+		}
+		
 	}
 	
 	@GetMapping(value = "/getLocationReport/{location_id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getLocationReport(@PathVariable long location_id) throws ParseException {
-		LocationReportDTO retVal=this.locationService.getLocationReport(location_id);
-		return new ResponseEntity<>(retVal, HttpStatus.OK);
+		try {
+			LocationReportDTO retVal=this.locationService.getLocationReport(location_id);
+			return new ResponseEntity<>(retVal, HttpStatus.OK);
+		}catch(LocationNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location not found."), HttpStatus.NOT_FOUND);
+		}
+		
 	}
 }

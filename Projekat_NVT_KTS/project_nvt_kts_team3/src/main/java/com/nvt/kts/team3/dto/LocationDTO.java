@@ -9,6 +9,14 @@ public class LocationDTO {
 	private String address;
 	private String description;
 	private List<LocationZoneDTO> locationZone = new ArrayList<LocationZoneDTO>();
+	
+	public LocationDTO(long id, String name, String address, String description) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.address = address;
+		this.description = description;
+	}
 
 	public LocationDTO(long id, String name, String address, String description, List<LocationZoneDTO> locationZone) {
 		super();

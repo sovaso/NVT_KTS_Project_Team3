@@ -54,20 +54,20 @@ public class UserController {
 
 	@GetMapping(value = "/getLogged", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-	public ResponseEntity<?> getLogged() {
+	public ResponseEntity<User> getLogged() {
 		User user = (User) this.userDetailsService
 				.loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "/editUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/editUser", consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-	public ResponseEntity<?> editUser(@RequestBody UserDTO userEdit) {
+	public ResponseEntity<Boolean> editUser(@RequestBody UserDTO userEdit) {
 		return new ResponseEntity<>(userDetailsService.editUser(userEdit), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/user/{userId}")
-	@PreAuthorize("hasRole('ROLE_ADMIN, ROLE_USER')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 	public User loadById(@PathVariable Long userId) {
 		return this.userService.findById(userId);
 	}

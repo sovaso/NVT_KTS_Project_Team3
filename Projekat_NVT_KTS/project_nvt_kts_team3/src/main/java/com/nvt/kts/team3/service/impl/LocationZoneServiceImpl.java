@@ -24,7 +24,7 @@ import exception.LocationZoneNotChangeable;
 import exception.LocationZoneNotFound;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class LocationZoneServiceImpl implements LocationZoneService {
 
 	@Autowired
@@ -35,11 +35,11 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 
 	@Override
 	public LocationZone findById(Long id) {
-		return locationZoneRepository.findById(id).get();
+		return locationZoneRepository.findById(id).orElse(null);
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LocationZone save(LocationZoneDTO lz) {
 		Location location = locationService.findById(lz.getLocationId());
 
@@ -63,7 +63,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LocationZone update(LocationZoneDTO lz) {
 		LocationZone zone = findById(lz.getId());
 
@@ -71,7 +71,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 			throw new LocationZoneNotFound();
 		}
 		List<Maintenance> activeMaintenances = getActiveMaintenances(zone.getId());
-		if (activeMaintenances != null && activeMaintenances.isEmpty() == false) {
+		if (activeMaintenances != null && activeMaintenances.size() > 0) {
 			throw new LocationZoneNotChangeable();
 		}
 		if (lz.isMatrix() && lz.getCol() > 0 && lz.getRow() > 0) {
@@ -99,7 +99,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
 		LocationZone lz = findById(id);
 		if (lz == null) {
@@ -118,7 +118,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<LocationZone> deleteByLocationId(long locationId) {
 		return locationZoneRepository.deleteByLocationId(locationId);
 	}

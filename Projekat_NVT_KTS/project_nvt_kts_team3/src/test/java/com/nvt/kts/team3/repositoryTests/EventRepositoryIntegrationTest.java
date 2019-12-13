@@ -17,21 +17,28 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.repository.EventRepository;
-
-
+/*
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/pathTo/spring/context/applicationContext.xml")
+@TransactionConfiguration(transactionManager = "jdbcTransactionManager", defaultRollback = true)
+@Transactional
+*/
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-
-public class EventRepositoryIntegrationTest {
+public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4SpringContextTests{
 
 	@Autowired
 	public EventRepository eventRepository;
@@ -40,9 +47,9 @@ public class EventRepositoryIntegrationTest {
 	public void testGetAll() {
 		List<Event> events = eventRepository.findAll();
 		assertEquals(9, events.size());
-		
 	}
-	
+
+
 	@Test
 	@Transactional
 	public void findByName_OneFound() {
@@ -179,8 +186,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriod_successfull() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventPeriod(startDate, endDate);
 		assertEquals(2, events.size());
 		
@@ -197,8 +204,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriodAndType_unsuccessfull_noTypeInThatPeriod() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventFieldPeriod("ENTERTAINMENT", startDate, endDate);
 		assertEquals(0, events.size());
 	}
@@ -206,8 +213,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriodAndType_unsuccessfull_noAddressInThatPeriod() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventFieldPeriod("Address6", startDate, endDate);
 		assertEquals(0, events.size());
 	}
@@ -215,8 +222,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriodAndType_unsuccessfull_noEventInThatPeriod() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventFieldPeriod("Event7", startDate, endDate);
 		assertEquals(0, events.size());
 	}
@@ -250,8 +257,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriodAndType_successfull_eventNameGivenForPeriod() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventFieldPeriod("Event1", startDate, endDate);
 		assertEquals(1, events.size());
 		assertEquals("Event1", events.get(0).getName());
@@ -262,8 +269,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriodAndType_successfull_eventTypeGivenForPeriod() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventFieldPeriod("SPORTS", startDate, endDate);
 		assertEquals(1, events.size());
 		assertEquals("Event1", events.get(0).getName());
@@ -274,8 +281,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventPeriodAndType_successfull_addressGivenForPeriod() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		LocalDateTime endDate = LocalDateTime.of(2020, Month.DECEMBER, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime endDate = LocalDateTime.of(2021, Month.DECEMBER, 15, 0, 0, 0);
 		ArrayList<Event> events = eventRepository.searchEventFieldPeriod("Address1", startDate, endDate);
 		assertEquals(2, events.size());
 		assertEquals("Event1", events.get(0).getName());
@@ -331,8 +338,8 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventSpecDate_successfull() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
-		startDate=startDate.plusHours(1);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
+		//startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventSpecDate(startDate);
 		assertEquals(1, events.size());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
@@ -352,7 +359,7 @@ public class EventRepositoryIntegrationTest {
 	@Test
 	@Transactional
 	public void searchEventSpecDate_unsuccessfull_noEventType() {
-		LocalDateTime startDate = LocalDateTime.of(2020, Month.JANUARY, 15, 0, 0, 0);
+		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
 		startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("entertainment", startDate);
 		assertEquals(0, events.size());
@@ -371,7 +378,7 @@ public class EventRepositoryIntegrationTest {
 	@Transactional
 	public void searchEventSpecDate_successfull_typeGiven() {
 		LocalDateTime startDate = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0);
-		startDate=startDate.plusHours(1);
+		//startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("sports", startDate);
 		assertEquals(1, events.size());
 		assertEquals("Event6", events.get(0).getName());
@@ -382,7 +389,7 @@ public class EventRepositoryIntegrationTest {
 	@Transactional
 	public void searchEventSpecDate_successfull_addressGiven() {
 		LocalDateTime startDate = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0);
-		startDate=startDate.plusHours(1);
+		//startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("address5", startDate);
 		assertEquals(1, events.size());
 		assertEquals("Event6", events.get(0).getName());
@@ -393,7 +400,7 @@ public class EventRepositoryIntegrationTest {
 	@Transactional
 	public void searchEventSpecDate_successfull_eventNameGiven() {
 		LocalDateTime startDate = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0);
-		startDate=startDate.plusHours(1);
+		//startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("event6", startDate);
 		assertEquals(1, events.size());
 		assertEquals("Event6", events.get(0).getName());
