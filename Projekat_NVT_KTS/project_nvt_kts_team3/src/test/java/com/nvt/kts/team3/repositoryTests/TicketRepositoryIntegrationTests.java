@@ -27,13 +27,9 @@ public class TicketRepositoryIntegrationTests {
 	@Transactional
 	public void test_getEventTickets() {
 		List<Ticket> tickets=ticketRepository.getEventTickets(2L);
-		assertEquals(5, tickets.size());
-		assertEquals(1,tickets.get(1).getReservation().getId());
-		assertEquals(2,tickets.get(2).getReservation().getId());
-		assertNull(tickets.get(0).getReservation());
-		assertNull(tickets.get(3).getReservation());
-		assertNull(tickets.get(4).getReservation());
-	
+		assertEquals(2, tickets.size());
+		assertEquals(21,tickets.get(0).getId());
+		assertEquals(22,tickets.get(1).getId());
 	}
 	
 	@Test
@@ -41,25 +37,20 @@ public class TicketRepositoryIntegrationTests {
 	public void test_getEventReservedTickets() {
 		List<Ticket> tickets=ticketRepository.getEventReservedTickets(2L);
 		assertEquals(2,tickets.size());
-		assertEquals(1,tickets.get(0).getReservation().getId());
-		assertEquals(2,tickets.get(1).getReservation().getId());
 	}
 	
 	@Test
 	@Transactional
 	public void test_getEventSoldTickets() {
 		List<Ticket> tickets=ticketRepository.getEventSoldTickets(2L);
-		assertEquals(1,tickets.size());
-		assertEquals(2,tickets.get(0).getReservation().getId());
+		assertEquals(0,tickets.size());
 	}
 	
 	@Test
 	@Transactional
 	public void test_getMaintenanceReservedTickets() {
 		List<Ticket> tickets=ticketRepository.getMaintenanceReservedTickets(1L);
-		assertEquals(2,tickets.size());
-		assertEquals(1,tickets.get(0).getReservation().getId());
-		assertEquals(2,tickets.get(1).getReservation().getId());
+		assertEquals(17,tickets.size());
 		
 	}
 	
@@ -67,51 +58,48 @@ public class TicketRepositoryIntegrationTests {
 	@Transactional
 	public void test_getMaintenanceSoldTickets() {
 		List<Ticket> tickets=ticketRepository.getMaintenanceSoldTickets(1L);
-		assertEquals(1,tickets.size());
-		assertEquals(2,tickets.get(0).getReservation().getId());
-	
-	}
-	
-	@Test
-	@Transactional
-	public void test_getMaintenanceTickets() {
-		List<Ticket> tickets=ticketRepository.getMaintenanceTickets(1L);
-		assertEquals(5, tickets.size());
-		assertEquals(1,tickets.get(1).getReservation().getId());
-		assertEquals(2,tickets.get(2).getReservation().getId());
-		assertNull(tickets.get(0).getReservation());
-		assertNull(tickets.get(3).getReservation());
-		assertNull(tickets.get(4).getReservation());
-	
-	}
-	
-	@Test
-	@Transactional
-	public void test_getLeasedZoneReservedTickets() {
-		List<Ticket> tickets=ticketRepository.getLeasedZoneReservedTickets(1L);
 		assertEquals(2,tickets.size());
-		assertEquals(1,tickets.get(0).getReservation().getId());
-		assertEquals(2,tickets.get(1).getReservation().getId());
 	}
 	
 	@Test
 	@Transactional
-	public void test_getLeasedZoneSoldTickets() {
+	public void test_getMaintenanceTickets() { //RADI
+		List<Ticket> tickets=ticketRepository.getMaintenanceTickets(1L);
+		assertEquals(20, tickets.size());
+		int i=1;
+		for(Ticket t: tickets) {
+			check_returnOfGetMaintenanceTickets(t, i);
+			i++;
+		}
+	
+	}
+	
+	public void check_returnOfGetMaintenanceTickets(Ticket t,int i) {
+		assertEquals(i,t.getRow());
+		assertEquals(1,t.getCol());
+		assertEquals(200,t.getPrice(),0);
+		
+	}
+	
+	@Test
+	@Transactional
+	public void test_getLeasedZoneReservedTickets() { //RADI
+		List<Ticket> tickets=ticketRepository.getLeasedZoneReservedTickets(1L);
+		assertEquals(17,tickets.size());
+	}
+	
+	@Test
+	@Transactional
+	public void test_getLeasedZoneSoldTickets() { //RADI
 		List<Ticket> tickets=ticketRepository.getLeasedZoneSoldTickets(1L);
-		assertEquals(1,tickets.size());
-		assertEquals(2,tickets.get(0).getReservation().getId());
+		assertEquals(2,tickets.size());
 	}
 	
 	@Test
 	@Transactional
-	public void test_getLeasedZoneTickets() {
+	public void test_getLeasedZoneTickets() { //Radi
 		List<Ticket> tickets=ticketRepository.getLeasedZoneTickets(1L);
-		assertEquals(5, tickets.size());
-		assertEquals(1,tickets.get(1).getReservation().getId());
-		assertEquals(2,tickets.get(2).getReservation().getId());
-		assertNull(tickets.get(0).getReservation());
-		assertNull(tickets.get(3).getReservation());
-		assertNull(tickets.get(4).getReservation());
+		assertEquals(20, tickets.size());
 	
 	}
 	
