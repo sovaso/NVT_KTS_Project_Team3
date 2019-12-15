@@ -50,6 +50,7 @@ import exception.TooManyTicketsReserved;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @TestPropertySource("classpath:application.properties")
+@Transactional
 public class ReservationServiceIntegrationTest {
 	
 	@Autowired
@@ -84,7 +85,7 @@ public class ReservationServiceIntegrationTest {
 		Event e=new Event();
 		e.setId(2L);
 		Ticket t=new Ticket();
-		t.setId(4L);
+		t.setId(1L);
 		Set<Ticket> tickets=new HashSet<>();
 		tickets.add(t);
 		Reservation r=new Reservation(1L, new Date(), false, 0, null, tickets, e, "aaa");
@@ -103,7 +104,7 @@ public class ReservationServiceIntegrationTest {
 		Event e=new Event();
 		e.setId(400L);
 		Ticket t=new Ticket();
-		t.setId(4L);
+		t.setId(5L);
 		Set<Ticket> tickets=new HashSet<>();
 		tickets.add(t);
 		Reservation r=new Reservation(1L, new Date(), false, 0, null, tickets, e, "aaa");
@@ -122,7 +123,7 @@ public class ReservationServiceIntegrationTest {
 		Event e=new Event();
 		e.setId(9L);
 		Ticket t=new Ticket();
-		t.setId(4L);
+		t.setId(5L);
 		Set<Ticket> tickets=new HashSet<>();
 		tickets.add(t);
 		Reservation r=new Reservation(1L, new Date(), false, 0, null, tickets, e, "aaa");
@@ -139,9 +140,9 @@ public class ReservationServiceIntegrationTest {
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
 		Event e=new Event();
-		e.setId(3L);
+		e.setId(2L);
 		Ticket t=new Ticket();
-		t.setId(4L);
+		t.setId(5L);
 		Set<Ticket> tickets=new HashSet<>();
 		tickets.add(t);
 		Reservation r=new Reservation(1L, new Date(), false, 0, null, tickets, e, "aaa");
@@ -212,7 +213,7 @@ public class ReservationServiceIntegrationTest {
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
-		reservationService.remove(1L);
+		reservationService.remove(3L);
 	}
 	
 	@Test(expected=ReservationCannotBeCancelled.class)
@@ -261,11 +262,10 @@ public class ReservationServiceIntegrationTest {
 		List<Reservation> reservations=reservationService.findByUser((RegularUser) user);
 		Event event=reservations.get(0).getEvent();
 		List<Reservation> reservations2=reservationService.findByEvent(event);
-		assertEquals(4,reservations2.size());
+		assertEquals(3,reservations2.size());
 		assertEquals(2600,reservations2.get(0).getTotalPrice(),0);
 		assertEquals(200,reservations2.get(1).getTotalPrice(),0);
 		assertEquals(200,reservations2.get(2).getTotalPrice(),0);
-		assertEquals(200,reservations2.get(3).getTotalPrice(),0);
 	
 	}
 	
@@ -295,7 +295,7 @@ public class ReservationServiceIntegrationTest {
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
-		boolean success=reservationService.payReservation(1L);
+		boolean success=reservationService.payReservation(3L);
 		assertTrue(success);
 		
 	}
@@ -337,11 +337,11 @@ public class ReservationServiceIntegrationTest {
 	public void test_payReservation_eventNotActive() {
 		Authentication authentication = Mockito.mock(Authentication.class);
 		authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-				"user5", "123"));
+				"user4", "123"));
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
 		SecurityContextHolder.setContext(securityContext);
-        reservationService.payReservation(7L);
+        reservationService.payReservation(8L);
 	}
 	
 	@Test (expected=ReservationExpired.class)
@@ -355,32 +355,18 @@ public class ReservationServiceIntegrationTest {
         reservationService.payReservation(6L);
 	}
 	
-	@Test
-	public void test_getLocationReservations() {
-		List<Reservation> reservations=reservationService.getLocationReservations(1L);
-		assertEquals(5,reservations.size());
-		assertEquals(3,reservations.get(0).getId());
-		assertEquals(4,reservations.get(1).getId());
-		assertEquals(5,reservations.get(2).getId());
-		assertEquals(6,reservations.get(3).getId());
-		assertEquals(7,reservations.get(4).getId());
-	}
 	
 	@Test(expected=LocationNotFound.class)
 	public void test_getLocationReservations_LocationNotFound() {
 		List<Reservation> reservation=reservationService.getLocationReservations(500L);
 	}
 	
-	
-	
-	
-	
-//	@Test
-//	public void test_getLocationReservations_ok() {
-//		List<Reservation> reservations=reservationService.getLocationReservations(1L);
-//		
-//		
-//	}
+	@Test
+	public void test_getLocationReservations_ok() {
+		List<Reservation> reservations=reservationService.getLocationReservations(1L);
+		assertEquals(3,reservations.size());
+		
+	}
 	
 
 }

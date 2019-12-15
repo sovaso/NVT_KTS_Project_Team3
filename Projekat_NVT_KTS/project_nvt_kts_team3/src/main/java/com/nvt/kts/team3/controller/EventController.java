@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +57,12 @@ public class EventController {
 	}
 
 	@GetMapping(value = "/getEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Event> getEvent(@PathVariable(value = "id") Long eventId) {
-		Event event = eventService.findById(eventId);
-		if (event == null) {
+	public ResponseEntity<Event> getEvent(@PathVariable(value = "id") Long eventId) { //menjano
+		Optional<Event> event = eventService.findById(eventId);
+		if (!event.isPresent()) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(event, HttpStatus.OK);
+		return new ResponseEntity<>(event.get(), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getAllEvents", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,11 +77,11 @@ public class EventController {
 
 	@GetMapping(value = "/getEventLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> getEventLocation(@PathVariable(value = "id") Long eventId) {
-		Event event = eventService.findById(eventId);
-		if (event == null || event.getLocationInfo() == null) {
+		Optional<Event> event = eventService.findById(eventId);
+		if (!event.isPresent() || event.get().getLocationInfo() == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(event.getLocationInfo(), HttpStatus.OK);
+		return new ResponseEntity<>(event.get().getLocationInfo(), HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "/deleteEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

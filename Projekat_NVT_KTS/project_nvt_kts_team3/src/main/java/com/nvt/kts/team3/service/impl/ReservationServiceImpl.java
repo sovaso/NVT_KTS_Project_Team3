@@ -19,6 +19,7 @@ import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
+import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.repository.EventRepository;
 import com.nvt.kts.team3.repository.LocationRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
@@ -39,7 +40,7 @@ import exception.ReservationNotFound;
 import exception.TooManyTicketsReserved;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class ReservationServiceImpl implements ReservationService {
 
 	@Autowired
@@ -58,12 +59,12 @@ public class ReservationServiceImpl implements ReservationService {
 	private LocationRepository locationRepository;
 
 	@Override
-	public Reservation findById(Long id) {
-		return reservationRepository.getOne(id);
+	public Optional<Reservation> findById(Long id) {
+		return reservationRepository.findById(id);
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Reservation create(Reservation reservation) {
 		Optional<Event> eventOpt = eventRepository.findById(reservation.getEvent().getId());
 		if (!eventOpt.isPresent()) {
@@ -131,7 +132,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean remove(Long id) {
 		Optional<Reservation> res = reservationRepository.findById(id);
 		if (res.isPresent()) {
@@ -183,7 +184,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public boolean payReservation(Long id) {
 		Optional<Reservation> res = reservationRepository.findById(id);
 		if (res.isPresent()) {
