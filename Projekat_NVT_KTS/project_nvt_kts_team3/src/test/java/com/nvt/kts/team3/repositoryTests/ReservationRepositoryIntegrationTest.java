@@ -2,6 +2,8 @@ package com.nvt.kts.team3.repositoryTests;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ public class ReservationRepositoryIntegrationTest {
 		UserRepository userRepository;
 		
 		@Test
+		@Transactional
 		public void test_findByEvent() {
 			//RegularUser u=new RegularUser(1L,"user1","user1","user1","a@a","$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa");
 			List<Reservation> reservations=reservationRepository.findByUser((RegularUser)userRepository.findById(1L));

@@ -178,7 +178,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(value = TooManyTicketsReserved.class)
     protected ResponseEntity<MessageDTO> handleTooManyTicketsReserved() {
-		return new ResponseEntity<>(new MessageDTO("Too many tickets reserved", "Cannot reserve more than 100 tickets for one event."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Too many tickets reserved", "Cannot reserve more than 10 tickets for one event."), HttpStatus.NOT_ACCEPTABLE);
     }
 	
 	@ExceptionHandler(value = NoLoggedUser.class)

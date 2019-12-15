@@ -2,6 +2,7 @@ package com.nvt.kts.team3.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,14 +24,10 @@ import com.nvt.kts.team3.dto.ReservationDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
-import com.nvt.kts.team3.model.User;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 import com.nvt.kts.team3.service.UserService;
-
-import exception.EventNotFound;
-import exception.ReservationNotFound;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,7 +72,7 @@ public class ReservationController {
 
 	}
 
-	@DeleteMapping(value = "/deleteReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@DeleteMapping(value = "/deleteReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> deleteReservation(@PathVariable long reservationId) {
 		boolean message = this.reservationService.remove(reservationId);
@@ -84,7 +81,7 @@ public class ReservationController {
 
 	}
 
-	@PutMapping(value = "/payReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/payReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> payReservation(@PathVariable long reservationId) {
 		boolean value = this.reservationService.payReservation(reservationId);
@@ -99,13 +96,13 @@ public class ReservationController {
 		return new ResponseEntity<>(reservations, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/getUserReservations/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getUserReservations/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public ResponseEntity<?> getUserReservations(@PathVariable long userId) {
-		User u = this.userService.findById(userId);
-		if (u != null) {
+	public ResponseEntity<?> getUserReservations(@PathVariable String username) {
+		RegularUser ru=(RegularUser) this.userService.findByUsername(username);
+		if (ru != null) {
 			List<Reservation> reservations = this.reservationService
-					.findByUser((RegularUser) this.userService.findById(userId));
+					.findByUser(ru);
 			return new ResponseEntity<>(reservations, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(new MessageDTO("No success", "User with given id does not exist!"),
@@ -113,37 +110,37 @@ public class ReservationController {
 		}
 	}
 
-	@GetMapping(value = "/getReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN', 'ROLE_USER')")
-	public ResponseEntity<?> getReservation(@PathVariable long reservationId) {
-		Reservation res = this.reservationService.findById(reservationId);
-		if (res != null) {
-			return new ResponseEntity<>(res, HttpStatus.OK);
-		} else {
-			throw new ReservationNotFound();
-		}
-	}
-
-	@GetMapping(value = "/getEventReservations/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<List<Reservation>> getEventReservations(@PathVariable long eventId) {
-		Event e = this.eventService.findById(eventId);
-		if (e != null) {
-			List<Reservation> res = this.reservationService.findByEvent(this.eventService.findById(eventId));
+	public ResponseEntity<?> getReservation(@PathVariable long reservationId) {
+		Optional<Reservation> res = this.reservationService.findById(reservationId);
+		if (res.isPresent()) {
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} else {
-			throw new EventNotFound();
+			return new ResponseEntity<>(new MessageDTO("Reservation Not Found","Reservation with this ID does not exist."),HttpStatus.NOT_FOUND);
 		}
 	}
 
-	@GetMapping(value = "/getLocationReservations/{locationId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getEventReservations/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> getEventReservations(@PathVariable long eventId) {
+		Optional<Event> e = this.eventService.findById(eventId);
+		if (e.isPresent()) {
+			List<Reservation> res = this.reservationService.findByEvent(e.get());
+			return new ResponseEntity<>(res, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(new MessageDTO("Event Not Found", "Event with this ID does not exist."), HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@GetMapping(value = "/getLocationReservations/{locationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getLocationReservations(@PathVariable long locationId) {
 		List<Reservation> ret = this.reservationService.getLocationReservations(locationId);
 		return new ResponseEntity<>(ret, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "/cancelTicket/{ticketId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/cancelTicket/{ticketId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<MessageDTO> cancelTicket(@PathVariable long ticketId) {
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
