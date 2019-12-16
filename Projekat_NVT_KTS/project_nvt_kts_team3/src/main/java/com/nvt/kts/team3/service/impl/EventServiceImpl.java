@@ -532,23 +532,23 @@ public class EventServiceImpl implements EventService {
 			events = eventRepository.searchEventOnlyField(field);
 		}else if (start.equals("***")==false && end.equals("***")==true && field.equals("***")==true){
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
-			//startDate = startDate.plusHours(1);
+			startDate = startDate.plusHours(1);
 			events = eventRepository.searchEventSpecDate(startDate);
 		}else if (start.equals("***")==false && end .equals("***")==false && field.equals("***")==true ){
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
-			//startDate = startDate.plusHours(1);
+			startDate = startDate.plusHours(1);
 			LocalDateTime endDate = LocalDateTime.parse(end, formatter);
-			//endDate = endDate.plusHours(1);
+			endDate = endDate.plusHours(1);
 			events = eventRepository.searchEventPeriod(startDate, endDate);
 		}else if (field.equals("***")==false  && start.equals("***")==false && end.equals("***")==true) {
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
-			//startDate = startDate.plusHours(1);
+			startDate = startDate.plusHours(1);
 			events = eventRepository.searchEventFieldSpecDate(field, startDate);
 		}else  {
 			LocalDateTime startDate = LocalDateTime.parse(start, formatter);
-			//startDate = startDate.plusHours(1);
+			startDate = startDate.plusHours(1);
 			LocalDateTime endDate = LocalDateTime.parse(end, formatter);
-			//endDate = endDate.plusHours(1);
+			endDate = endDate.plusHours(1);
 			events = eventRepository.searchEventFieldPeriod(field, startDate, endDate);
 		}
 		

@@ -12,7 +12,7 @@ import com.nvt.kts.team3.repository.UserRepository;
 import com.nvt.kts.team3.service.UserService;
 
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
 	@Autowired
@@ -22,12 +22,12 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findByToken(token);
 	}
 
-	@Transactional(readOnly = false)
+	//@Transactional(readOnly = false)
 	public void save(User user) {
 		userRepository.save(user);
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public String editProfile(User user) {
 		User userToEdit = userRepository.findByUsername(user.getUsername());
 		if (userToEdit == null) {

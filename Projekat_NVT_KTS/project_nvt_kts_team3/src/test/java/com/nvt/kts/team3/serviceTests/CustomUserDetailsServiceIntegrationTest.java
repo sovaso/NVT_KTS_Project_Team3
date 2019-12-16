@@ -50,6 +50,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	private CustomUserDetailsService customUserDetailsService;
 	
 	@Test
+	@Transactional
 	public void usernameTaken_false() {
 		Boolean result = customUserDetailsService.usernameTaken("someUsername");
 		assertFalse(result);
@@ -57,12 +58,14 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 
 	@Test
+	@Transactional
 	public void usernameTaken_true() {
 		Boolean result = customUserDetailsService.usernameTaken("user1");
 		assertTrue(result);
 	}
 	
 	@Test
+	@Transactional
 	public void loadUserByUsername_userSuccessfull() {
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername("user1");
 		User user = (User) userDetails;
@@ -72,11 +75,13 @@ public class CustomUserDetailsServiceIntegrationTest {
 	}
 	
 	@Test(expected = UsernameNotFoundException.class)
+	@Transactional
 	public void loadUserByUsername_userNull() {
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername("someUsername");
 	}
 	
 	@Test
+	@Transactional
 	public void loadUserById_successfull() {
 		UserDetails userDetails = customUserDetailsService.loadUserById(1L);
 		User user = (User) userDetails;
@@ -87,11 +92,13 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 
 	@Test(expected = UsernameNotFoundException.class)
+	@Transactional
 	public void loadUserById_userNull() {
 		UserDetails userDetails = customUserDetailsService.loadUserById(100L);
 	}
 	
 	@Test
+	@Transactional
 	public void registerUser_regular_usernameExist() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("user1");
@@ -100,6 +107,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void registerUser_admin_usernameExist() {
 		UserDTO admin = new UserDTO();
 		admin.setUsername("user1");

@@ -560,13 +560,11 @@ public class LocationServiceUnitTest {
 		assertEquals(4, (int) report.getWeeklyValues().get(0));
 		assertEquals(0, (int) report.getWeeklyValues().get(1));
 		assertEquals(0, (int) report.getWeeklyValues().get(2));
-		
+	
 		assertEquals(0, (int) report.getMonthlyValues().get(0));
 	
-		
-		
 	}
 	
-	
+
 
 }

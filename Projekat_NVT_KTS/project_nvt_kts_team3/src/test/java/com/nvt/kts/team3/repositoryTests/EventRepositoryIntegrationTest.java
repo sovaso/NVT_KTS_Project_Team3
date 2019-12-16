@@ -339,7 +339,7 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void searchEventSpecDate_successfull() {
 		LocalDateTime startDate = LocalDateTime.of(2021, Month.JANUARY, 15, 0, 0, 0);
-		//startDate=startDate.plusHours(1);
+		startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventSpecDate(startDate);
 		assertEquals(1, events.size());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
@@ -378,7 +378,7 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void searchEventSpecDate_successfull_typeGiven() {
 		LocalDateTime startDate = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0);
-		//startDate=startDate.plusHours(1);
+		startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("sports", startDate);
 		assertEquals(1, events.size());
 		assertEquals("Event6", events.get(0).getName());
@@ -389,7 +389,7 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void searchEventSpecDate_successfull_addressGiven() {
 		LocalDateTime startDate = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0);
-		//startDate=startDate.plusHours(1);
+		startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("address5", startDate);
 		assertEquals(1, events.size());
 		assertEquals("Event6", events.get(0).getName());
@@ -400,7 +400,7 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void searchEventSpecDate_successfull_eventNameGiven() {
 		LocalDateTime startDate = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0, 0);
-		//startDate=startDate.plusHours(1);
+		startDate=startDate.plusHours(1);
 		ArrayList<Event> events = eventRepository.searchEventFieldSpecDate("event6", startDate);
 		assertEquals(1, events.size());
 		assertEquals("Event6", events.get(0).getName());
