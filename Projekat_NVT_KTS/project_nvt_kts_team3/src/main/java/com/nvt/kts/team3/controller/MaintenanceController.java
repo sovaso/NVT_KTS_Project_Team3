@@ -1,6 +1,7 @@
 package com.nvt.kts.team3.controller;
 
 import java.text.ParseException;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -71,8 +72,8 @@ public class MaintenanceController {
 	
 	@GetMapping(value = "/getMaintenances/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Set<Maintenance>> getMaintenances(@PathVariable(value = "eventId") Long eventId){
-		Event event = eventService.findById(eventId);
-		return new ResponseEntity<>(event.getMaintenances(), HttpStatus.OK);
+		Optional<Event> event = eventService.findById(eventId);
+		return new ResponseEntity<>(event.get().getMaintenances(), HttpStatus.OK);
 	}
 	
 	//@Scheduled(cron = "0 0 * * * *") //the top of every hour

@@ -92,8 +92,8 @@ public class EventServiceImpl implements EventService {
 	private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	@Override
-	public Event findById(Long id) {
-		return eventRepository.getOne(id);
+	public Optional<Event> findById(Long id) {
+		return eventRepository.findById(id);
 	}
 
 	@Override

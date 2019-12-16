@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -92,15 +93,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Maintenance save(MaintenanceDTO maintenanceDTO) throws ParseException {
-		Event event = eventService.findById(maintenanceDTO.getEventId());
+		Optional<Event> event = eventService.findById(maintenanceDTO.getEventId());
 		
 		//Mora biti postojeci event i mora biti aktivan
-		if (event == null || !(eventService.eventIsActive(event.getId()))) {
+		if (!event.isPresent() || !(eventService.eventIsActive((event.get()).getId()))) {
 			throw new EventNotFound();
 		}
 
 		//Mora biti postojeca lokacija i mora biti aktivna
-		Location location = locationService.findById(event.getLocationInfo().getId());
+		Location location = locationService.findById(event.get().getLocationInfo().getId());
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
@@ -143,7 +144,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		
 		maintenance.setMaintenanceDate(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ));
 		maintenance.setMaintenanceEndTime(LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
-		maintenance.setEvent(event);
+		maintenance.setEvent(event.get());
 		
 		//Moras da navedes koje zone zelis da zakupis za dogadjaj
 		if (maintenanceDTO.getLocationZones() == null || maintenanceDTO.getLocationZones().isEmpty()) {
