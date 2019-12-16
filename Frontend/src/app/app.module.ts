@@ -27,6 +27,10 @@ import { LocationsComponent } from './locations/locations.component';
 import { MyReservationsComponent } from './my-reservations/my-reservations.component';
 import { ReportsComponent } from './reports/reports.component';
 import { UpdateEventComponent } from './events/update-event/update-event.component';
+import { AlertComponent } from './directives';
+import { AlertService } from './services';
+import { AlertBoxComponent } from './alert-box/alert-box.component';
+
 
 
 @NgModule({
@@ -43,7 +47,8 @@ import { UpdateEventComponent } from './events/update-event/update-event.compone
     LocationsComponent,
     MyReservationsComponent,
     ReportsComponent,
-    UpdateEventComponent
+    UpdateEventComponent,
+    AlertBoxComponent
   ],
   imports: [
     NgbModule,
@@ -54,6 +59,7 @@ import { UpdateEventComponent } from './events/update-event/update-event.compone
     FormsModule,
   ],
   providers: [
+    AlertService,
     CanActivateAuthGuard,
     JwtUtilsService,
     AuthenticationService,
@@ -62,11 +68,13 @@ import { UpdateEventComponent } from './events/update-event/update-event.compone
       useClass: TokenInterceptorService,
       multi: true
     },
+
     
   ],
   bootstrap: [AppComponent],
   entryComponents: [
-    EditProfileComponent
+    EditProfileComponent,
+    AlertBoxComponent
   ],
   exports: [ EditProfileComponent ]
 })

@@ -40,7 +40,6 @@ export class EventsService {
     console.log('delete from service called');
     console.log(id);
   return this.http.delete<MessageDto>(`http://localhost:8080/api/deleteEvent/${id}`);
-  
   }
 
 

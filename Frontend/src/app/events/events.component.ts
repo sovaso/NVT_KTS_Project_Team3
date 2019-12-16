@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CurrentUser } from '../model/currentUser';
 import { SharedService } from '../services/shared/shared.service';
 import { EventsService } from '../services/events/events.service';
+import { AlertService } from '../services';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AlertBoxComponent } from '../alert-box/alert-box.component';
 
 @Component({
   selector: 'app-events',
@@ -27,7 +30,7 @@ export class EventsComponent implements OnInit {
 
   type = '';
 
-  constructor(private sharedService: SharedService, private eventsService: EventsService) {}
+  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private eventsService: EventsService) {}
 
   ngOnInit() {
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -52,8 +55,12 @@ export class EventsComponent implements OnInit {
     this.eventsService.delete(event.id).subscribe(data => {
         console.log(data);
         this.sharedService.updateAll();
+      
     }
     );
+
+    const modalRef = this.modalService.open(AlertBoxComponent);
+    modalRef.componentInstance.message="Event is successfully deleted.";
     
   }
 
@@ -120,6 +127,8 @@ export class EventsComponent implements OnInit {
       
     }
     }
+
+    
     
 
   

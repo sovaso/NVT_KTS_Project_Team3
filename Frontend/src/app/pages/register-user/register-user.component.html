@@ -12,7 +12,7 @@
           <input type="surname" id="surname" class="form-control" name="surname" [(ngModel)]="user.surname" placeholder="Surname"
             required>
           <label for="email" class="sr-only">Email</label>
-          <input type="email" id="email" class="form-control" name="email" [(ngModel)]="user.email" placeholder="Email"
+          <input type="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" class="form-control" name="email" [(ngModel)]="user.email" placeholder="Email"
               required autofocus>
           <label for="username" class="sr-only">Username</label>
           <input type="text" id="username" class="form-control" name="username" [(ngModel)]="user.username" placeholder="Username"
@@ -31,6 +31,7 @@
         <div *ngIf=noInput class="alert alert-warning box-msg" role="alert">
           Please fill all fields.
          </div> -->
+  
          <div *ngIf="message!==''">
             <ngb-alert [type]="type" >{{message}}</ngb-alert>  
           
