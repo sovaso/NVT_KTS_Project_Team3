@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.nvt.kts.team3.dto.UserDTO;
@@ -117,6 +118,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void registerUser_regular_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("newUser");
@@ -131,6 +133,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void registerUser_admin_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("newUser");
@@ -146,6 +149,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void editUser_regular_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("user1");
@@ -160,6 +164,7 @@ public class CustomUserDetailsServiceIntegrationTest {
 	
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void editUser_admin_successfull() {
 		UserDTO userDto = new UserDTO();
 		userDto.setUsername("user2");

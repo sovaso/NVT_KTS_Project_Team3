@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
@@ -44,6 +45,7 @@ public class UserControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getLoggedSuccessfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -58,6 +60,7 @@ public class UserControllerIntegrationTest {
 	
 	
 	@Test
+	@Transactional
 	public void findByIdSuccessfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -72,6 +75,7 @@ public class UserControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getAllUsers() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -80,7 +84,7 @@ public class UserControllerIntegrationTest {
 				httpEntity, User[].class);
 		User[] users = responseEntity.getBody();
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertEquals(5, users.length);
+		assertEquals(6, users.length);
 	}
 	
 	/*

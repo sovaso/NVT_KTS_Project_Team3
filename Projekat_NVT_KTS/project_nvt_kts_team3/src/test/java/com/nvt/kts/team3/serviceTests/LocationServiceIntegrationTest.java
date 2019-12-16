@@ -392,7 +392,7 @@ public class LocationServiceIntegrationTest {
 	@Test
 	@Transactional
 	public void getLocationReport_noReservationsForLocation() {
-		LocationReportDTO report = locationService.getLocationReport(1L);
+		LocationReportDTO report = locationService.getLocationReport(3L);
 		assertEquals(0, report.getDailyLabels().size());
 		assertEquals(0, report.getDailyValues().size());
 		assertEquals(0, report.getWeeklyLabels().size());
