@@ -55,12 +55,12 @@ export class EventsComponent implements OnInit {
     this.eventsService.delete(event.id).subscribe(data => {
         console.log(data);
         this.sharedService.updateAll();
-      
+        const modalRef = this.modalService.open(AlertBoxComponent);
+        modalRef.componentInstance.message=data.header;
     }
     );
 
-    const modalRef = this.modalService.open(AlertBoxComponent);
-    modalRef.componentInstance.message="Event is successfully deleted.";
+ 
     
   }
 

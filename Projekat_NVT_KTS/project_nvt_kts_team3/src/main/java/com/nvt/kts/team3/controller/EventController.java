@@ -34,6 +34,9 @@ import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.service.EventService;
 
+import exception.EventNotChangeable;
+import exception.EventNotFound;
+
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin(origins="http://localhost:4200", allowedHeaders = "*")
@@ -88,8 +91,16 @@ public class EventController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteEvent(@PathVariable(value = "id") Long eventId) {
 		System.out.println("Uslo u delete event");
-		eventService.remove(eventId);
-		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully deleted."), HttpStatus.OK);
+		try {
+			eventService.remove(eventId);
+			return new ResponseEntity<>(new MessageDTO("Success", "Event successfully deleted."), HttpStatus.OK);
+		}catch(EventNotFound e) {
+			return new ResponseEntity<>(new MessageDTO("Not found", "Event already deleted."), HttpStatus.OK);
+		}catch(EventNotChangeable e) {
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Not able to be deleted. There are sold tickets."), HttpStatus.OK);
+		}
+		
+		
 	}
 
 	@GetMapping(value = "/getEventIncome/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)

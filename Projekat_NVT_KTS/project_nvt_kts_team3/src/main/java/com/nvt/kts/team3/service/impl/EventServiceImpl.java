@@ -359,7 +359,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public ArrayList<Event> getSoldTickets(Long eventId) {
+	public ArrayList<Ticket> getSoldTickets(Long eventId) {
 		return eventRepository.getSoldTickets(eventId);
 	}
 

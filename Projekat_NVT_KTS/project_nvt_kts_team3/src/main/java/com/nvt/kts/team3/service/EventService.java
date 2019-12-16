@@ -14,6 +14,7 @@ import com.nvt.kts.team3.dto.UploadFileDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.EventType;
 import com.nvt.kts.team3.model.Location;
+import com.nvt.kts.team3.model.Ticket;
 
 public interface EventService {
 	public Optional<Event> findById(Long id);
@@ -22,7 +23,7 @@ public interface EventService {
 	public List<Event> findAll();
 	public void remove(Long id);
 	public ArrayList<Event> getReservedTickets(Long eventId);
-	public ArrayList<Event> getSoldTickets(Long eventId);
+	public ArrayList<Ticket> getSoldTickets(Long eventId);
 	public List<Event> getActiveEvents();
 	boolean eventIsActive(long eventId);
 	public EventReportDTO getEventReport(Long id);
