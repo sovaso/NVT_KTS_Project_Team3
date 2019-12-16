@@ -133,16 +133,18 @@ public class EventController {
 		}
 	}
 
-	@GetMapping(value = "/sortByName")
-	public ResponseEntity<?> sortByName() {
+	@GetMapping(value = "/sortByName", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Event>> sortByName() {
 		System.out.println("Sort by name called");
 		List<Event> events  = eventService.findAllSortedName();
+		return new ResponseEntity<>(events, HttpStatus.OK);
+		/*
 		if (events.size() != 0) {
 			return new ResponseEntity<>(events, HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(new MessageDTO("Not found", "No events in database."), HttpStatus.NOT_FOUND);
 		}
-		
+		*/
 	}
 	
 	@GetMapping(value = "/sortByDateAcs")

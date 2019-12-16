@@ -38,7 +38,7 @@ import com.nvt.kts.team3.security.auth.JwtAuthenticationRequest;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class AuthenitcationControllerIntegrationTest {
+public class AuthenticationControllerIntegrationTest {
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 
@@ -78,6 +78,29 @@ public class AuthenitcationControllerIntegrationTest {
 		assertFalse(responseBody);
 		assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
 	}
+	/*
+	@Test
+	public void registerAdmin_unauthorized() {
+		UserDTO userDto = new UserDTO(1L, "Name", "Surname", "user1", "n@n", "123",  null, false, null);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+"wwww");
+		
+		HttpEntity<UserDTO> httpEntity = new HttpEntity<UserDTO>(userDto, headers);
+		ResponseEntity<Boolean> responseEntity = testRestTemplate.exchange("/auth/registerAdmin", HttpMethod.POST,
+				httpEntity, Boolean.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	
+	@Test
+	public void registerAdmin_unauthorized_noToken() {
+		UserDTO userDto = new UserDTO(1L, "Name", "Surname", "user1", "n@n", "123",  null, false, null);
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<UserDTO> httpEntity = new HttpEntity<UserDTO>(userDto, headers);
+		ResponseEntity<Boolean> responseEntity = testRestTemplate.exchange("/auth/registerAdmin", HttpMethod.POST,
+				httpEntity, Boolean.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	*/
 	/*
 	Uraditi rollback nad bazom
 	@Test

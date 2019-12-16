@@ -39,6 +39,7 @@ public class EventControllerIntegrationTest {
 	private String token;
 	
 	@Test
+	@Transactional
 	public void testSortByName_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/sortByName", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -56,6 +57,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testSortByDateAcs_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/sortByDateAcs", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -76,7 +78,9 @@ public class EventControllerIntegrationTest {
 		assertEquals("Event2", events[12].getName());
 	}
 	
+	
 	@Test
+	@Transactional
 	public void testSortByDateDesc_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/sortByDateDesc", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -98,6 +102,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testSearchEvent_fieldGiven_eventName() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event2/***/***", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -109,6 +114,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void testSearchEvent_fieldGiven_eventName_moreThanOneResult() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event1/***/***", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -123,6 +129,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_onlyField_eventNameGiven_nonFound() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/someEventName/***/***", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -132,6 +139,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_onlyField_eventTypeGiven_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/entertainment/***/***", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -146,6 +154,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_onlyField_addressGiven_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address4/***/***", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -158,6 +167,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_onlyField_dateGiven_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2021-01-15T00:00/***", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -169,6 +179,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_onlyField_dateGiven_unsuccessfull() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2010-01-15T00:00/***", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -178,6 +189,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEvent_onlyField_dateGiven_successfullMoreThanOneResult() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2018-01-01T00:00/***", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -191,6 +203,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_period_successfull() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		Event[] events = responseEntity.getBody();
@@ -207,6 +220,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_period_nonFound() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/***/2010-01-15T00:00/2010-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -216,6 +230,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_unsuccessfull_noTypeInThatPeriod() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/ENTERTAINMENT/2021-01-15T00:00/2021-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -225,6 +240,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_unsuccessfull_noAddressInThatPeriod() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address6/2021-01-15T00:00/2021-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -234,6 +250,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_unsuccessfull_noEventInThatPeriod() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event7/2021-01-15T00:00/2021-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -243,6 +260,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_unsuccessfull_eventExistsButNotInThatPeriod() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event1/2010-01-15T00:00/2010-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -253,6 +271,7 @@ public class EventControllerIntegrationTest {
 	
 
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_unsuccessfull_addressExistsButNotInThatPeriod() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Address1/2010-01-15T00:00/2010-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -262,6 +281,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEventPeriodAndType_unsuccessfull_typeoExistsButNotInThatPeriod() {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.getForEntity("/api/findEvent/sports/2010-01-15T00:00/2010-12-15T00:00", MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
@@ -271,6 +291,7 @@ public class EventControllerIntegrationTest {
 	}
 	
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_successfull_eventNameGivenForPeriod() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/Event1/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -282,6 +303,7 @@ public class EventControllerIntegrationTest {
 	}
 
 	@Test
+	@Transactional
 	public void searchEvent_periodAndType_successfull_eventTypeGivenForPeriod() {
 		ResponseEntity<Event[]> responseEntity = testRestTemplate.getForEntity("/api/findEvent/SPORTS/2021-01-15T00:00/2021-12-15T00:00", Event[].class);
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -362,5 +384,6 @@ public class EventControllerIntegrationTest {
 		assertEquals(EventType.SPORTS, events[0].getType());
 	}
 
+	
 	
 }

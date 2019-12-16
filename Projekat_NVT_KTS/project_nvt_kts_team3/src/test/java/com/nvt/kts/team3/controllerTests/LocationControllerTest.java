@@ -65,6 +65,7 @@ public class LocationControllerTest {
 
 	
 	@Test
+	@Transactional
 	public void getLocation_successfull() {
 		
 		ResponseEntity<Location> responseEntity = testRestTemplate.getForEntity("/api/getLocation/1", Location.class);
@@ -79,6 +80,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getLocation_null() {
 		ResponseEntity<Location> responseEntity = testRestTemplate.getForEntity("/api/getLocation/100", Location.class);
 		Location foundLocation = responseEntity.getBody();
@@ -87,6 +89,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getLocation_notActive() {
 		ResponseEntity<Location> responseEntity = testRestTemplate.getForEntity("/api/getLocation/3", Location.class);
 		Location foundLocation = responseEntity.getBody();
@@ -96,6 +99,7 @@ public class LocationControllerTest {
 	
 	//Obraditi slucaj i kada se vraca prazna lista
 	@Test
+	@Transactional
 	public void getAllLocations_successfull() {
 		ResponseEntity<Location[]> responseEntity = testRestTemplate.getForEntity("/api/getAllLocations", Location[].class);
 		Location[] locations = responseEntity.getBody();
@@ -104,6 +108,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void getActiveLocations_successfull() {
 		ResponseEntity<Location[]> responseEntity = testRestTemplate.getForEntity("/api/getActiveLocations", Location[].class);
 		Location[] locations = responseEntity.getBody();
@@ -111,7 +116,7 @@ public class LocationControllerTest {
 		assertEquals(5, locations.length);
 	}
 	
-
+	/*
 	@Test
 	@Transactional
 	@Rollback(true)
@@ -129,9 +134,10 @@ public class LocationControllerTest {
 		assertEquals("Success", messageDto.getMessage());
 		assertEquals("Location successfully created.", messageDto.getHeader());
 	}
+	*/
 	
-
 	@Test
+	@Transactional
 	public void createLocation_LocationAlreadyExist() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setId(1L);
@@ -150,8 +156,45 @@ public class LocationControllerTest {
 		assertEquals("Location with that name and address already exist.", messageDto.getHeader());
 	}
 	
+	
 	@Test
-	public void saveLocation_locationZoneEmpty() {
+	@Transactional
+	public void createLocation_unatuhorized() {
+		LocationDTO locationDto = new LocationDTO();
+		locationDto.setId(1L);
+		locationDto.setName("Name1");
+		locationDto.setAddress("Address1");
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+"wwwww");
+		
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	
+	@Test
+	@Transactional
+	public void createLocation_unatuhorized_noToken() {
+		LocationDTO locationDto = new LocationDTO();
+		locationDto.setId(1L);
+		locationDto.setName("Name1");
+		locationDto.setAddress("Address1");
+		
+		HttpHeaders headers = new HttpHeaders();
+		
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	
+	
+	
+	@Test
+	@Transactional
+	public void createLocation_locationZoneEmpty() {
 		LocationDTO locationDto = new LocationDTO();
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -168,7 +211,8 @@ public class LocationControllerTest {
 	}
 	
 	@Test
-	public void saveLocation_locationZoneNull() {
+	@Transactional
+	public void createLocation_locationZoneNull() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setLocationZone(null);
 		HttpHeaders headers = new HttpHeaders();
@@ -184,7 +228,8 @@ public class LocationControllerTest {
 	}
 	
 	@Test
-	public void saveLocation_invalidLocationZone() {
+	@Transactional
+	public void createLocation_invalidLocationZone() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -208,7 +253,8 @@ public class LocationControllerTest {
 	
 	//capacity > 0, matrix = true, col <  0, row < 0
 	@Test
-	public void saveLocation_invalidLocationZoneCaseTwo() {
+	@Transactional
+	public void createLocation_invalidLocationZoneCaseTwo() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -233,7 +279,8 @@ public class LocationControllerTest {
 	
 	//col > 0, row > 0, matrix = false, capacity < 0
 	@Test
-	public void saveLocation_invalidLocationZoneCaseThree() {
+	@Transactional
+	public void createLocation_invalidLocationZoneCaseThree() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -256,7 +303,8 @@ public class LocationControllerTest {
 	}
 	
 	@Test
-	public void saveLocationZone_invalidLocationZoneCaseFour() {
+	@Transactional
+	public void createLocationZone_invalidLocationZoneCaseFour() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -280,7 +328,8 @@ public class LocationControllerTest {
 	
 	//matrix = true, columns > 0, rows < 0, capacity < 0
 	@Test
-	public void saveLocation_invalidLocationZoneCaseFive() {
+	@Transactional
+	public void createLocation_invalidLocationZoneCaseFive() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -304,7 +353,8 @@ public class LocationControllerTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity > 0
 	@Test
-	public void saveLocation_invalidLocationZoneCaseSix() {
+	@Transactional
+	public void createLocation_invalidLocationZoneCaseSix() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -328,7 +378,8 @@ public class LocationControllerTest {
 	
 	//matrix = true, columns < 0, rows > 0, capacity < 0
 	@Test
-	public void saveLocation_invalidLocationZoneCaseSeven() {
+	@Transactional
+	public void createLocation_invalidLocationZoneCaseSeven() {
 		LocationDTO locationDto = new LocationDTO();
 		locationDto.setName("NewLocation");
 		locationDto.setAddress("NewAddress");
@@ -351,6 +402,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void updateLocation_locationNull_locationNotFound() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -363,8 +415,10 @@ public class LocationControllerTest {
 		assertEquals("Bad request", messageDto.getMessage());
 		assertEquals("Location not found.", messageDto.getHeader());
 	}
+
 	
 	@Test
+	@Transactional
 	public void updateLocation_locationNotActive_locationNotFound() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -379,6 +433,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void updateLocation_locationExists() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -391,9 +446,38 @@ public class LocationControllerTest {
 		assertEquals("Not found", messageDto.getMessage());
 		assertEquals("Location with submited name and address already exist.", messageDto.getHeader());
 	}
+	
+	@Test
+	@Transactional
+	public void updateLocation_unauthorized() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+"wwww");
+		LocationDTO locationDto = new LocationDTO(1, "NewLocationn", "NewAdress", "NewDescriptionn");
+		//LocationZoneDTO locationZoneDto = new LocationZoneDTO(99, 99, true, "NewLocationZone", 20, 10, 200);
+		//locationDto.getLocationZone().add(locationZoneDto);
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/updateLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	
+	@Test
+	@Transactional
+	public void updateLocation_unauthorized_noToken() {
+		HttpHeaders headers = new HttpHeaders();
+		LocationDTO locationDto = new LocationDTO(1, "NewLocationn", "NewAdress", "NewDescriptionn");
+		//LocationZoneDTO locationZoneDto = new LocationZoneDTO(99, 99, true, "NewLocationZone", 20, 10, 200);
+		//locationDto.getLocationZone().add(locationZoneDto);
+		HttpEntity<LocationDTO> httpEntity = new HttpEntity<LocationDTO>(locationDto, headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/updateLocation", HttpMethod.POST,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	
+	}
 /*
 	@Test
 	@Transactional
+	@Rollback(true)
 	public void updateLocation_successfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -408,10 +492,10 @@ public class LocationControllerTest {
 		assertEquals("Success", messageDto.getMessage());
 		assertEquals("Location successfully updated.", messageDto.getHeader());
 	}
-	*/
-
 	
+*/
 	
+	/*
 	@Test
 	@Transactional
 	public void deleteLocation_successfull() {
@@ -428,8 +512,37 @@ public class LocationControllerTest {
 		assertEquals("Success", messageDto.getMessage());
 		assertEquals("Location successfully deleted.", messageDto.getHeader());
 	}
+	*/
 	
 	@Test
+	@Transactional
+	public void deleteLocation_unauthorized() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Bearer "+"wwww");
+		//LocationDTO locationDto = new LocationDTO(1, "NewLocationn", "NewAdress", "NewDescriptionn");
+		//LocationZoneDTO locationZoneDto = new LocationZoneDTO(99, 99, true, "NewLocationZone", 20, 10, 200);
+		//locationDto.getLocationZone().add(locationZoneDto);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteLocation/6", HttpMethod.DELETE,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	
+	@Test
+	@Transactional
+	public void deleteLocation_unauthorized_noToken() {
+		HttpHeaders headers = new HttpHeaders();
+		//LocationDTO locationDto = new LocationDTO(1, "NewLocationn", "NewAdress", "NewDescriptionn");
+		//LocationZoneDTO locationZoneDto = new LocationZoneDTO(99, 99, true, "NewLocationZone", 20, 10, 200);
+		//locationDto.getLocationZone().add(locationZoneDto);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteLocation/6", HttpMethod.DELETE,
+				httpEntity, MessageDTO.class);
+		assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
+	}
+	
+	@Test
+	@Transactional
 	public void deleteLocation_locationNull_locationNotFound(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -443,6 +556,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void deleteLocation_locationNull_locationNotActive(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
@@ -456,6 +570,7 @@ public class LocationControllerTest {
 	}
 	
 	@Test
+	@Transactional
 	public void deleteLocation_locationNotChangeable(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);

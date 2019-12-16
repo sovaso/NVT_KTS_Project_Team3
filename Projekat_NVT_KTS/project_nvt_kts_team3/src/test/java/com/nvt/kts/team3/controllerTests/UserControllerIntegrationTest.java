@@ -56,6 +56,7 @@ public class UserControllerIntegrationTest {
 		
 	}
 	
+	
 	@Test
 	public void findByIdSuccessfull() {
 		HttpHeaders headers = new HttpHeaders();
