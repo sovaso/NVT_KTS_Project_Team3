@@ -5,6 +5,7 @@ import { LocationsService } from '../locations/locations.service';
 
 
 import { Observable } from 'rxjs';
+import { Event } from 'src/app/model/event.model';
 
 @Injectable({
   providedIn: 'root'

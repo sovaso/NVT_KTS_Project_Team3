@@ -5,6 +5,7 @@ import { EventDto } from 'src/app/dto/event.dto';
 import { MessageDto } from 'src/app/dto/message.dto';
 import { EventReportDto } from 'src/app/dto/event_report.dto';
 import { UploadFileDto } from 'src/app/dto/upload_file.dto';
+import { Event } from 'src/app/model/event.model';
 
 
 @Injectable({

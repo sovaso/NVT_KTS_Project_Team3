@@ -124,9 +124,11 @@ public class ReservationController {
 	@GetMapping(value = "/getEventReservations/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventReservations(@PathVariable long eventId) {
+		System.out.println("Uslo u get event reservations!!!!!!");
 		Optional<Event> e = this.eventService.findById(eventId);
 		if (e.isPresent()) {
 			List<Reservation> res = this.reservationService.findByEvent(e.get());
+			System.out.println("Broj rezervacija: "+res.size());
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(new MessageDTO("Event Not Found", "Event with this ID does not exist."), HttpStatus.NOT_FOUND);

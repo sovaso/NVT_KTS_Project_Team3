@@ -30,6 +30,8 @@ import { UpdateEventComponent } from './events/update-event/update-event.compone
 import { AlertComponent } from './directives';
 import { AlertService } from './services';
 import { AlertBoxComponent } from './alert-box/alert-box.component';
+import { EventDetailsComponent } from './events/event-details/event-details.component';
+
 
 
 
@@ -48,7 +50,8 @@ import { AlertBoxComponent } from './alert-box/alert-box.component';
     MyReservationsComponent,
     ReportsComponent,
     UpdateEventComponent,
-    AlertBoxComponent
+    AlertBoxComponent,
+    EventDetailsComponent
   ],
   imports: [
     NgbModule,
@@ -74,7 +77,8 @@ import { AlertBoxComponent } from './alert-box/alert-box.component';
   bootstrap: [AppComponent],
   entryComponents: [
     EditProfileComponent,
-    AlertBoxComponent
+    AlertBoxComponent,
+    EventDetailsComponent
   ],
   exports: [ EditProfileComponent ]
 })

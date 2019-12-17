@@ -41,7 +41,7 @@
                 <td>{{event.type.toLowerCase()}}</td>
                 <td>{{event.status}}</td>
                 <td>{{event.locationInfo.name}}</td> 
-                <td><button class="btn btn-primary" (click)="updateEvent(event)">Show details</button></td>
+                <td><button class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
                 <ngb-tab title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
                 <td><button class="btn btn-danger" (click)="deleteEvent(event)" >Delete</button>
                     <button class="btn btn-primary" (click)="updateEvent(event)">Edit</button></td>

@@ -5,6 +5,8 @@ import { EventsService } from '../services/events/events.service';
 import { AlertService } from '../services';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertBoxComponent } from '../alert-box/alert-box.component';
+import { EventDetailsComponent } from './event-details/event-details.component';
+import { Event } from '../model/event.model';
 
 @Component({
   selector: 'app-events',
@@ -15,6 +17,7 @@ export class EventsComponent implements OnInit {
 
   events: Event[];
   locations: Location[];
+  
 
   activeTab: String;
 
@@ -59,9 +62,15 @@ export class EventsComponent implements OnInit {
         modalRef.componentInstance.message=data.header;
     }
     );
+  }
 
- 
-    
+  showDetails(e){
+    console.log('show details called');
+    console.log(e.id);
+    this.eventsService.getById(e.id).subscribe(data => {
+      const modalRef = this.modalService.open(EventDetailsComponent);
+      modalRef.componentInstance.event = data;
+    });
   }
 
   sortByDateAcs(){
