@@ -147,7 +147,7 @@ public class ReservationController {
 	public ResponseEntity<MessageDTO> cancelTicket(@PathVariable long ticketId) {
 		// dodaj prover da je moguce obrisati rezervaciju samo ako je pre dogadjaja
 		Boolean b = this.ticketService.cancelTicket(ticketId);
-		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
+		return new ResponseEntity<>(new MessageDTO("Success", "Ticket successfuly cancelled!"), HttpStatus.OK);
 	}
 
 }

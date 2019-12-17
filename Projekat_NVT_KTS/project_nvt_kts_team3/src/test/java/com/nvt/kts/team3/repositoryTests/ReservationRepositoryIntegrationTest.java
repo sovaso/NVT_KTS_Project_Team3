@@ -1,8 +1,9 @@
 package com.nvt.kts.team3.repositoryTests;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,35 +12,50 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
+import com.nvt.kts.team3.repository.EventRepository;
 import com.nvt.kts.team3.repository.ReservationRepository;
 import com.nvt.kts.team3.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ReservationRepositoryIntegrationTest {
-		@Autowired
-		ReservationRepository reservationRepository;
-		
-		@Autowired
-		UserRepository userRepository;
-		
-		@Test
-		@Transactional
-		public void test_findByEvent() {
-			//RegularUser u=new RegularUser(1L,"user1","user1","user1","a@a","$2a$10$.0EvoW1g2cAX.fcXuvrgzO2e6iOpeWUhAdLJDJHv8xSFZOcrR8uUa");
-			List<Reservation> reservations=reservationRepository.findByUser((RegularUser)userRepository.findById(1L));
-			
-//		   Set<Event> events=new HashSet<>();
-//		   Set<LocationZone> locationZones=new HashSet<>();
-//		   
-//		   Location location=new Location(1L,"Name1","Address23","Description1",true,events,locationZones);
-//		   LeasedZone leasedZone=new LeasedZone();
-//		   Maintenance mt=new Ma
-//		   leasedZone.setId(1L);
-//		   
-//	       LocationZone locationZone=new LocationZone(1L, 10, "Name1", 200, true, 20, leasedZone, location);
-		}
-		
+	
+	@Autowired
+	ReservationRepository reservationRepository;
+	
+	@Autowired
+	UserRepository userRepository;
+	
+	@Autowired
+	EventRepository eventRepository;
+	
+	@Test
+	public void test_findByUser() {
+		RegularUser u=(RegularUser) this.userRepository.findByUsername("user1");
+		List<Reservation> userReservations=this.reservationRepository.findByUser(u);
+		assertEquals(3,userReservations.size());
+	}
+	
+	
+	@Test
+	public void test_findByUserAndPaid() {
+		RegularUser u=(RegularUser) this.userRepository.findByUsername("user1");
+		List<Reservation> userReservations=this.reservationRepository.findByUserAndPaid(u,false);
+		assertEquals(2,userReservations.size());
+	}
+	
+	
+	@Test
+	public void test_findByEvent() {
+		Optional<Event> e=this.eventRepository.findById(2L);
+		List<Reservation> reservations=this.reservationRepository.findByEvent(e.get());
+		assertEquals(4,reservations.size());
+	}
+	
+	
+	
+
 }
