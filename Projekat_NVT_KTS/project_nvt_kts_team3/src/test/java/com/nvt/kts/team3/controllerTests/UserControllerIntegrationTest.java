@@ -79,7 +79,7 @@ public class UserControllerIntegrationTest {
 				httpEntity, User[].class);
 		User[] users = responseEntity.getBody();
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertEquals(5, users.length);
+		assertEquals(6, users.length);
 	}
 	
 	/*

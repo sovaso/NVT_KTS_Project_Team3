@@ -54,6 +54,8 @@ INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, l
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (4, 400, 40, 1, 'Name4', 10, 6) ON DUPLICATE KEY UPDATE id = 4;
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (5, 200, 20, 1, 'Name5', 10, 2) ON DUPLICATE KEY UPDATE id = 5;
 INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (6, 200, 20, 1, 'Name6', 10, 5) ON DUPLICATE KEY UPDATE id = 6;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (7, 200, 20, 1, 'Name6', 10, 4) ON DUPLICATE KEY UPDATE id = 7;
+
 
 INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (1, 200, 1, 0,1) ON DUPLICATE KEY UPDATE id = 1; 
 
@@ -64,6 +66,8 @@ INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_i
 INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (4, 200, 3, 0,5) ON DUPLICATE KEY UPDATE id = 4; 
 
 INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (5, 200, 13, 0,6) ON DUPLICATE KEY UPDATE id = 5; 
+
+INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (6, 200, 5, 0,7) ON DUPLICATE KEY UPDATE id = 6; 
 
 INSERT INTO reservation (id, date_of_reservation, paid, total_price,version, event_id, user_id)  VALUES (1, '2019-11-09 00:00', 0, 200,0, 2, 1) ON DUPLICATE KEY UPDATE id = 1;
 
@@ -115,6 +119,10 @@ INSERT INTO ticket (id, number_col, price, reserved, number_row, version,reserva
 INSERT INTO ticket (id, number_col, price, reserved, number_row, version,leased_zone_id) VALUES (24, 1, 200, 0, 21,0, 1) ON DUPLICATE KEY UPDATE id = 24;
 
 INSERT INTO ticket (id, number_col, price, reserved, number_row, version,leased_zone_id) VALUES (25, 1, 200, 0, 22,0, 1) ON DUPLICATE KEY UPDATE id = 25;
+
+INSERT INTO ticket (id, number_col, price, reserved, number_row, version,leased_zone_id) VALUES (26, 1, 200, 0, 23,0, 6) ON DUPLICATE KEY UPDATE id = 26;
+
+INSERT INTO ticket (id, number_col, price, reserved, number_row, version,leased_zone_id) VALUES (27, 1, 200, 0, 24,0, 6) ON DUPLICATE KEY UPDATE id = 27;
 
 INSERT INTO authority (id, name) VALUES (1,'ROLE_USER') ON DUPLICATE KEY UPDATE id = 1;
 INSERT INTO authority (id, name) VALUES (2,'ROLE_ADMIN') ON DUPLICATE KEY UPDATE id = 2;
