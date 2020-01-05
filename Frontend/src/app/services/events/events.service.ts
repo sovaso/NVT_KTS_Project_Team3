@@ -50,7 +50,7 @@ export class EventsService {
   getEventIncome = (id: string): Observable<number> =>
   this.http.get<number>(`http://localhost:8080/api/getEventIncome/${ id }`);
 
-  getEventReport = (id: string): Observable<EventReportDto> =>
+  seeReport = (id: string): Observable<EventReportDto> =>
   this.http.get<EventReportDto>(`http://localhost:8080/api/getEventReport/${ id }`);
 
   uploadFile = (uploadFile: UploadFileDto): Observable<string> =>
@@ -69,4 +69,7 @@ export class EventsService {
 
   sortByDateDesc = (): Observable<any> =>
   this.http.get<any>(`http://localhost:8080/api/sortByDateDesc`);
+
+  getIncome = (id:string): Observable<any> =>
+  this.http.get<any>(`http://localhost:8080/api/getEventIncome/${id}`);
 }

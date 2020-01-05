@@ -1,1 +1,39 @@
-<p>locations works!</p>
+
+<div class="container">    
+    <ngb-tab  title="Create new" id="createLocationTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+        <button class="btn btn-primary" (click)="newLocation()">New Location</button>
+        <div class="divider"></div>
+    </ngb-tab>
+    <div *ngIf="message!==''">
+            <ngb-alert [type]="type" >{{message}}</ngb-alert>  
+    </div>
+    <div *ngIf="message===''">
+    <table class="table table-striped">
+        <thead>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Description</th>
+            <th>Status</th>          
+        </thead>
+        <tbody>
+            <tr *ngFor="let location of locations">
+                <td>{{location.id}}</td>
+                <td>{{location.name}}</td>
+                <td>{{location.address}}</td>
+                <td>{{location.description}}</td>
+                <td *ngIf="location.status===true; else elseblock">active</td>
+                    <ng-template #elseblock>
+                        <td>not active</td>
+                    </ng-template> 
+                <td><button class="btn btn-primary" (click)="showDetails(location)">Show details</button></td>
+                <ngb-tab title="Create new" id="createLocationTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+                <td><button class="btn btn-danger" (click)="deleteLocation(location)" >Delete</button></td>
+                <td><button class="btn btn-primary" (click)="updateLocation(location)">Edit</button></td>
+                <td><button class="btn btn-primary" (click)="seeReport(location)">See report</button></td>
+                </ngb-tab>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>

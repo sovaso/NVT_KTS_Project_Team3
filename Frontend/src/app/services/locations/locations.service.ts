@@ -38,11 +38,13 @@ export class LocationsService {
   update = (location: LocationDto): Observable<MessageDto> =>
   this.http.put<MessageDto>(`http://localhost:8080/api/updateLocation`, location);
 
-  delete = (id: string): Observable<MessageDto> =>
-  this.http.delete<MessageDto>(`http://localhost:8080/api/deleteLocation/${id}`)
+  delete = (id: string): Observable<MessageDto> =>{
+    console.log('delete from service called');
+    console.log(id);
+    return this.http.delete<MessageDto>(`http://localhost:8080/api/deleteLocation/${id}`)
+  }
 
-
-  getLocationReport = (id: string): Observable<LocationReportDto> =>
+  seeReport = (id: string): Observable<LocationReportDto> =>
   this.http.get<LocationReportDto>(`http://localhost:8080/api/getLocationReport/${ id }`);
 
   
