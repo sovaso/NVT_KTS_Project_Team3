@@ -7,6 +7,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertBoxComponent } from '../alert-box/alert-box.component';
 import { EventDetailsComponent } from './event-details/event-details.component';
 import { Event } from '../model/event.model';
+import { EventReportComponent } from './event-report/event-report.component';
+
 
 @Component({
   selector: 'app-events',
@@ -93,6 +95,13 @@ export class EventsComponent implements OnInit {
     console.log('reset called');
     this.sharedService.updateAll();
   }
+
+  getIncome(event){
+    this.eventsService.getIncome(event.id).subscribe(data => {
+      const modalRef = this.modalService.open(AlertBoxComponent);
+      modalRef.componentInstance.message='Income for '+event.name+' is: '+data;
+    });
+  }
   search(){
     if ((this.field == '' || this.field == "***") && (this.startDate == '' || this.startDate == "***")
      && (this.endDate=='' || this.endDate=="***")){
@@ -135,6 +144,15 @@ export class EventsComponent implements OnInit {
       document.getElementById("sortByName").hidden=true;
       
     }
+    }
+
+    
+
+    seeReport(event){
+      this.eventsService.seeReport(event.id).subscribe(data => {
+          const modalRef = this.modalService.open(EventReportComponent);
+          modalRef.componentInstance.data = data;
+    });
     }
 
     

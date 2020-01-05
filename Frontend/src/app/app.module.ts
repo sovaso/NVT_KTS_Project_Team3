@@ -31,7 +31,9 @@ import { AlertComponent } from './directives';
 import { AlertService } from './services';
 import { AlertBoxComponent } from './alert-box/alert-box.component';
 import { EventDetailsComponent } from './events/event-details/event-details.component';
-
+import { LocationDetailsComponent } from './locations/location-details/location-details.component';
+import { EventReportComponent } from './events/event-report/event-report.component';
+import {LocationReportComponent} from './locations/location-report/location-report.component';
 
 
 
@@ -51,7 +53,10 @@ import { EventDetailsComponent } from './events/event-details/event-details.comp
     ReportsComponent,
     UpdateEventComponent,
     AlertBoxComponent,
-    EventDetailsComponent
+    EventDetailsComponent,
+    LocationDetailsComponent,
+    EventReportComponent,
+    LocationReportComponent
   ],
   imports: [
     NgbModule,
@@ -78,7 +83,9 @@ import { EventDetailsComponent } from './events/event-details/event-details.comp
   entryComponents: [
     EditProfileComponent,
     AlertBoxComponent,
-    EventDetailsComponent
+    EventDetailsComponent,
+    EventReportComponent,
+    LocationReportComponent
   ],
   exports: [ EditProfileComponent ]
 })

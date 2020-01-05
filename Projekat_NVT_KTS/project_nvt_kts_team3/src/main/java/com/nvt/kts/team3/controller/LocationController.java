@@ -106,9 +106,9 @@ public class LocationController {
 			locationService.remove(locationId);
 			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully deleted."), HttpStatus.OK);
 		}catch(LocationNotFound e) {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Location not found."), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location not found."), HttpStatus.OK);
 		}catch(LocationNotChangeable e) {
-			return new ResponseEntity<>(new MessageDTO("Conflict", "Location not changeable."), HttpStatus.CONFLICT);
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location not changeable."), HttpStatus.OK);
 		}
 		
 	}

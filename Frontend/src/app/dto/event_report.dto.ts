@@ -1,5 +1,6 @@
 
 export interface EventReportDto{
+    dailyLabels: Array<string>;
     dailyValues : Array<number>;
     weeklyLabels: Array<string>;
     weeklyValues: Array<number>;
