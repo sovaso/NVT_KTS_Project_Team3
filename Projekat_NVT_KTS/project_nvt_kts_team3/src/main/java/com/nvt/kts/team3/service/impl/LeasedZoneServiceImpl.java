@@ -3,6 +3,7 @@ package com.nvt.kts.team3.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
+import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.model.Maintenance;
@@ -21,11 +23,15 @@ import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
 import com.nvt.kts.team3.service.TicketService;
 
+import exception.EventNotActive;
+import exception.EventNotFound;
 import exception.InvalidLocationZone;
 import exception.InvalidPrice;
 import exception.LeasedZoneNotChangeable;
 import exception.LeasedZoneNotFound;
 import exception.LocationNotFound;
+import exception.LocationZoneNotAvailable;
+import exception.LocationZoneNotFound;
 import exception.MaintenanceNotFound;
 
 @Service
@@ -49,20 +55,30 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 
 	@Override
 	public LeasedZone findById(Long id) {
-		return leasedZoneRepository.getOne(id);
+		Optional<LeasedZone> leasedZone = leasedZoneRepository.findById(id);
+		if(leasedZone.isPresent()){
+			return leasedZone.get();
+		}
+		return null;
 	}
 
 	@Override
 	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LeasedZone save(LeasedZoneDTO lz) {
 		Maintenance maintenance = maintenanceService.findById(lz.getMaintenanceId());
-		if (maintenance == null || eventService.eventIsActive(maintenance.getEvent().getId()) == false) {
+		if (maintenance == null) {
 			throw new MaintenanceNotFound();
 		}
+		if(eventService.eventIsActive(maintenance.getEvent().getId()) == false){
+			throw new EventNotActive();
+		}
 		LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
-		if (locationZone == null
-				|| locationZone.getLocation().getId() != maintenance.getEvent().getLocationInfo().getId()) {
-			throw new LocationNotFound();
+		if(locationZone == null){
+			throw new LocationZoneNotFound();
+		}
+		
+		if (locationZone.getLocation().getId() != maintenance.getEvent().getLocationInfo().getId()) {
+			throw new LocationZoneNotAvailable();
 		}
 		if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
 			throw new InvalidPrice();
@@ -93,17 +109,23 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 		if (newZone == null) {
 			throw new LeasedZoneNotFound();
 		}
-		Maintenance maintenance = maintenanceService.findById(lz.getMaintenanceId());
-		if (maintenance == null || eventService.eventIsActive(maintenance.getEvent().getId()) == false) {
-			throw new MaintenanceNotFound();
+		
+		Maintenance maintenance = newZone.getMaintenance();
+		if(eventService.eventIsActive(maintenance.getEvent().getId()) == false){
+			throw new EventNotActive();
 		}
+		
+		LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
+		if(locationZone == null){
+			throw new LocationZoneNotFound();
+		}
+		
+		if (locationZone.getLocation().getId() != maintenance.getEvent().getLocationInfo().getId()) {
+			throw new LocationZoneNotAvailable();
+		}
+			
 		if (ticketService.getLeasedZoneReservedTickets(lz.getId()).isEmpty() == false) {
 			throw new LeasedZoneNotChangeable();
-		}
-		LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
-		if (locationZone == null
-				|| locationZone.getLocation().getId() != maintenance.getEvent().getLocationInfo().getId()) {
-			throw new InvalidLocationZone();
 		}
 
 		ticketService.deleteByZoneId(newZone.getId());
@@ -138,9 +160,13 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 		if (newZone == null) {
 			throw new LeasedZoneNotFound();
 		}
+		if(eventService.eventIsActive(newZone.getMaintenance().getEvent().getId()) == false){
+			throw new EventNotActive();
+		}
 		if (ticketService.getLeasedZoneReservedTickets(id).isEmpty() == false) {
 			throw new LeasedZoneNotChangeable();
 		}
+		ticketService.deleteByZoneId(id);
 		leasedZoneRepository.deleteById(newZone.getId());
 	}
 
@@ -151,12 +177,20 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 
 	@Override
 	public ArrayList<LeasedZone> getEventLeasedZones(long eventId) {
+		Event event = eventService.findById(eventId);
+		if(event == null){
+			throw new EventNotFound();
+		}
 		return leasedZoneRepository.getEventLeasedZones(eventId);
 	}
 
 	@Override
 	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<LeasedZone> deleteByMaintenanceId(long maintenanceId) {
+		Maintenance maintenance = maintenanceService.findById(maintenanceId);
+		if(maintenance == null){
+			throw new MaintenanceNotFound();
+		}
 		return leasedZoneRepository.deleteByMaintenanceId(maintenanceId);
 	}
 

@@ -3,14 +3,9 @@ package com.nvt.kts.team3.controller;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.EventDTO;
@@ -31,7 +25,6 @@ import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.UploadFileDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Location;
-import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.service.EventService;
 
 import exception.EventNotChangeable;
@@ -61,11 +54,11 @@ public class EventController {
 
 	@GetMapping(value = "/getEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Event> getEvent(@PathVariable(value = "id") Long eventId) { //menjano
-		Optional<Event> event = eventService.findById(eventId);
-		if (!event.isPresent()) {
+		Event event = eventService.findById(eventId);
+		if (event == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(event.get(), HttpStatus.OK);
+		return new ResponseEntity<>(event, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getAllEvents", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,27 +73,18 @@ public class EventController {
 
 	@GetMapping(value = "/getEventLocation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Location> getEventLocation(@PathVariable(value = "id") Long eventId) {
-		Optional<Event> event = eventService.findById(eventId);
-		if (!event.isPresent() || event.get().getLocationInfo() == null) {
+		Event event = eventService.findById(eventId);
+		if (event == null || event.getLocationInfo() == null) {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(event.get().getLocationInfo(), HttpStatus.OK);
+		return new ResponseEntity<>(event.getLocationInfo(), HttpStatus.OK);
 	}
 
 	@DeleteMapping(value = "/deleteEvent/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> deleteEvent(@PathVariable(value = "id") Long eventId) {
-		System.out.println("Uslo u delete event");
-		try {
-			eventService.remove(eventId);
-			return new ResponseEntity<>(new MessageDTO("Success", "Event successfully deleted."), HttpStatus.OK);
-		}catch(EventNotFound e) {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Event already deleted."), HttpStatus.OK);
-		}catch(EventNotChangeable e) {
-			return new ResponseEntity<>(new MessageDTO("Conflict", "Not able to be deleted. There are sold tickets."), HttpStatus.OK);
-		}
-		
-		
+		eventService.remove(eventId);
+		return new ResponseEntity<>(new MessageDTO("Success", "Event successfully deleted."), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getEventIncome/{event_id}", produces = MediaType.APPLICATION_JSON_VALUE)

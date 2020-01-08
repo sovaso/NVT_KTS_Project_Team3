@@ -64,7 +64,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(value = InvalidEventType.class)
     protected ResponseEntity<MessageDTO> handleInvalidEventType() {
-		return new ResponseEntity<>(new MessageDTO("Invalid Event Type", "Choosen event type could not be found."), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new MessageDTO("Invalid Event Type", "Choosen event type does not exist. Please choose: SPORTS, CULTURAL or ENTERTAINMENT event type."), HttpStatus.BAD_REQUEST);
     }
 	
 	@ExceptionHandler(value = InvalidLocationZone.class)
@@ -74,12 +74,12 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(value = InvalidPrice.class)
     protected ResponseEntity<MessageDTO> handleInvalidPrice() {
-		return new ResponseEntity<>(new MessageDTO("Invalid Price", "Please set a price of ticket that is between 1$ and 5000$."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Invalid Price", "Please set a price of ticket that is between 1$ and 10000$."), HttpStatus.NOT_ACCEPTABLE);
     }
 	
 	@ExceptionHandler(value = LeasedZoneNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleLeasedZoneNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Leased Zone Not Changeable", "There are reserved tickets for this zone, so, it can not be changed."), HttpStatus.NOT_MODIFIED);
+		return new ResponseEntity<>(new MessageDTO("Leased Zone Not Changeable", "There are reserved tickets for this zone, so, it can not be changed."), HttpStatus.NOT_ACCEPTABLE);
     }
 	
 	@ExceptionHandler(value = LeasedZoneNotFound.class)
@@ -94,7 +94,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(value = LocationNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleLocationNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Location Not Changeable", "Location could not be updated because there are reserved tickets for this location."), HttpStatus.NOT_MODIFIED);
+		return new ResponseEntity<>(new MessageDTO("Location Not Changeable", "Location could not be updated because there are reserved tickets for this location."), HttpStatus.NOT_ACCEPTABLE);
     }
 	
 	@ExceptionHandler(value = LocationNotFound.class)
@@ -109,7 +109,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 	
 	@ExceptionHandler(value = MaintenanceNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleMaintenanceNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Maintenance Not Changeable", "Choosen maintenance could not be updated because expiry date has passed."), HttpStatus.NOT_MODIFIED);
+		return new ResponseEntity<>(new MessageDTO("Maintenance Not Changeable", "Choosen maintenance could not be updated because there are reserved tickets for it."), HttpStatus.NOT_ACCEPTABLE);
     }
 	
 	@ExceptionHandler(value = MaintenanceNotFound.class)

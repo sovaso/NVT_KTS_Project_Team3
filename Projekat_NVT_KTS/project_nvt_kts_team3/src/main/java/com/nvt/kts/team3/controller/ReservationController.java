@@ -125,9 +125,9 @@ public class ReservationController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> getEventReservations(@PathVariable long eventId) {
 		System.out.println("Uslo u get event reservations!!!!!!");
-		Optional<Event> e = this.eventService.findById(eventId);
-		if (e.isPresent()) {
-			List<Reservation> res = this.reservationService.findByEvent(e.get());
+		Event e = this.eventService.findById(eventId);
+		if (e != null) {
+			List<Reservation> res = this.reservationService.findByEvent(e);
 			System.out.println("Broj rezervacija: "+res.size());
 			return new ResponseEntity<>(res, HttpStatus.OK);
 		} else {

@@ -44,7 +44,7 @@ public class ReservationRepositoryIntegrationTest {
 	public void test_findByUserAndPaid() {
 		RegularUser u=(RegularUser) this.userRepository.findByUsername("user1");
 		List<Reservation> userReservations=this.reservationRepository.findByUserAndPaid(u,false);
-		assertEquals(2,userReservations.size());
+		assertEquals(1,userReservations.size());
 	}
 	
 	
@@ -52,7 +52,7 @@ public class ReservationRepositoryIntegrationTest {
 	public void test_findByEvent() {
 		Optional<Event> e=this.eventRepository.findById(2L);
 		List<Reservation> reservations=this.reservationRepository.findByEvent(e.get());
-		assertEquals(4,reservations.size());
+		assertEquals(6,reservations.size());
 	}
 	
 	

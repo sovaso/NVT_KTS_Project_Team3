@@ -15,7 +15,7 @@ import com.nvt.kts.team3.model.LeasedZone;
 public interface LeasedZoneRepository extends JpaRepository<LeasedZone, Long>{
 
 	@Query("SELECT DISTINCT lz FROM LeasedZone lz " +
-		    "WHERE lz.maintenance.event = ?1 ")
+		    "WHERE lz.maintenance.event.id = ?1 ")
 	public ArrayList<LeasedZone> getEventLeasedZones(long eventId);
 	
 	@Transactional

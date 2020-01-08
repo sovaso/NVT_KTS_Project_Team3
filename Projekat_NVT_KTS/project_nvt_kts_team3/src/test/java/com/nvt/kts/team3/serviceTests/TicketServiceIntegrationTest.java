@@ -53,7 +53,7 @@ public class TicketServiceIntegrationTest {
 	@Transactional
 	public void test_getMaintenanceReservedTickets() {
 		List<Ticket> tickets=ticketService.getMaintenanceReservedTickets(1L);
-		assertEquals(15,tickets.size());
+		assertEquals(16,tickets.size());
 		
 	}
 	
@@ -61,7 +61,7 @@ public class TicketServiceIntegrationTest {
 	@Transactional
 	public void test_getMaintenanceSoldTickets() {
 		List<Ticket> tickets=ticketService.getMaintenanceSoldTickets(1L);
-		assertEquals(1,tickets.size());
+		assertEquals(13,tickets.size());
 	}
 	
 	@Test
@@ -85,14 +85,14 @@ public class TicketServiceIntegrationTest {
 	@Transactional
 	public void test_getLeasedZoneReservedTickets() { //RADI
 		List<Ticket> tickets=ticketService.getLeasedZoneReservedTickets(1L);
-		assertEquals(15,tickets.size());
+		assertEquals(16,tickets.size());
 	}
 	
 	@Test
 	@Transactional
 	public void test_getLeasedZoneSoldTickets() { //RADI
 		List<Ticket> tickets=ticketService.getLeasedZoneSoldTickets(1L);
-		assertEquals(1,tickets.size());
+		assertEquals(13,tickets.size());
 	}
 	
 	@Test
@@ -118,7 +118,7 @@ public class TicketServiceIntegrationTest {
 		LocalDateTime ldt=LocalDateTime.of(2021,01,16,00,00);
 		LocalDateTime ldt2=LocalDateTime.of(2021,01,19,00,00);
 		List<Ticket> tickets=ticketService.getExpieredUnpaidTickets(ldt, ldt2);
-		assertEquals(14,tickets.size());
+		assertEquals(3,tickets.size());
 	}
 	
 	@Test
@@ -128,7 +128,7 @@ public class TicketServiceIntegrationTest {
 		assertEquals(2,tickets.size());
 		assertEquals(23,tickets.get(0).getRow());
 		assertEquals(24,tickets.get(1).getRow());
-		assertEquals(25,ticketService.findAll().size());
+		assertEquals(29,ticketService.findAll().size());
 	}
 	
 

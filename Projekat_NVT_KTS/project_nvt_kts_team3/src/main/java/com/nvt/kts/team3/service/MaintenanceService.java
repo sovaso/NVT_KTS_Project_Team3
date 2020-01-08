@@ -1,6 +1,8 @@
 package com.nvt.kts.team3.service;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.mail.MessagingException;
@@ -17,7 +19,7 @@ public interface MaintenanceService {
 	public void remove(long id);
 	public Maintenance getLastMaintenanceOfEvent(long eventId);
 	public List<Maintenance> removeByEventId(long eventId);
-	public List<Maintenance> save(List<Maintenance> maintenances);
 	public void checkForExpieredTickets() throws AddressException, MessagingException;
 	public void warnUsersAboutExpiry() throws AddressException, MessagingException;
+	public ArrayList<Maintenance> getMaintenancesForDate(Long locationId, LocalDateTime startDate, LocalDateTime endDate);
 }

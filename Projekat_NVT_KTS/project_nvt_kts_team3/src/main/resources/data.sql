@@ -42,7 +42,6 @@ INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id)VALUES (10, '2019-01-01 00:00:00', '2019-01-20 00:00:00', '2019-01-17 00:00:00',0, 9) ON DUPLICATE KEY UPDATE id = 10;
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version, event_id)VALUES (11, '2019-02-02 00:00:00', '2019-02-12 00:00:00', '2019-02-10 00:00:00',0, 4) ON DUPLICATE KEY UPDATE id = 11;
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry,version, event_id) VALUES (12, '2018-01-01 00:00:00', '2018-01-15 00:00:00', '2019-01-13 00:00:00',0, 8) ON DUPLICATE KEY UPDATE id = 12;
-
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version,event_id) VALUES (13, '2018-01-01 00:00:00', '2018-01-10 00:00:00', '2019-01-08 00:00:00', 0,7) ON DUPLICATE KEY UPDATE id = 13;
 
 

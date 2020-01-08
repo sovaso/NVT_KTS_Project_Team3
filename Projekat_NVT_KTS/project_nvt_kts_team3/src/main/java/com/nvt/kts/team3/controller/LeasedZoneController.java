@@ -1,6 +1,7 @@
 package com.nvt.kts.team3.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
 import com.nvt.kts.team3.dto.MessageDTO;
+import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Maintenance;
+import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.LeasedZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
 
@@ -35,6 +38,9 @@ public class LeasedZoneController {
 	@Autowired
 	private LeasedZoneService leasedZoneService;
 	
+	@Autowired
+	private EventService eventService;
+	
 	@PostMapping(value = "/createLeasedZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLeasedZone(@RequestBody LeasedZoneDTO lz){
@@ -45,11 +51,11 @@ public class LeasedZoneController {
 	@PostMapping(value = "/updateLeasedZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> updateLeasedZone(@RequestBody LeasedZoneDTO lz){
-		leasedZoneService.remove(lz.getId());
+		leasedZoneService.update(lz);
 		return new ResponseEntity<>(new MessageDTO("Success", "Leased zone successfully updated."), HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/getLeasedZone{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getLeasedZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LeasedZone> getLeasedZone(@PathVariable(value = "id") Long id){
 		LeasedZone lz = leasedZoneService.findById(id);
 		if(lz == null){
@@ -58,7 +64,7 @@ public class LeasedZoneController {
 		return new ResponseEntity<>(lz, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/getLeasedZones{maintenanceId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/getLeasedZones/{maintenanceId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Set<LeasedZone>> getLeasedZones(@PathVariable(value = "maintenanceId") Long maintenanceId){
 		Maintenance maintenance = maintenanceService.findById(maintenanceId);
 		if(maintenance == null){
@@ -67,14 +73,18 @@ public class LeasedZoneController {
 		return new ResponseEntity<>(maintenance.getLeasedZones(), HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/getEventLeasedZones{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ArrayList<LeasedZone>> getEventLeasedZones(@PathVariable(value = "eventId") Long eventId){
+	@GetMapping(value = "/getEventLeasedZones/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<LeasedZone>> getEventLeasedZones(@PathVariable(value = "eventId") Long eventId){
+		Event event = eventService.findById(eventId);
+		if(event == null){
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
 		return new ResponseEntity<>(leasedZoneService.getEventLeasedZones(eventId), HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/deleteLeasedZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<MessageDTO> deleteEvent(@PathVariable(value = "id") Long id){
+	public ResponseEntity<MessageDTO> delete(@PathVariable(value = "id") Long id){
 		leasedZoneService.remove(id);
 		return new ResponseEntity<>(new MessageDTO("Success", "Leased zone successfully deleted."), HttpStatus.OK);
 	}
