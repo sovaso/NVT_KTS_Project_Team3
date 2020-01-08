@@ -1,6 +1,7 @@
 package com.nvt.kts.team3.repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,9 +24,18 @@ public interface MaintenanceRepository extends JpaRepository<Maintenance, Long>{
 	public List<Maintenance> deleteByEventId(long eventId);
 
 	@Query("SELECT m FROM Maintenance m "+
-			"WHERE m.reservationExpiry >= ?1 AND  m.reservationExpiry <= ?2")
+			"WHERE m.reservationExpiry >= ?1 AND  m.reservationExpiry < ?2")
 	public List<Maintenance> getWarningMaintenances(LocalDateTime next24hours, LocalDateTime next25hours);
 	
-	public List<Maintenance> save(List<Maintenance> maintenances);
+
+	@Query("SELECT DISTINCT m FROM Maintenance m " +
+			"WHERE m.event.locationInfo.id = ?1 "+
+			"AND m.event.status = 1 "+
+			"AND ((m.maintenanceDate <= ?3 AND m.maintenanceEndTime >= ?3) " +
+			"		OR (m.maintenanceDate <= ?2 AND m.maintenanceEndTime >= ?3) " +
+			"		OR (m.maintenanceDate >= ?2 AND m.maintenanceEndTime <= ?3) " +
+			"		OR (m.maintenanceDate >= ?2 AND m.maintenanceDate <= ?3) " +
+			"		OR (m.maintenanceEndTime >= ?2 AND m.maintenanceEndTime <= ?3))")
+	public ArrayList<Maintenance> getMaintenancesForDate(Long locationId, LocalDateTime startDate, LocalDateTime endDate);
 }
 

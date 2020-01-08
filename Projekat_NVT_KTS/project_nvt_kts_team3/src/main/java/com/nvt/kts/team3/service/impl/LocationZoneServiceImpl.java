@@ -3,6 +3,7 @@ package com.nvt.kts.team3.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,11 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 
 	@Override
 	public LocationZone findById(Long id) {
-		return locationZoneRepository.findById(id).orElse(null);
+		Optional<LocationZone> locationZone = locationZoneRepository.findById(id);
+		if(locationZone.isPresent()){
+			return locationZone.get();
+		}
+		return null;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.nvt.kts.team3.controller;
 
 import java.text.ParseException;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -28,6 +27,8 @@ import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Maintenance;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.MaintenanceService;
+
+import exception.EventNotFound;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,12 +73,18 @@ public class MaintenanceController {
 	
 	@GetMapping(value = "/getMaintenances/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Set<Maintenance>> getMaintenances(@PathVariable(value = "eventId") Long eventId){
-		Optional<Event> event = eventService.findById(eventId);
-		return new ResponseEntity<>(event.get().getMaintenances(), HttpStatus.OK);
+		Event event = eventService.findById(eventId);
+		Set<Maintenance> maintenances = null;
+		try {
+			maintenances = event.getMaintenances();
+		} catch (Exception e) {
+			throw new EventNotFound();
+		}
+		return new ResponseEntity<>(maintenances, HttpStatus.OK);
 	}
 	
-	//@Scheduled(cron = "0 0 * * * *") //the top of every hour
-	@Scheduled(cron = "*/10 * * * * *") //every ten seconds (FOR TEST PURPOSE ONLY)
+	@Scheduled(cron = "0 0 * * * *") //the top of every hour
+	//@Scheduled(cron = "*/10 * * * * *") //every ten seconds (FOR TEST PURPOSE ONLY)
 	public void doHourlyTasks() throws AddressException, MessagingException{
 		maintenanceService.checkForExpieredTickets();
 		maintenanceService.warnUsersAboutExpiry();

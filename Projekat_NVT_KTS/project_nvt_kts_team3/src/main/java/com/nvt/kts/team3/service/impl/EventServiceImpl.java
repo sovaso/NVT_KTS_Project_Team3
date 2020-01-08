@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.FileContent;
@@ -51,10 +49,12 @@ import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
 import com.nvt.kts.team3.service.TicketService;
 
+import exception.EventNotActive;
 import exception.EventNotChangeable;
 import exception.EventNotFound;
 import exception.InvalidDate;
 import exception.InvalidEventType;
+import exception.InvalidLocationZone;
 import exception.InvalidPrice;
 import exception.LocationNotAvailable;
 import exception.LocationNotChangeable;
@@ -92,15 +92,22 @@ public class EventServiceImpl implements EventService {
 	private DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	@Override
-	public Optional<Event> findById(Long id) {
-		return eventRepository.findById(id);
+	public Event findById(Long id) {
+		Optional<Event> event = eventRepository.findById(id);
+		if(event.isPresent()){
+			return event.get();
+		}
+		return null;
 	}
 
 	@Override
 	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event save(EventDTO eventDTO) throws ParseException {
 		// Ne sme da se ne unese tip dogadjaja
-		if (EventType.valueOf(eventDTO.getEventType()) == null) {
+		EventType type;
+		try {
+			 type = EventType.valueOf(eventDTO.getEventType());
+		} catch (Exception e) {
 			throw new InvalidEventType();
 		}
 		
@@ -111,7 +118,7 @@ public class EventServiceImpl implements EventService {
 		}
 
 		//Napravi event
-		Event event = new Event(eventDTO.getName(), true, EventType.valueOf(eventDTO.getEventType()),
+		Event event = new Event(eventDTO.getName(), true, type,
 				new HashSet<Reservation>(), new HashSet<Maintenance>(), location, new ArrayList<String>(),
 				new ArrayList<String>());
 
@@ -132,8 +139,8 @@ public class EventServiceImpl implements EventService {
 			maintenanceEndDate = sdf.parse(dates.getEndDate());
 			
 			//Ako smo uneli da se odrzava pre danas
-			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
-			//	throw new InvalidDate();
+			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today) ||maintenanceEndDate.before(maintenanceStartDate)) {
+				throw new InvalidDate();
 			}
 			
 			//Postavljas da je expiry tri dana pre pocetka rezervacije
@@ -162,7 +169,11 @@ public class EventServiceImpl implements EventService {
 			}
 
 			//U EventDTO klasi imas leased zone imas leasedZoneDTO set
-			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
+			if(dates.getLocationZones() == null || dates.getLocationZones().isEmpty()){
+				throw new InvalidLocationZone();
+			}
+			
+			for (LeasedZoneDTO lz : dates.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
 				
 				//Ako smo prosledili nevalidan id za zonu ili leasedZone lokacija nije isto sto i uneta lokacija
@@ -201,13 +212,13 @@ public class EventServiceImpl implements EventService {
 	@Override
 	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Event update(EventDTO eventDTO) throws ParseException {
-		Event event = eventRepository.getOne(eventDTO.getId());
+		Event event = findById(eventDTO.getId());
 		if (event == null) {
 			throw new EventNotFound();
 		}
 		
 		//Dogadjaj nije aktivan i nema sta da se menja
-		if (!(event.isStatus()) || !(eventIsActive(event.getId()))) {
+		if (!(eventIsActive(event.getId()))) {
 			throw new EventNotChangeable();
 		}
 		
@@ -217,10 +228,13 @@ public class EventServiceImpl implements EventService {
 		}
 
 		//Tip dogadjaja mora da se unese
-		event.setType(EventType.valueOf(eventDTO.getEventType()));
-		if (event.getType() == null) {
+		EventType type;
+		try {
+			 type = EventType.valueOf(eventDTO.getEventType());
+		} catch (Exception e) {
 			throw new InvalidEventType();
 		}
+		event.setType(type);
 
 		//Mora da se unese lokacija koja postoji i koja je aktivna
 		Location location = locationService.findById(eventDTO.getLocationId());
@@ -259,7 +273,7 @@ public class EventServiceImpl implements EventService {
 			maintenanceStartDate = null;
 			maintenanceStartDate = sdf.parse(dates.getStartDate());
 			maintenanceEndDate = sdf.parse(dates.getEndDate());
-			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)) {
+			if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today) ||maintenanceEndDate.before(maintenanceStartDate)) {
 				throw new InvalidDate();
 			}
 			
@@ -271,7 +285,6 @@ public class EventServiceImpl implements EventService {
 			if (hours > 24 || minutes < 30) {
 				throw new InvalidDate();
 			}
-			
 			
 			Maintenance maintenance = new Maintenance(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
 					LocalDateTime.parse( sdf.format(maintenanceEndDate),df ),
@@ -286,9 +299,11 @@ public class EventServiceImpl implements EventService {
 				throw new LocationNotAvailable();
 			}
 			
+			if(dates.getLocationZones() == null || dates.getLocationZones().isEmpty()){
+				throw new InvalidLocationZone();
+			}
 			
-			
-			for (LeasedZoneDTO lz : eventDTO.getLocationZones()) {
+			for (LeasedZoneDTO lz : dates.getLocationZones()) {
 				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
 				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
 					throw new LocationZoneNotAvailable();
@@ -332,35 +347,19 @@ public class EventServiceImpl implements EventService {
 	@Override
 	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(Long id) {
-		System.out.println(id);
-		System.out.println("11111");
-		Event event = eventRepository.getOne(id);
-		System.out.println(event.getName());
-		System.out.println(event.isStatus());
-		System.out.println("2222");
+		Event event = findById(id);
 		//Ne mozes da uklonis dogadjaj koji ne postoji ili koji nije aktivan
-		if (event == null || event.isStatus() == false) {
-			System.out.println("3333");
+		if (event == null) {
 			throw new EventNotFound();
 		}
-		if (!(getSoldTickets(event.getId()).isEmpty()) && eventIsActive(event.getId())) {
-			System.out.println("4444");
+		if(event.isStatus() == false){
+			throw new EventNotActive();
+		}
+		if (!(ticketService.getEventReservedTickets(event.getId()).isEmpty()) && eventIsActive(event.getId())) {
 			throw new EventNotChangeable();
 		}
 		event.setStatus(false);
-		System.out.println("55555");
 		eventRepository.save(event);
-		System.out.println("66666");
-	}
-
-	@Override
-	public ArrayList<Event> getReservedTickets(Long eventId) {
-		return eventRepository.getReservedTickets(eventId);
-	}
-
-	@Override
-	public ArrayList<Ticket> getSoldTickets(Long eventId) {
-		return eventRepository.getSoldTickets(eventId);
 	}
 
 	@Override

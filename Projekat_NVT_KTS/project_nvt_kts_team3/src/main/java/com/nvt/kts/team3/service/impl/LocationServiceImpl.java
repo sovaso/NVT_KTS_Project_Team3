@@ -45,7 +45,11 @@ public class LocationServiceImpl implements LocationService {
 
 	@Override
 	public Location findById(Long id) {
-		return locationRepository.findById(id).orElse(null);
+		Optional<Location> location = locationRepository.findById(id);
+		if(location.isPresent()){
+			return location.get();
+		}
+		return null;
 	}
 
 	@Override

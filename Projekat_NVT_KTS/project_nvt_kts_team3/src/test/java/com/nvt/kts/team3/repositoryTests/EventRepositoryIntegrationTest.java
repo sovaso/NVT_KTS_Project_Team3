@@ -1,8 +1,5 @@
 package com.nvt.kts.team3.repositoryTests;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
@@ -17,12 +14,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -43,10 +34,12 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Autowired
 	public EventRepository eventRepository;
 	
+	private static final int ACTIVE_EVENTS_NUM = 4;
+	
 	@Test
 	public void testGetAll() {
 		List<Event> events = eventRepository.findAll();
-		assertEquals(9, events.size());
+		assertEquals(11, events.size());
 	}
 
 
@@ -151,7 +144,7 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void searchEventOnlyField_eventTypeGiven_successfull() {
 		ArrayList<Event> events = eventRepository.searchEventOnlyField("Sports");
-		assertEquals(4, events.size());
+		assertEquals(6, events.size());
 		assertEquals("Event1", events.get(0).getName());
 		assertEquals(EventType.SPORTS, events.get(0).getType());
 		assertEquals(1, events.get(0).getLocationInfo().getId());
@@ -169,6 +162,14 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 		//assertFalse(events.get(3).isStatus());
 		assertEquals(EventType.SPORTS, events.get(3).getType());
 		assertEquals(6, events.get(3).getLocationInfo().getId());
+		
+		assertEquals("Event10", events.get(4).getName());
+		assertEquals(EventType.SPORTS, events.get(4).getType());
+		assertEquals(3, events.get(4).getLocationInfo().getId());
+		
+		assertEquals("Event11", events.get(5).getName());
+		assertEquals(EventType.SPORTS, events.get(5).getType());
+		assertEquals(2, events.get(5).getLocationInfo().getId());
 	}
 	
 	
@@ -298,7 +299,7 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void findAllSortedDateAcs() {
 		ArrayList<Event> events = eventRepository.findAllSortedDateAcs();
-		assertEquals(13, events.size());
+		assertEquals(17, events.size());
 		assertEquals("Event8", events.get(0).getName());
 		assertEquals("Event6", events.get(1).getName());
 		assertEquals("Event9", events.get(2).getName());
@@ -311,7 +312,11 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 		assertEquals("Event1", events.get(9).getName());
 		assertEquals("Event1", events.get(10).getName());
 		assertEquals("Event1", events.get(11).getName());
-		assertEquals("Event2", events.get(12).getName());
+		assertEquals("Event10", events.get(12).getName());
+		assertEquals("Event11", events.get(13).getName());
+		assertEquals("Event10", events.get(14).getName());
+		assertEquals("Event1", events.get(15).getName());
+		assertEquals("Event2", events.get(16).getName());
 	}
 	
 //Za ovo sortiranje uraditi slucaj i praznjenja baze
@@ -319,20 +324,24 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	@Transactional
 	public void findAllSortedDateDescs() {
 		ArrayList<Event> events = eventRepository.findAllSortedDateDesc();
-		assertEquals(13, events.size());
+		assertEquals(17, events.size());
 		assertEquals("Event2", events.get(0).getName());
 		assertEquals("Event1", events.get(1).getName());
-		assertEquals("Event1", events.get(2).getName());
+		assertEquals("Event10", events.get(2).getName());
 		assertEquals("Event1", events.get(3).getName());
-		assertEquals("Event4", events.get(4).getName());
-		assertEquals("Event3", events.get(5).getName());
-		assertEquals("Event6", events.get(6).getName());
-		assertEquals("Event8", events.get(7).getName());
-		assertEquals("Event5", events.get(8).getName());
+		assertEquals("Event10", events.get(4).getName());
+		assertEquals("Event11", events.get(5).getName());
+		assertEquals("Event1", events.get(6).getName());
+		assertEquals("Event1", events.get(7).getName());
+		assertEquals("Event4", events.get(8).getName());
 		assertEquals("Event3", events.get(9).getName());
-		assertEquals("Event9", events.get(10).getName());
+		assertEquals("Event6", events.get(10).getName());
 		assertEquals("Event8", events.get(11).getName());
-		assertEquals("Event6", events.get(12).getName());
+		assertEquals("Event5", events.get(12).getName());
+		assertEquals("Event3", events.get(9).getName());
+		assertEquals("Event6", events.get(10).getName());
+		assertEquals("Event8", events.get(11).getName());
+		assertEquals("Event5", events.get(12).getName());
 	}
 	
 	@Test
@@ -407,4 +416,10 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 		assertEquals(EventType.SPORTS, events.get(0).getType());
 	}
 	
+	@Test
+	@Transactional
+	public void test_getActiveEvents() {
+		List<Event> events = eventRepository.getActiveEvents();
+		assertEquals(ACTIVE_EVENTS_NUM, events.size());
+	}
 }

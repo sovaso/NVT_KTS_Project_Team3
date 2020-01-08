@@ -10,13 +10,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
@@ -43,9 +41,12 @@ import com.nvt.kts.team3.service.MaintenanceService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
 
+import exception.EventNotActive;
+import exception.EventNotChangeable;
 import exception.EventNotFound;
 import exception.InvalidDate;
 import exception.InvalidLocationZone;
+import exception.InvalidPrice;
 import exception.LocationNotAvailable;
 import exception.LocationNotFound;
 import exception.LocationZoneNotAvailable;
@@ -87,21 +88,29 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 	@Override
 	public Maintenance findById(Long id) {
-		return maintenanceRepository.getOne(id);
+		Optional<Maintenance> maintenance = maintenanceRepository.findById(id);
+		if(maintenance.isPresent()){
+			return maintenance.get();
+		}
+		return null;
 	}
 
 	@Override
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Maintenance save(MaintenanceDTO maintenanceDTO) throws ParseException {
-		Optional<Event> event = eventService.findById(maintenanceDTO.getEventId());
+		Event event = eventService.findById(maintenanceDTO.getEventId());
 		
 		//Mora biti postojeci event i mora biti aktivan
-		if (!event.isPresent() || !(eventService.eventIsActive((event.get()).getId()))) {
+		if(event == null){
 			throw new EventNotFound();
+		}
+		
+		if(!(eventService.eventIsActive(event.getId()))){
+			throw new EventNotChangeable();
 		}
 
 		//Mora biti postojeca lokacija i mora biti aktivna
-		Location location = locationService.findById(event.get().getLocationInfo().getId());
+		Location location = event.getLocationInfo();
 		if (location == null || location.isStatus() == false) {
 			throw new LocationNotFound();
 		}
@@ -135,7 +144,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
 		//Proveravas da li je lokacija na kojoj zelimo odrzavanje dostupna u zeljenom periodu.
 		ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
-				LocalDateTime.parse( sdf.format(maintenanceEndDate) ));
+				LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
 		if (locationEvents.isEmpty() == false) {
 			throw new LocationNotAvailable();
 		}
@@ -144,7 +153,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		
 		maintenance.setMaintenanceDate(LocalDateTime.parse( sdf.format(maintenanceStartDate),df ));
 		maintenance.setMaintenanceEndTime(LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
-		maintenance.setEvent(event.get());
+		maintenance.setReservationExpiry(LocalDateTime.parse( sdf.format(expiry.getTime()),df ));
+		maintenance.setEvent(event);
 		
 		//Moras da navedes koje zone zelis da zakupis za dogadjaj
 		if (maintenanceDTO.getLocationZones() == null || maintenanceDTO.getLocationZones().isEmpty()) {
@@ -161,6 +171,9 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 			}
 
 			if (choosenZones.contains(lz.getZoneId()) == false) {//Jednom mozes zakupiti jednu locationZone
+				if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
+					throw new InvalidPrice();
+				}
 				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance, new HashSet<Ticket>());
 				choosenZones.add(lz.getZoneId());
 				if (locationZone.isMatrix()) {
@@ -188,13 +201,24 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public Maintenance updateMaintenance(MaintenanceDTO maintenanceDTO) throws ParseException {
 		Maintenance maintenance = findById(maintenanceDTO.getId());
-
-		//Ne mozes updateovat nepostojeci maintenance
-		if (maintenance == null) {
+		if(maintenance == null){
 			throw new MaintenanceNotFound();
 		}
-
+		
 		Event event = maintenance.getEvent();
+		
+		if(event == null){
+			throw new EventNotFound();
+		}
+		
+		if(!(eventService.eventIsActive(event.getId()))){
+			throw new EventNotChangeable();
+		}
+		
+		Location location = event.getLocationInfo();
+		if(location == null || location.isStatus() == false){
+			throw new LocationNotFound();
+		}
 
 		Date maintenanceStartDate = null;
 		Date maintenanceEndDate = null;
@@ -223,54 +247,55 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		maintenance.setMaintenanceEndTime(LocalDateTime.parse(sdf.format(maintenanceEndDate), df));
 		maintenance.setReservationExpiry(LocalDateTime.parse(sdf.format(expiry.getTime()), df));
 
-		Location location = locationService.findById(event.getLocationInfo().getId());
-		//Ne mozes da postvis nepostojecu ili neaktivnu lokaciju
-		if (location == null || location.isStatus() == false) {
-			throw new LocationNotFound();
+		//Ne mozes da menjas lokaciju ako imas prodatih karata vec
+		if (!(ticketService.getMaintenanceReservedTickets(maintenance.getId()).isEmpty())) {
+			throw new MaintenanceNotChangeable();
 		}
-
-		if (location.getId() != maintenance.getEvent().getId()) {
-			//Ne mozes da menjas lokaciju ako imas prodatih karata vec
-			if (!(ticketService.getMaintenanceReservedTickets(maintenance.getId()).isEmpty())) {
-				throw new MaintenanceNotChangeable();
-			}
-			
-			//Cak i ako nema prodatih karata i mozes da promenis lokaciju, moras da proveris da li je ta lokacija slobodna
-			ArrayList<Event> locationEvents = locationService.checkIfAvailable(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
-					LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
-			if (locationEvents.isEmpty() == false) {
+		
+		//Cak i ako nema prodatih karata i mozes da promenis lokaciju, moras da proveris da li je ta lokacija slobodna
+		ArrayList<Maintenance> maintenances = getMaintenancesForDate(location.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
+				LocalDateTime.parse( sdf.format(maintenanceEndDate),df));
+		if (!(maintenances.isEmpty())) {
+			if(!(maintenances.size() == 1 && maintenances.get(0).getId() == maintenance.getId())){
 				throw new LocationNotAvailable();
 			}
+		}
+		
+		if (maintenanceDTO.getLocationZones() == null || maintenanceDTO.getLocationZones().isEmpty()) {
+			throw new InvalidLocationZone();
+		}
 
-			leasedZoneService.deleteByMaintenanceId(maintenance.getId());//Oslobodile smo zone koje su bile zakupljena
-			ArrayList<Long> choosenZones = new ArrayList<Long>();
-			for (LeasedZoneDTO lz : maintenanceDTO.getLocationZones()) {
-				LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
+		leasedZoneService.deleteByMaintenanceId(maintenance.getId());//Oslobodile smo zone koje su bile zakupljena
+		ArrayList<Long> choosenZones = new ArrayList<Long>();
+		for (LeasedZoneDTO lz : maintenanceDTO.getLocationZones()) {
+			LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
 
-				//Specificirala si zone koje hoces da zakupis i sad to sredjujes
-				if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
-					throw new LocationZoneNotAvailable();
+			//Specificirala si zone koje hoces da zakupis i sad to sredjujes
+			if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
+				throw new LocationZoneNotAvailable();
+			}
+
+			if (choosenZones.contains(lz.getZoneId()) == false) {
+				if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
+					throw new InvalidPrice();
 				}
-
-				if (choosenZones.contains(lz.getZoneId()) == false) {
-					LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance,
-							new HashSet<Ticket>());
-					choosenZones.add(lz.getZoneId());
-					if (locationZone.isMatrix()) {
-						for (int i = 1; i <= locationZone.getColNumber(); i++) {
-							for (int j = 1; j <= locationZone.getRowNumber(); j++) {
-								Ticket ticket = new Ticket(i, j, lz.getPrice(), false, null, newZone);
-								newZone.getTickets().add(ticket);
-							}
-						}
-					} else {
-						for (int i = 0; i < locationZone.getCapacity(); i++) {
-							Ticket ticket = new Ticket(0, 0, lz.getPrice(), false, null, newZone);
+				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance,
+						new HashSet<Ticket>());
+				choosenZones.add(lz.getZoneId());
+				if (locationZone.isMatrix()) {
+					for (int i = 1; i <= locationZone.getColNumber(); i++) {
+						for (int j = 1; j <= locationZone.getRowNumber(); j++) {
+							Ticket ticket = new Ticket(i, j, lz.getPrice(), false, null, newZone);
 							newZone.getTickets().add(ticket);
 						}
 					}
-					maintenance.getLeasedZones().add(newZone);
+				} else {
+					for (int i = 0; i < locationZone.getCapacity(); i++) {
+						Ticket ticket = new Ticket(0, 0, lz.getPrice(), false, null, newZone);
+						newZone.getTickets().add(ticket);
+					}
 				}
+				maintenance.getLeasedZones().add(newZone);
 			}
 		}
 		return maintenanceRepository.save(maintenance);
@@ -285,13 +310,19 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void remove(long id) {
 		Maintenance maintenance = findById(id);
-		if (maintenance == null) {
+		if(maintenance == null){
 			throw new MaintenanceNotFound();
 		}
-		
-		//Ne mozes da obrises ako ima rezervisanih karata
+		Event event = maintenance.getEvent();
+		if(!(eventService.eventIsActive(event.getId()))){
+			throw new EventNotActive();
+		}
 		if (!(ticketService.getMaintenanceReservedTickets(id).isEmpty())) {
 			throw new MaintenanceNotChangeable();
+		}
+		for(LeasedZone lz : maintenance.getLeasedZones()){
+			ticketService.deleteByZoneId(lz.getId());
+			leasedZoneService.deleteByMaintenanceId(id);
 		}
 		maintenanceRepository.deleteById(maintenance.getId());
 	}
@@ -305,11 +336,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public List<Maintenance> removeByEventId(long eventId) {
 		return maintenanceRepository.deleteByEventId(eventId);
-	}
-
-	@Override
-	public List<Maintenance> save(List<Maintenance> maintenances) {
-		return maintenanceRepository.save(maintenances);
 	}
 
 	@Override
@@ -389,5 +415,11 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 		}
 		emailController.sendEmails(emails);
 		System.out.println("[INFO] Users warned about reservation expiry at: " + sdf2.format(new Date())+",  "+warnings+" emails sent.");
+	}
+
+	@Override
+	public ArrayList<Maintenance> getMaintenancesForDate(Long locationId, LocalDateTime startDate,
+			LocalDateTime endDate) {
+		return maintenanceRepository.getMaintenancesForDate(locationId, startDate, endDate);
 	}
 }

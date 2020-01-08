@@ -27,7 +27,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long>{
 	public List<Ticket> getEventSoldTickets(long eventID);
 
 	@Query("SELECT t FROM Ticket t " +
-		    "WHERE t.zone.maintenance.id = ?1 AND t.reserved = 1")
+		    "WHERE (t.zone.maintenance.id = ?1 AND t.reserved = 1)")
 	public List<Ticket> getMaintenanceReservedTickets(long maintenanceID);
 	
 	@Query("SELECT t FROM Ticket t " +
