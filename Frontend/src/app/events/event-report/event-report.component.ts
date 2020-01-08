@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Chart} from 'chart.min.js'
 import { EventReportDto } from 'src/app/dto/event_report.dto';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-event-report',
@@ -10,7 +11,7 @@ import { EventReportDto } from 'src/app/dto/event_report.dto';
 export class EventReportComponent implements OnInit {
 
   data: EventReportDto;
-  constructor() { }
+  constructor(private modalService: NgbModal) { }
 
   ngOnInit() {
     this.createChart("myChart1", this.data.dailyLabels, this.data.dailyValues)
@@ -45,6 +46,10 @@ export class EventReportComponent implements OnInit {
       }
     });
 
+  }
+
+  close(){
+    this.modalService.dismissAll();
   }
 
 }

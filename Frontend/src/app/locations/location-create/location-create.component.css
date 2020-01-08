@@ -1,0 +1,22 @@
+ .foo {
+	width: 40px;
+	height: 40px;
+} 
+
+.foo2 {
+	width: 300px;
+	height: 300px;
+} 
+
+.yellow {
+	background: blueviolet
+}
+
+.x{
+	position: absolute;
+	float: right;
+    background: red;
+    color: white;
+    top: 0px;
+    right: 0px;
+}

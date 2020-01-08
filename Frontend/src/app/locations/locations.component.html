@@ -1,7 +1,6 @@
-
 <div class="container">    
     <ngb-tab  title="Create new" id="createLocationTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
-        <button class="btn btn-primary" (click)="newLocation()">New Location</button>
+        <button type="btn btn-primary" label="Click" (click)="newLocation()">New location</button>
         <div class="divider"></div>
     </ngb-tab>
     <div *ngIf="message!==''">

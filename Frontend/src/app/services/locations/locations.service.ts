@@ -18,34 +18,34 @@ export class LocationsService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<Location[]> {
-    return this.http.get<Location[]>(`http://localhost:8080/api/getAllLocations`);
+    return this.http.get<Location[]>(`/api/getAllLocations`);
   }
 
   getActive(): Observable<Location[]> {
-    return this.http.get<Location[]>(`http://localhost:8080/api/getActiveLocations`);
+    return this.http.get<Location[]>(`/api/getActiveLocations`);
   }
 
   getById(id: String): Observable<Location> {
     return this.http.get<Location>(
-      `http://localhost:8080/api/getLocation/${id}`
+      `/api/getLocation/${id}`
     );
   }
 
   create(location: LocationDto): Observable<MessageDto> {
-    return this.http.post<MessageDto>(`http://localhost:8080/api/createLocation`, location);
+    return this.http.post<MessageDto>(`/api/createLocation`, location);
   }
 
   update = (location: LocationDto): Observable<MessageDto> =>
-  this.http.put<MessageDto>(`http://localhost:8080/api/updateLocation`, location);
+  this.http.put<MessageDto>(`/api/updateLocation`, location);
 
   delete = (id: string): Observable<MessageDto> =>{
     console.log('delete from service called');
     console.log(id);
-    return this.http.delete<MessageDto>(`http://localhost:8080/api/deleteLocation/${id}`)
+    return this.http.delete<MessageDto>(`/api/deleteLocation/${id}`)
   }
 
   seeReport = (id: string): Observable<LocationReportDto> =>
-  this.http.get<LocationReportDto>(`http://localhost:8080/api/getLocationReport/${ id }`);
+  this.http.get<LocationReportDto>(`/api/getLocationReport/${ id }`);
 
   
   

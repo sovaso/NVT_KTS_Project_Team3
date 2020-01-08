@@ -22,7 +22,7 @@ export class MaintenancesService {
 
   getByEventId(eventId: String): Observable<Maintenance[]> {
     return this.http.get<Maintenance[]>(
-      `http://localhost:8080/api/getMaintenances/${eventId}`
+      `/api/getMaintenances/${eventId}`
     );
   }
 }

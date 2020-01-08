@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Output,EventEmitter} from '@angular/core';
+import { NgbModal,NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+
 
 @Component({
   selector: 'app-alert-box',
@@ -7,15 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AlertBoxComponent implements OnInit {
   message: String = '';
-  constructor() {
+  constructor(private modalService: NgbModal,private activeModal: NgbActiveModal) {
   
    }
 
   ngOnInit() {
   }
 
+
+
   close(){
-    location.reload();
+
+    //location.reload();
+    this.activeModal.dismiss();
+    //this.modalService.dismissAll();
+    
   }
 
 }

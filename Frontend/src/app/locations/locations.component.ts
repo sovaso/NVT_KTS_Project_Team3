@@ -3,11 +3,14 @@ import { CurrentUser } from '../model/currentUser';
 import { SharedService } from '../services/shared/shared.service';
 import { LocationsService } from '../services/locations/locations.service';
 import { AlertService } from '../services';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal,NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { AlertBoxComponent } from '../alert-box/alert-box.component';
 import { LocationDetailsComponent } from './location-details/location-details.component';
 import { Event } from '../model/event.model';
 import { LocationReportComponent } from './location-report/location-report.component';
+import {LocationZone} from  '../model/location_zone.model'
+import { Router } from '@angular/router';
+import { LocationCreateComponent } from './location-create/location-create.component';
 
 @Component({
   selector: 'app-locations',
@@ -17,6 +20,8 @@ import { LocationReportComponent } from './location-report/location-report.compo
 export class LocationsComponent implements OnInit {
 
   locations: Location[];
+
+  locationZones: LocationZone[];
 
   activeTab: String;
 
@@ -32,7 +37,12 @@ export class LocationsComponent implements OnInit {
 
   type = '';
 
-  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService) {}
+  showCreate: boolean = false;
+  modalOption: NgbModalOptions = {};
+
+  
+
+  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService,private router: Router) {}
 
   ngOnInit() {
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -63,11 +73,24 @@ export class LocationsComponent implements OnInit {
   }
 
   seeReport(event){
+    this.modalOption.backdrop = 'static';
+    this.modalOption.keyboard = false;
+    this.modalOption.windowClass='my-class2';
     this.locationsService.seeReport(event.id).subscribe(data => {
-        const modalRef = this.modalService.open(LocationReportComponent);
+        const modalRef = this.modalService.open(LocationReportComponent,this.modalOption);
         modalRef.componentInstance.data = data;
   });
   }
+
+  newLocation(){
+    this.modalOption.backdrop = 'static';
+    this.modalOption.keyboard = false;
+    this.modalOption.windowClass='my-class';
+    const modalRef=this.modalService.open(LocationCreateComponent,this.modalOption);
+    
+  }
+
+
 
   // showDetails(e){
   //   console.log('show details called');

@@ -17,59 +17,59 @@ export class EventsService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<Event[]> {
-    return this.http.get<Event[]>(`http://localhost:8080/api/getAllEvents`);
+    return this.http.get<Event[]>(`/api/getAllEvents`);
   }
 
   getActive(): Observable<Event[]> {
-    return this.http.get<Event[]>(`http://localhost:8080/api/getActiveEvents`);
+    return this.http.get<Event[]>(`/api/getActiveEvents`);
   }
 
   getById(id: String): Observable<Event> {
     return this.http.get<Event>(
-      `http://localhost:8080/api/getEvent/${id}`
+      `/api/getEvent/${id}`
     );
   }
 
   create(event: EventDto): Observable<MessageDto> {
-    return this.http.post<MessageDto>(`http://localhost:8080/api/createEvent`, event);
+    return this.http.post<MessageDto>(`/api/createEvent`, event);
   }
 
   update = (event: EventDto): Observable<MessageDto> =>
-  this.http.put<MessageDto>(`http://localhost:8080/api/updateEvent`, event);
+  this.http.put<MessageDto>(`/api/updateEvent`, event);
 
   delete = (id: string): Observable<MessageDto> =>{
     console.log('delete from service called');
     console.log(id);
-  return this.http.delete<MessageDto>(`http://localhost:8080/api/deleteEvent/${id}`);
+  return this.http.delete<MessageDto>(`/api/deleteEvent/${id}`);
   }
 
 
   getEventLocation = (id: string): Observable<Location> =>
-  this.http.get<Location>(`http://localhost:8080/api/getEventLocation/${ id }`);
+  this.http.get<Location>(`/api/getEventLocation/${ id }`);
 
   getEventIncome = (id: string): Observable<number> =>
-  this.http.get<number>(`http://localhost:8080/api/getEventIncome/${ id }`);
+  this.http.get<number>(`/api/getEventIncome/${ id }`);
 
   seeReport = (id: string): Observable<EventReportDto> =>
-  this.http.get<EventReportDto>(`http://localhost:8080/api/getEventReport/${ id }`);
+  this.http.get<EventReportDto>(`/api/getEventReport/${ id }`);
 
   uploadFile = (uploadFile: UploadFileDto): Observable<string> =>
-  this.http.post<string>(`http://localhost:8080/api/upload`, uploadFile);
+  this.http.post<string>(`/api/upload`, uploadFile);
 
   search = (field: string, startDate: string, endDate: string): Observable<any> =>
     
- this.http.get<any>(`http://localhost:8080/api/findEvent/${field}/${startDate}/${endDate}`);
+ this.http.get<any>(`/api/findEvent/${field}/${startDate}/${endDate}`);
   
 
   sortByName = (): Observable<any> =>
-  this.http.get<any>(`http://localhost:8080/api/sortByName`);
+  this.http.get<any>(`/api/sortByName`);
 
   sortByDateAcs = (): Observable<any> =>
-  this.http.get<any>(`http://localhost:8080/api/sortByDateAcs`);
+  this.http.get<any>(`/api/sortByDateAcs`);
 
   sortByDateDesc = (): Observable<any> =>
-  this.http.get<any>(`http://localhost:8080/api/sortByDateDesc`);
+  this.http.get<any>(`/api/sortByDateDesc`);
 
   getIncome = (id:string): Observable<any> =>
-  this.http.get<any>(`http://localhost:8080/api/getEventIncome/${id}`);
+  this.http.get<any>(`/api/getEventIncome/${id}`);
 }

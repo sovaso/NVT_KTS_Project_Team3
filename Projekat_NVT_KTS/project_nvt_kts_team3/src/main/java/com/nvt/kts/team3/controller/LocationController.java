@@ -52,10 +52,10 @@ public class LocationController {
 			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully created."), HttpStatus.CREATED);
 
 		} catch (LocationExists e) {
-			return new ResponseEntity<>(new MessageDTO("Bad request", "Location with that name and address already exist."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Location with that name and address already exist."), HttpStatus.OK);
 
 		} catch (InvalidLocationZone e) {
-			return new ResponseEntity<>(new MessageDTO("Conflict", "Invalid location zone."), HttpStatus.CONFLICT);
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Invalid location zone."), HttpStatus.OK);
 		}
 		
 	}
