@@ -17,14 +17,14 @@ export class UsersService {
   }
   edit = (data: UserModel): Observable<boolean> => {
     
-      return this.http.put<boolean>("http://localhost:8080/api/editUser", data).pipe(
+      return this.http.put<boolean>("/api/editUser", data).pipe(
         map( (res: any) => {
             return res;
         })  );
   }
 
   getUser():Observable<UserModel>{
-    return this.http.get<UserModel>("http://localhost:8080/api/getLogged");
+    return this.http.get<UserModel>("/api/getLogged");
   }
 
 

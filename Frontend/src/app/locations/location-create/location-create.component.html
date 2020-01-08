@@ -1,0 +1,85 @@
+
+<div class="container" [hidden]="isModelShow">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+          <h2 class="form-signin-heading">Add location</h2>
+          <label for="name" class="sr-only">Name</label>
+          <input type="text" id="name" class="form-control" name="name" [(ngModel)]="location.name" placeholder="Name"
+            required autofocus>
+          <label for="address" class="sr-only">Surname</label>
+          <input type="address" id="address" class="form-control" name="address" [(ngModel)]="location.address" placeholder="Address"
+            required>
+          <label for="description" class="sr-only">Email</label>
+          <input type="description" id="description" class="form-control" name="description" [(ngModel)]="location.description" placeholder="Description"
+              required autofocus>
+            <button class="btn btn-primary btn-block" (click)="newLocationZone()">Add location zone</button>
+            <br/>
+            
+            <table *ngIf="newZone==true">
+                <tr>
+                    <td><label for="lzname" class="sr-only">Name</label>
+                        <input type="text" id="lzname" class="form-control" name="lzname" [(ngModel)]="locationZones[numOfLocationZones-1].name" placeholder="Name"
+                          required autofocus></td></tr>
+                          <tr>
+                          <td><label for="row" class="sr-only">Row number</label>
+                            <input type="text" id="row" class="form-control" name="row" [(ngModel)]="locationZones[numOfLocationZones-1].row" placeholder="Row number"
+                              required autofocus></td></tr>
+                              <tr>
+                              <td><label for="col" class="sr-only">Col number</label>
+                                <input type="text" id="col" class="form-control" name="col" [(ngModel)]="locationZones[numOfLocationZones-1].col" placeholder="Col number"
+                                  required autofocus></td></tr>
+                                <tr>
+                                  <td><label for="matrix">Is matrix?</label></td></tr><tr><td>
+                                    <input type="checkbox" id="matrix" name="matrix" [(ngModel)]="locationZones[numOfLocationZones-1].matrix" placeholder="Matrix" 
+                                      required autofocus></td></tr>
+                                <tr>
+                                    <button class="btn btn-primary btn-block" (click)="addLocationZone()">Add</button>
+                                </tr>
+                                
+
+
+            </table>
+            <button  class="btn btn-danger btn-block" (click)="close()" class="x">X</button>
+          <button class="btn btn-primary btn-block" (click)="createLocation()">Create</button>
+          <br/>
+        <div *ngFor="let lz of locationZones">
+        
+                <table>
+                  <tr>
+                    <td>Name: {{lz.name}}</td><td></td><td></td><td> <button  class="btn btn-danger btn-block" (click)="remove(lz.id)">Remove</button></td>
+                  </tr>
+                  <tr></tr>
+                <div *ngIf="lz.capacity!=0">    
+                  <div *ngIf="lz.matrix else elseblock">  
+                          <tr>
+                            <td>  </td>
+                              <td *ngFor="let other of counter(lz.col)" align="top|center">
+                                  {{other}}
+                              
+                              </td>
+
+                          </tr>
+                <tr *ngFor="let item of counter(lz.row)">
+                    <td align="top|center">{{item}}</td>
+                        <td *ngFor="let other of counter(lz.col)">
+                                    <div class="foo yellow"></div>
+                                
+                                </td>
+                        
+                          
+                    </tr>
+                  </div>
+                  <ng-template #elseblock>
+                    <tr><td>Capacity: {{lz.capacity}}</td></tr>
+                      <div class="foo2 yellow"></div>
+                  </ng-template>
+                  </div>
+                </table>
+              
+            <br/>   
+        </div>
+    
+  </div>
+  </div>
+</div>

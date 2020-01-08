@@ -7,6 +7,7 @@ import { EventsComponent } from './events/events.component';
 import { LocationsComponent } from './locations/locations.component';
 import { MyReservationsComponent } from './my-reservations/my-reservations.component';
 import { ReportsComponent } from './reports/reports.component';
+import {LocationCreateComponent} from 'src/app/locations/location-create/location-create.component'
 
 
 
@@ -33,10 +34,11 @@ const routes: Routes = [
       { path: 'myReservations', component: MyReservationsComponent},
       { path : 'reports' , component : ReportsComponent},
       { path : 'addNewAdmin', component : RegisterUserComponent},
+
     ] 
    
   },
-  
+
   {path: '**', redirectTo: 'dashboard'}
 ];
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Chart} from 'chart.min.js'
 import { LocationReportDto } from 'src/app/dto/location_report.dto';
+import { NgbModal,NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-location-report',
@@ -12,7 +13,7 @@ export class LocationReportComponent implements OnInit {
 
 
   data: LocationReportDto;
-  constructor() { }
+  constructor(private modalService: NgbModal) { }
 
   ngOnInit() {
     this.createChart("myChart1", this.data.dailyLabels, this.data.dailyValues)
@@ -46,8 +47,13 @@ export class LocationReportComponent implements OnInit {
         }
       }
     });
+  }
 
 
-}
+    close(){
+      this.modalService.dismissAll();
+    }
+
+
 
 }

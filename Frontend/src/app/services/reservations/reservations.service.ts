@@ -21,7 +21,7 @@ export class ReservationsService {
 
   getByEventId(eventId: String): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(
-      `http://localhost:8080/api/getEventReservations/${eventId}`
+      `/api/getEventReservations/${eventId}`
     );
   }
 

@@ -3,7 +3,7 @@ import { CurrentUser } from '../model/currentUser';
 import { SharedService } from '../services/shared/shared.service';
 import { EventsService } from '../services/events/events.service';
 import { AlertService } from '../services';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal,NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { AlertBoxComponent } from '../alert-box/alert-box.component';
 import { EventDetailsComponent } from './event-details/event-details.component';
 import { Event } from '../model/event.model';
@@ -34,6 +34,8 @@ export class EventsComponent implements OnInit {
   message: String = '';
 
   type = '';
+
+  modalOption: NgbModalOptions = {};
 
   constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private eventsService: EventsService) {}
 
@@ -149,8 +151,10 @@ export class EventsComponent implements OnInit {
     
 
     seeReport(event){
+    this.modalOption.backdrop = 'static';
+    this.modalOption.keyboard = false;
       this.eventsService.seeReport(event.id).subscribe(data => {
-          const modalRef = this.modalService.open(EventReportComponent);
+          const modalRef = this.modalService.open(EventReportComponent,this.modalOption);
           modalRef.componentInstance.data = data;
     });
     }

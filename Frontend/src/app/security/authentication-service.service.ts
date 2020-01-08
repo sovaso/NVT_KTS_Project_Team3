@@ -12,8 +12,8 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 @Injectable()
 export class AuthenticationService {
 
-  private readonly loginPath = "http://localhost:8080/auth/login";
-  private readonly getUser = "http://localhost:8080/auth/login";
+  private readonly loginPath = "/auth/login";
+  private readonly getUser = "/auth/login";
 
   constructor(private http: HttpClient, private jwtUtilsService: JwtUtilsService) { }
 
