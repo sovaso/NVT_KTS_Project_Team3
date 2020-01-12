@@ -45,14 +45,14 @@ INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation
 INSERT INTO maintenance (id, maintenance_date, maintenance_end_time, reservation_expiry, version,event_id) VALUES (13, '2018-01-01 00:00:00', '2018-01-10 00:00:00', '2019-01-08 00:00:00', 0,7) ON DUPLICATE KEY UPDATE id = 13;
 
 
-INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (1, 200, 20, 1, 'Name1', 10, 1) ON DUPLICATE KEY UPDATE id = 1;
-INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (2, 300, 30, 1, 'Name2', 10, 3) ON DUPLICATE KEY UPDATE id = 2;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row,version, location_id) VALUES (1, 200, 20, 1, 'Name1', 10,0, 1) ON DUPLICATE KEY UPDATE id = 1;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row,version, location_id) VALUES (2, 300, 30, 1, 'Name2', 10,0, 3) ON DUPLICATE KEY UPDATE id = 2;
 
-INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (3, 300, 30, 1, 'Name3', 10, 6) ON DUPLICATE KEY UPDATE id = 3;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row,version,location_id) VALUES (3, 300, 30, 1, 'Name3', 10,0, 6) ON DUPLICATE KEY UPDATE id = 3;
 
-INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (4, 400, 40, 1, 'Name4', 10, 6) ON DUPLICATE KEY UPDATE id = 4;
-INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (5, 200, 20, 1, 'Name5', 10, 2) ON DUPLICATE KEY UPDATE id = 5;
-INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row, location_id) VALUES (6, 200, 20, 1, 'Name6', 10, 5) ON DUPLICATE KEY UPDATE id = 6;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row,version, location_id) VALUES (4, 400, 40, 1, 'Name4', 10,0, 6) ON DUPLICATE KEY UPDATE id = 4;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row,version, location_id) VALUES (5, 200, 20, 1, 'Name5', 10,0, 2) ON DUPLICATE KEY UPDATE id = 5;
+INSERT INTO location_zone (id, capacity, number_col, matrix, name, number_row,version, location_id) VALUES (6, 200, 20, 1, 'Name6', 10,0, 5) ON DUPLICATE KEY UPDATE id = 6;
 
 INSERT INTO leased_zone (id, seat_price, maintenance_id,version, location_zone_id) VALUES (1, 200, 1, 0,1) ON DUPLICATE KEY UPDATE id = 1; 
 

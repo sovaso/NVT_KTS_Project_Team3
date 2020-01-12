@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
+import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model. Location;
 
@@ -21,4 +22,5 @@ public interface LocationService {
 	public ArrayList<Event> checkIfAvailable(Long locationId, LocalDateTime startDate, LocalDateTime endDate);
 	public LocationReportDTO getLocationReport(Long id);
 	public Location findByAddress(String address);
+	public MessageDTO checkIfNameAndAddressAvailable(String name, String address);
 }

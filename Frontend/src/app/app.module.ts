@@ -35,6 +35,7 @@ import { LocationDetailsComponent } from './locations/location-details/location-
 import { EventReportComponent } from './events/event-report/event-report.component';
 import {LocationReportComponent} from './locations/location-report/location-report.component';
 import { LocationCreateComponent } from './locations/location-create/location-create.component';
+import { LocationEditComponent } from './locations/location-edit/location-edit.component';
 
 
 
@@ -58,7 +59,8 @@ import { LocationCreateComponent } from './locations/location-create/location-cr
     LocationDetailsComponent,
     EventReportComponent,
     LocationReportComponent,
-    LocationCreateComponent
+    LocationCreateComponent,
+    LocationEditComponent
   ],
   imports: [
     NgbModule,
@@ -88,7 +90,8 @@ import { LocationCreateComponent } from './locations/location-create/location-cr
     EventDetailsComponent,
     EventReportComponent,
     LocationReportComponent,
-    LocationCreateComponent
+    LocationCreateComponent,
+    LocationEditComponent
   ],
   exports: [ EditProfileComponent ]
 })

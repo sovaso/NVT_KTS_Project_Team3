@@ -43,13 +43,14 @@ public class LocationZoneController {
 	@PostMapping(value = "/createLocationZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<MessageDTO> createLocationZone(@RequestBody LocationZoneDTO lz){
+		System.out.println("USAOOOO U FJU");
 		try {
 			locationZoneService.save(lz);
 			return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully created."), HttpStatus.OK);
 		}catch(LocationNotFound e) {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Location of location zone not found."), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location of location zone not found."), HttpStatus.OK);
 		}catch(InvalidLocationZone e) {
-			return new ResponseEntity<>(new MessageDTO("Bad request", "Invalid inputs for location zone."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Invalid inputs for location zone."), HttpStatus.OK);
 		}
 		
 	}
@@ -61,11 +62,11 @@ public class LocationZoneController {
 			locationZoneService.update(lz);
 			return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully updated."), HttpStatus.OK);
 		}catch(LocationZoneNotFound e) {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Location zone not found."), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location zone not found."), HttpStatus.OK);
 		}catch(LocationZoneNotChangeable e) {
-			return new ResponseEntity<>(new MessageDTO("Conflict", "Location zone not changeable."), HttpStatus.CONFLICT);
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location zone not changeable."), HttpStatus.OK);
 		}catch(InvalidLocationZone e) {
-			return new ResponseEntity<>(new MessageDTO("Bad request", "Invalid input for location zone."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Invalid input for location zone."), HttpStatus.OK);
 		}
 		
 	}
@@ -85,7 +86,7 @@ public class LocationZoneController {
 		if(location != null){
 			return new ResponseEntity<>(location.getLocationZones(), HttpStatus.OK);
 		}
-		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(null, HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/deleteLocationZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -95,9 +96,9 @@ public class LocationZoneController {
 			locationZoneService.remove(id);
 			return new ResponseEntity<>(new MessageDTO("Success", "Location zone successfully deleted."), HttpStatus.OK);
 		}catch(LocationZoneNotFound e) {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Location zone not found."), HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location zone not found."), HttpStatus.OK);
 		}catch(LocationZoneNotChangeable e) {
-			return new ResponseEntity<>(new MessageDTO("Conflict", "Location zone not changeable."), HttpStatus.CONFLICT);
+			return new ResponseEntity<>(new MessageDTO("Conflict", "Location zone not changeable."), HttpStatus.OK);
 		}
 		
 	}

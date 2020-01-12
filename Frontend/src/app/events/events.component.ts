@@ -7,6 +7,7 @@ import { NgbModal,NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { AlertBoxComponent } from '../alert-box/alert-box.component';
 import { EventDetailsComponent } from './event-details/event-details.component';
 import { Event } from '../model/event.model';
+import { Location } from '../model/location.model';
 import { EventReportComponent } from './event-report/event-report.component';
 
 

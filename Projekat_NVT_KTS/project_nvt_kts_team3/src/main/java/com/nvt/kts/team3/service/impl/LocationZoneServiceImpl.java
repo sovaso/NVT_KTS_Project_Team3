@@ -49,6 +49,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 		Location location = locationService.findById(lz.getLocationId());
 
 		if (location == null || location.isStatus() == false) {
+			System.out.println("LocatioNotFound");
 			throw new LocationNotFound();
 		}
 		LocationZone newZone = null;
@@ -62,6 +63,7 @@ public class LocationZoneServiceImpl implements LocationZoneService {
 					location);
 			location.getLocationZones().add(newZone);
 		} else {
+			System.out.println("InvalidLocationZone");
 			throw new InvalidLocationZone();
 		}
 		return locationZoneRepository.save(newZone);
