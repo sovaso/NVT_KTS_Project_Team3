@@ -1,8 +1,6 @@
-
-<div class="container" [hidden]="isModelShow">
-    <div class="row">
-      <div class="col-md-3"></div>
-      <div class="col-md-6">
+<div class="row" ng-controller="testController"
+style="overflow-x: auto;">
+    <div class="column">
           <h2 class="form-signin-heading">Add location</h2>
           <label for="name" class="sr-only">Name</label>
           <input type="text" id="name" class="form-control" name="name" [(ngModel)]="location.name" placeholder="Name"
@@ -23,12 +21,12 @@
                           required autofocus></td></tr>
                           <tr>
                           <td><label for="row" class="sr-only">Row number</label>
-                            <input type="text" id="row" class="form-control" name="row" [(ngModel)]="locationZones[numOfLocationZones-1].row" placeholder="Row number"
-                              required autofocus></td></tr>
+                            <input type="text" id="row" class="form-control" name="row" maxlength="2" inputmode="numeric" pattern="[0-9]*" [(ngModel)]="locationZones[numOfLocationZones-1].row" placeholder="Row number"
+                              required autofocus digitonly></td></tr>
                               <tr>
                               <td><label for="col" class="sr-only">Col number</label>
-                                <input type="text" id="col" class="form-control" name="col" [(ngModel)]="locationZones[numOfLocationZones-1].col" placeholder="Col number"
-                                  required autofocus></td></tr>
+                                <input type="text" id="col" class="form-control" name="col" maxlength="2" inputmode="numeric" pattern="[0-9]*" [(ngModel)]="locationZones[numOfLocationZones-1].col" placeholder="Col number"
+                                  required autofocus digitonly></td></tr>
                                 <tr>
                                   <td><label for="matrix">Is matrix?</label></td></tr><tr><td>
                                     <input type="checkbox" id="matrix" name="matrix" [(ngModel)]="locationZones[numOfLocationZones-1].matrix" placeholder="Matrix" 
@@ -43,13 +41,13 @@
             <button  class="btn btn-danger btn-block" (click)="close()" class="x">X</button>
           <button class="btn btn-primary btn-block" (click)="createLocation()">Create</button>
           <br/>
+          </div>
+        <div class="column">
         <div *ngFor="let lz of locationZones">
-        
+          Name: {{lz.name}}
+          <button  class="btn btn-danger" (click)="remove(lz.id)">Remove</button>
                 <table>
-                  <tr>
-                    <td>Name: {{lz.name}}</td><td></td><td></td><td> <button  class="btn btn-danger btn-block" (click)="remove(lz.id)">Remove</button></td>
-                  </tr>
-                  <tr></tr>
+                  
                 <div *ngIf="lz.capacity!=0">    
                   <div *ngIf="lz.matrix else elseblock">  
                           <tr>
@@ -79,7 +77,7 @@
               
             <br/>   
         </div>
+      </div>
     
-  </div>
-  </div>
+ 
 </div>

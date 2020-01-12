@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nvt.kts.team3.dto.LocationDTO;
 import com.nvt.kts.team3.dto.LocationReportDTO;
 import com.nvt.kts.team3.dto.LocationZoneDTO;
+import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Location;
@@ -263,6 +264,16 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	public Location findByAddress(String address){
 		return locationRepository.findByAddress(address);
+	}
+
+	@Override
+	public MessageDTO checkIfNameAndAddressAvailable(String name, String address) {
+		Location loc=this.locationRepository.findByNameAndAddress(name,address);
+		if(loc!=null) {
+			return new MessageDTO("Location exists","Exists");
+		}
+		return new MessageDTO("Okay","Okay");
+		
 	}
 
 }

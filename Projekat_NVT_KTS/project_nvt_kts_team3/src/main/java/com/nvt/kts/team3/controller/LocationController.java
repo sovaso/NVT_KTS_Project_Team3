@@ -68,9 +68,9 @@ public class LocationController {
 			locationService.update(locationDTO);
 			return new ResponseEntity<>(new MessageDTO("Success", "Location successfully updated."), HttpStatus.OK);
 		} catch(LocationNotFound e) {
-			return new ResponseEntity<>(new MessageDTO("Bad request", "Location not found."), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new MessageDTO("Bad request", "Location not found."), HttpStatus.OK);
 		}catch (LocationExists e) {
-			return new ResponseEntity<>(new MessageDTO("Not found", "Location with submited name and address already exist."), HttpStatus.CONFLICT);
+			return new ResponseEntity<>(new MessageDTO("Not found", "Location with submited name and address already exist."), HttpStatus.OK);
 		}
 		
 	}
@@ -124,4 +124,15 @@ public class LocationController {
 		}
 		
 	}
+	
+	@GetMapping(value = "/checkIfNameAndAddressAvailable/{location_name}/{location_address}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<MessageDTO> checkIfNameAndAddressAvailable(@PathVariable String location_name,@PathVariable String location_address){
+		MessageDTO retVal=this.locationService.checkIfNameAndAddressAvailable(location_name,location_address);
+		return new ResponseEntity<>(retVal, HttpStatus.OK);
+		
+	}
+	
+	
+	
 }

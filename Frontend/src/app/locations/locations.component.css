@@ -13,3 +13,8 @@
     max-width: 80%;
     width: 80%;
 }
+
+
+::ng-deep .my-full-screen-dialog .modal-dialog{
+    max-width: 100vw;
+  }

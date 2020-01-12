@@ -14,6 +14,7 @@ import com.nvt.kts.team3.model.Location;
 public interface LocationRepository extends JpaRepository<Location, Long>{
 	
 	public Location findByNameAndAddress(String name, String address);
+	public Location findByName(String name);
 	
 	@Query("SELECT DISTINCT e FROM Event e " +
 		    "WHERE e.status = 1 AND e.id IN " +

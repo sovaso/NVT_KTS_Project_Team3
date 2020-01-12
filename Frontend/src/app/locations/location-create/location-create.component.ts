@@ -3,7 +3,7 @@ import { CurrentUser } from 'src/app/model/currentUser';
 import { SharedService } from 'src/app/services/shared/shared.service';
 import { LocationsService } from 'src/app/services/locations/locations.service';
 import { AlertService } from 'src/app/services';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal,NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertBoxComponent } from 'src/app/alert-box/alert-box.component';
 import { Event } from 'src/app/model/event.model';
 import {LocationZone} from  'src/app/model/location_zone.model'
@@ -30,6 +30,7 @@ export class LocationCreateComponent implements OnInit {
   location: LocationDto;
   numOfLocationZones:number=0;
   isModelShow: boolean=false;
+  done: number=0;
   @Input() showMePartially: boolean;
 
   ngOnInit() {
@@ -45,32 +46,52 @@ export class LocationCreateComponent implements OnInit {
       };
   }
 
-  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService){};
-
+  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService,private activeModal:NgbActiveModal){};
+  checkNameAndAdress(){
+    this.sharedService.updateAll();
+    this.locationsService.checkNameAndAddress(this.location.name,this.location.address).subscribe(data => {
+      if(data.message=="Location exists"){
+        const modalRef = this.modalService.open(AlertBoxComponent);
+        modalRef.componentInstance.message="Location with this name and address already exists!";
+      }else{
+         this.createLocation2();
+      }
+  });
+  }
 
   createLocation(){
     if(this.location.name=='' || this.location.address=='' || this.location.description==''){
       const modalRef = this.modalService.open(AlertBoxComponent);
       modalRef.componentInstance.message="Location name,address and description cannot be blank!";
 
-    }else{
+    }
+    this.checkNameAndAdress();
+  }
+
+  createLocation2(){
       let k:number=0;
       for(k;k<this.locationZones.length;k++){
         if(this.locationZones[k].name==''|| this.locationZones[k].capacity==0){
           this.numOfLocationZones-=1;
           this.locationZones.splice(k,1);
         }
+        
       }
+      if(this.locationZones.length==0){
+        const modalRef = this.modalService.open(AlertBoxComponent);
+        modalRef.componentInstance.message="Must have at least one location zone!";
+      }else{
       this.location.locationZone=this.locationZones;
       this.locationsService.create(this.location).subscribe(data => {
         console.log(data);
         this.sharedService.updateAll();
         const modalRef = this.modalService.open(AlertBoxComponent);
         modalRef.componentInstance.message=data.header;
+        this.activeModal.dismiss();
     });
   }
+}
 
-  }
 
 
   
@@ -145,11 +166,18 @@ close(){
 }
 
 remove(i:string){
-  
+  let k: number=0;
   let a: number=parseInt(i);
-  console.log("Index",a);
-  this.locationZones.splice(a,1);
+  for(k;k<=this.locationZones.length;k++){
+    if(this.locationZones[k].id==i){
+      this.locationZones.splice(k,1);
+      break;
+    }
+  }
   this.numOfLocationZones-=1;
+  if(this.numOfLocationZones==0){
+    this.newLocationZone(); 
+  }
 }
 
 }

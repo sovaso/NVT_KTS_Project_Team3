@@ -1,0 +1,102 @@
+<div class="row" ng-controller="testController"
+style="overflow-x: auto;">
+    <div class="column">
+          <h2 class="form-signin-heading">Add location</h2>
+          <label for="name" class="sr-only">Name</label>
+          <input type="text" id="name" class="form-control" name="name" [(ngModel)]="location.name" placeholder="Name"
+            required autofocus>
+          <label for="address" class="sr-only">Surname</label>
+          <input type="address" id="address" class="form-control" name="address" [(ngModel)]="location.address" placeholder="Address"
+            required>
+          <label for="description" class="sr-only">Email</label>
+          <input type="description" id="description" class="form-control" name="description" [(ngModel)]="location.description" placeholder="Description"
+              required autofocus>
+          <button class="btn btn-primary btn-block" (click)="saveLocationChanges()">Save changes</button> 
+            <button  class="btn btn-danger btn-block" (click)="close()" class="x">X</button>
+          <!-- <button class="btn btn-primary btn-block" (click)="createLocation()">Create</button> -->
+          <br/>
+          </div>
+          
+        <div class="column">
+        <button class="btn btn-primary btn-block" (click)="newLocationZone()">Add location zone</button>
+        <table *ngIf="newZone==true">
+            <tr>
+                <td><label for="lzname" class="sr-only">Name</label>
+                    <input type="text" id="lzname" class="form-control" name="lzname" [(ngModel)]="newLocationZones[numberOfLocationZones-1].name" placeholder="Name"
+                      required autofocus></td></tr>
+                      <tr>
+                      <td><label for="row" class="sr-only">Row number</label>
+                        <input type="text" id="row" class="form-control" name="row" maxlength="2" inputmode="numeric" pattern="[0-9]*" [(ngModel)]="newLocationZones[numberOfLocationZones-1].row" placeholder="Row number"
+                          required autofocus digitonly></td></tr>
+                          <tr>
+                          <td><label for="col" class="sr-only">Col number</label>
+                            <input type="text" id="col" class="form-control" name="col" maxlength="2" inputmode="numeric" pattern="[0-9]*" [(ngModel)]="newLocationZones[numberOfLocationZones-1].col" placeholder="Col number"
+                              required autofocus digitonly></td></tr>
+                            <tr>
+                              <td><label for="matrix">Is matrix?</label></td></tr><tr><td>
+                                <input type="checkbox" id="matrix" name="matrix" [(ngModel)]="newLocationZones[numberOfLocationZones-1].matrix" placeholder="Matrix" 
+                                  required autofocus></td></tr>
+                            <tr>
+                                <button class="btn btn-primary btn-block" (click)="addLocationZone()">Save</button>
+                            </tr>
+                            
+
+
+        </table>
+        <div *ngFor="let lz of locationZones">
+          Name: {{lz.name}}
+          <button  class="btn btn-danger" (click)="remove(lz.id)">Remove</button>
+                <table>
+                  
+                <div *ngIf="lz.capacity!=0">    
+                  <div *ngIf="lz.matrix else elseblock">  
+                          <tr>
+                            <td>  </td>
+                              <td *ngFor="let other of counter(lz.colNumber)" align="top|center">
+                                  {{other}}
+                              
+                              </td>
+
+                          </tr>
+                <tr *ngFor="let item of counter(lz.rowNumber)">
+                    <td align="top|center">{{item}}</td>
+                        <td *ngFor="let other of counter(lz.colNumber)">
+                                    <div class="foo yellow"></div>
+                                
+                                </td>
+                        
+                          
+                    </tr>
+                  </div>
+                  <ng-template #elseblock>
+                    <tr><td>Capacity: {{lz.capacity}}</td></tr>
+                      <div class="foo2 yellow"></div>
+                  </ng-template>
+                  </div>
+                  <tr><td><label for="lzname" class="sr-only">Name</label>
+                        <input type="text" id="lzname" class="form-control" name="lzname" [(ngModel)]="lz.name" placeholder="Name"
+                          required autofocus></td></tr>
+                          <tr>
+                          <td><label for="row" class="sr-only">Row number</label>
+                            <input type="text" id="row" class="form-control" name="row" maxlength="2" inputmode="numeric" pattern="[0-9]*" digitOnly [(ngModel)]="lz.rowNumber" placeholder="Row number"
+                              required autofocus></td></tr>
+                              <tr>
+                              <td><label for="col" class="sr-only">Col number</label>
+                                <input type="text" id="col" class="form-control" name="col" maxlength="2" inputmode="numeric" pattern="[0-9]*" [(ngModel)]="lz.colNumber" placeholder="Col number"
+                                  required autofocus digitOnly></td></tr>
+                                <tr>
+                                  <td><label for="matrix">Is matrix?</label></td></tr><tr><td>
+                                    <input type="checkbox" id="matrix" name="matrix" [(ngModel)]="lz.matrix" placeholder="Matrix" 
+                                      required autofocus digitOnly></td></tr>
+                                <tr>
+                                    <button class="btn btn-primary btn-block" (click)="updateLocationZone(lz)">Change location zone</button>
+                                </tr>
+                </table>
+                
+              
+            <br/>   
+        </div>
+      </div>
+    
+ 
+</div>

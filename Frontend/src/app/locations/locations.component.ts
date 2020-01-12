@@ -11,6 +11,8 @@ import { LocationReportComponent } from './location-report/location-report.compo
 import {LocationZone} from  '../model/location_zone.model'
 import { Router } from '@angular/router';
 import { LocationCreateComponent } from './location-create/location-create.component';
+import {LocationEditComponent} from './location-edit/location-edit.component'
+import {Location} from  '../model/location.model'
 
 @Component({
   selector: 'app-locations',
@@ -85,9 +87,17 @@ export class LocationsComponent implements OnInit {
   newLocation(){
     this.modalOption.backdrop = 'static';
     this.modalOption.keyboard = false;
-    this.modalOption.windowClass='my-class';
+    this.modalOption.windowClass='my-full-screen-dialog';
     const modalRef=this.modalService.open(LocationCreateComponent,this.modalOption);
     
+  }
+
+  updateLocation(location){
+    this.modalOption.backdrop = 'static';
+    this.modalOption.keyboard = false;
+    this.modalOption.windowClass='my-full-screen-dialog';
+    const modalRef=this.modalService.open(LocationEditComponent,this.modalOption);
+    modalRef.componentInstance.location=location;
   }
 
 

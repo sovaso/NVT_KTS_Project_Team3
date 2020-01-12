@@ -7,6 +7,7 @@ import { EventReportDto } from 'src/app/dto/event_report.dto';
 import { UploadFileDto } from 'src/app/dto/upload_file.dto';
 import { LocationReportDto } from 'src/app/dto/location_report.dto';
 import { LocationDto } from 'src/app/dto/location.dto';
+import { Location } from 'src/app/model/location.model';
 
 
 @Injectable({
@@ -36,7 +37,7 @@ export class LocationsService {
   }
 
   update = (location: LocationDto): Observable<MessageDto> =>
-  this.http.put<MessageDto>(`/api/updateLocation`, location);
+  this.http.post<MessageDto>(`/api/updateLocation`, location);
 
   delete = (id: string): Observable<MessageDto> =>{
     console.log('delete from service called');
@@ -47,6 +48,10 @@ export class LocationsService {
   seeReport = (id: string): Observable<LocationReportDto> =>
   this.http.get<LocationReportDto>(`/api/getLocationReport/${ id }`);
 
+  
+
+  checkNameAndAddress = (name: string,address:string): Observable<MessageDto> =>
+  this.http.get<MessageDto>(`/api/checkIfNameAndAddressAvailable/${ name }/${ address }`);
   
   
 

@@ -1,5 +1,6 @@
 import { EventsComponent } from '../events/events.component';
 import { LocationsComponent } from '../locations/locations.component';
+import { LocationZone } from './location_zone.model';
 
 
 export interface Location {
@@ -8,6 +9,6 @@ export interface Location {
     address: string;
     description: string;
     status: boolean;
-    events: Set<EventsComponent>;
-    locationZones: Set<LocationsComponent>;
+    events: Set<Event>;
+    locationZones: Set<LocationZone>;
  }
