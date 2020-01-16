@@ -29,9 +29,6 @@ export class LocationEditComponent implements OnInit {
 
   constructor(private locationService: LocationsService,private alertService: AlertService,private modalService:NgbModal,private eventService: EventsService,private locationZonesService:LocationZonesService) { }
 
-
-
-
   ngOnInit() {
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
     this.loadLocationZones();

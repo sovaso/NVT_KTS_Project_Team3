@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MenuBarComponent } from './menu-bar.component';
+import { Router } from '@angular/router';
 
 describe('MenuBarComponent', () => {
   let component: MenuBarComponent;
@@ -8,7 +9,10 @@ describe('MenuBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MenuBarComponent ]
+      declarations: [ MenuBarComponent ],
+      providers: [
+        {provide: Router, useValue: MockRouter }
+      ]
     })
     .compileComponents();
   }));
@@ -23,3 +27,7 @@ describe('MenuBarComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+class MockRouter{
+
+}

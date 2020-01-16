@@ -42,8 +42,6 @@ export class LocationsComponent implements OnInit {
   showCreate: boolean = false;
   modalOption: NgbModalOptions = {};
 
-  
-
   constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService,private router: Router) {}
 
   ngOnInit() {

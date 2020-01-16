@@ -1,12 +1,17 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { AuthenticationService } from './authentication-service.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { JwtUtilsService } from './jwt-utils.service';
 
 
 
 describe('AuthenticationServiceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AuthenticationService]
+      imports:  [HttpClientTestingModule],
+      providers: [AuthenticationService,
+        {provide: JwtUtilsService, useClass: JwtUtilsServiceMock},
+      ]
     });
   });
 
@@ -14,3 +19,7 @@ describe('AuthenticationServiceService', () => {
     expect(service).toBeTruthy();
   }));
 });
+
+class JwtUtilsServiceMock{
+  
+}

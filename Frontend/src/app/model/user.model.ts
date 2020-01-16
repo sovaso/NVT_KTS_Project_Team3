@@ -1,6 +1,6 @@
 import { Authority } from './authority.model';
 
-export interface UserModel {
+export class UserModel {
     id: string;
     name: string;
     surname: string;
@@ -9,4 +9,8 @@ export interface UserModel {
     password: string;
     enabled: boolean;
     authorities: Set<Authority>;
+
+    constructor(){
+      
+    }
   }

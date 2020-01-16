@@ -36,7 +36,6 @@ const routes: Routes = [
       { path : 'addNewAdmin', component : RegisterUserComponent},
 
     ] 
-   
   },
 
   {path: '**', redirectTo: 'dashboard'}

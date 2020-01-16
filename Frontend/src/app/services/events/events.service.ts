@@ -38,11 +38,9 @@ export class EventsService {
   this.http.put<MessageDto>(`/api/updateEvent`, event);
 
   delete = (id: string): Observable<MessageDto> =>{
-    console.log('delete from service called');
-    console.log(id);
-  return this.http.delete<MessageDto>(`/api/deleteEvent/${id}`);
+  
+    return this.http.delete<MessageDto>(`/api/deleteEvent/${id}`);
   }
-
 
   getEventLocation = (id: string): Observable<Location> =>
   this.http.get<Location>(`/api/getEventLocation/${ id }`);

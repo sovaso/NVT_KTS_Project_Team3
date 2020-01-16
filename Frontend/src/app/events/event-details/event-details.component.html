@@ -10,15 +10,22 @@
         <tbody>
             <tr>
                 <td><b>Name:</b></td>
-                <td>{{event.name}}</td>
+                <ngb-tab *ngIf="event.name">
+                    <td id="eventName">{{event.name}}</td>
+                </ngb-tab>
             </tr>
             <tr>
                 <td><b>Status:</b></td>
-                <td>{{event.status}}</td>
+                <ngb-tab *ngIf="event.status">
+                    <td>{{event.status}}</td>
+                </ngb-tab>
+                
             </tr>
             <tr>
                 <td><b>Type:</b></td>
-                <td>{{event.type}}</td>
+                <ngb-tab *ngIf="event.type">
+                    <td>{{event.type}}</td>
+                </ngb-tab>
             </tr>
             <tr>
                 <td><b>Paid tickets:</b></td>
@@ -46,7 +53,10 @@
 
             <tr>
                 <td><b>Location:</b></td>
-                <td>{{event.locationInfo.name}} &nbsp; &nbsp; <button class="btn btn-primary" (click)="showDetails(event.locationInfo)">Show details</button></td>
+                <ngb-tab *ngIf="event.locationInfo">
+                    <td>{{event.locationInfo.name}} &nbsp; &nbsp; <button class="btn btn-primary" (click)="showDetails(event.locationInfo)">Show details</button></td>
+                </ngb-tab>
+                
                 <!-- <td><button class="btn btn-primary" (click)="showDetails(event.locationInfo)">Show details</button></td> -->
             </tr>
             <tr>

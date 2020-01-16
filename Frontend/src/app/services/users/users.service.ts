@@ -27,6 +27,7 @@ export class UsersService {
     return this.http.get<UserModel>("/api/getLogged");
   }
 
+  
 
 
 }

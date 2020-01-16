@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, HostListener } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './pages/login/login.component';
+
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -36,6 +36,7 @@ import { EventReportComponent } from './events/event-report/event-report.compone
 import {LocationReportComponent} from './locations/location-report/location-report.component';
 import { LocationCreateComponent } from './locations/location-create/location-create.component';
 import { LocationEditComponent } from './locations/location-edit/location-edit.component';
+import { LoginComponent } from './pages/login/login.component';
 
 
 

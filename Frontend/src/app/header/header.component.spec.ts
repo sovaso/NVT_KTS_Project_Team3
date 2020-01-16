@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HeaderComponent } from './header.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AuthenticationService } from '../security/authentication-service.service';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -8,7 +10,11 @@ describe('HeaderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HeaderComponent ]
+      declarations: [ HeaderComponent ],
+      imports: [NgbModule],
+      providers: [
+        {provide: AuthenticationService, useClass: AuthenticationServiceMock},
+      ]
     })
     .compileComponents();
   }));
@@ -23,3 +29,7 @@ describe('HeaderComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+class AuthenticationServiceMock{
+  
+}

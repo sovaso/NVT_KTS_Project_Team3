@@ -26,10 +26,10 @@ export class EventDetailsComponent implements OnInit {
   constructor(private reservationsService: ReservationsService, private maintenancesService: MaintenancesService) { }
 
   ngOnInit() {
+    /*
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
     this.reservationsService.getByEventId(this.event.id).subscribe(data => {
-      console.log('uslo u get reservatons');
-      console.log(data.length);
+      
       this.reservations=data;
 
       for (let res in this.reservations){
@@ -46,8 +46,7 @@ export class EventDetailsComponent implements OnInit {
     });
 
     this.maintenancesService.getByEventId(this.event.id).subscribe(data=>{
-      console.log('uslo u get maintenances');
-      console.log(data.length);
+     
       this.maintenances=data;
       for (let m in this.maintenances){
         console.log('uslo u main loop');
@@ -62,25 +61,13 @@ export class EventDetailsComponent implements OnInit {
         maintenance.reservationExpiry.toString().split("T")[1];
 
         this.maintRepr.push(repr);
-      /*   this.maintenancesString.push("from " + maintenance.maintenanceDate.toString().split("T")[0]+
-        " " + maintenance.maintenanceDate.toString().split("T")[1] + " to " + 
-        maintenance.maintenanceEndTime.toString().split("T")[0]+
-        " " + maintenance.maintenanceEndTime.toString().split("T")[1]
-        + " , expiry " + maintenance.reservationExpiry.toString().split("T")[0]+ " "+
-        maintenance.reservationExpiry.toString().split("T")[1]
-        );
-
-
-        this.maintenancesStart.push(maintenance.maintenanceDate.toString().split("T")[0]+
-        " " + maintenance.maintenanceDate.toString().split("T")[1]
-        );
-        this.maintenancesEnd.push(maintenance.maintenanceEndTime.toString().split("T")[0]+
-        " " + maintenance.maintenanceEndTime.toString().split("T")[1]
-        ); */
+        
+    
       }
+      
     });
     
-    
+    */
     
    // this.soldTickets=this.reservations.size
     /*
