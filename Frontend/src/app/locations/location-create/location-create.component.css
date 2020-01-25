@@ -1,4 +1,4 @@
- .foo {
+.foo {
 	width: 12px;
 	height: 12px;
 } 
@@ -29,17 +29,170 @@
 
 
   .column {
-    margin-bottom: 30px;
-    margin-right: 30px;
-    margin-top: 30px;
-    padding: 15px 15px 15px 30px;
     float: left;
-    width: 30%;
+    padding: 10px;
+  }
+
+  .left {
+    width: 25%;
+  }
+  
+  .right {
+    width: 75%;
+    float: left;
+    white-space: nowrap;
+    overflow-x: auto;
   }
   
   /* Clear floats after the columns */
-  .row:after {
+  .row2:after {
     content: "";
     display: table;
     clear: both;
   }
+
+  .foo {
+    width: 12px;
+    height: 12px;
+  } 
+  
+  .foo2 {
+    width: 300px;
+    height: 300px;
+  } 
+  
+  .yellow {
+    background: blueviolet
+  }
+  
+  .x{
+    position: absolute;
+    float: right;
+      background: red;
+      color: white;
+      top: 0px;
+      right: 0px;
+  }
+  
+  .my-full-screen-dialog {
+      height: '100%';
+      width: '100%';
+    }
+  
+  
+  
+    .column {
+      float: left;
+      padding: 10px;
+    }
+  
+    .left {
+      width: 25%;
+    }
+    
+    .right {
+      width: 75%;
+      float: left;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+  
+  
+    .row2:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .outer-seat{
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
+      border: 3px solid #D8D8D8 ;
+      background: white;
+      position: relative;
+      margin: -35px 0px 0px -35px;
+      margin: 4px;
+      display: inline-block;
+    
+    }
+    .inner-seat{
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      top: 50%;
+      left: 50%;
+      margin: -15px 0px 0px -15px;
+      background: #D8D8D8 ;
+      position: absolute;
+      display: inline-block;
+  
+    }
+  
+  
+  
+    .outer-seat2{
+      width: 40px;
+      height: 40px;
+      border-radius: 9px;
+      background: white;
+      position: relative;
+      margin: -35px 0px 0px -35px;
+      margin: 4px;
+      display: inline-block;
+    }
+    .inner-seat2{
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      top: 50%;
+      left: 50%;
+      margin: -15px 0px 0px -15px;
+      position: absolute;
+      display: inline-block;
+    }
+  
+  
+    #div-inline{display: flex;}
+    
+  
+    
+    .clearBoth { clear:both; }
+  
+  
+    .labelText {    
+      display: block;
+      position: relative;    
+      width: 100%;    
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1.5rem;
+      padding: 4px 0;
+      border-radius: 5px;
+    }
+  
+    .outer-seat3{
+      width: 300px;
+      height: 300px;
+      border-radius: 9px;
+      border: 3px solid #D8D8D8 ;
+      background: white;
+      position: relative;
+      margin: -35px 0px 0px -35px;
+      margin: 4px;
+      display: inline-block;
+    
+    }
+    .inner-seat3{
+      width: 290px;
+      height: 290px;
+      border-radius: 4px;
+      top: 50%;
+      left: 50%;
+      margin: -145px 0px 0px -145px;
+      background: #D8D8D8 ;
+      position: absolute;
+      display: inline-block;
+  
+    }
+    
