@@ -1,6 +1,6 @@
-<div class="row" ng-controller="testController"
+<div class="row2" ng-controller="testController"
 style="overflow-x: auto;">
-    <div class="column">
+    <div class="column left">
           <h2 class="form-signin-heading">Add location</h2>
           <label for="name" class="sr-only">Name</label>
           <input type="text" id="name" class="form-control" name="name" [(ngModel)]="location.name" placeholder="Name"
@@ -42,41 +42,37 @@ style="overflow-x: auto;">
           <button class="btn btn-primary btn-block" (click)="createLocation()">Create</button>
           <br/>
           </div>
-        <div class="column">
+        <div class="column right" ng-controller="testController"
+        style="overflow-x: auto;">
         <div *ngFor="let lz of locationZones">
           Name: {{lz.name}}
-          <button  class="btn btn-danger" (click)="remove(lz.id)">Remove</button>
-                <table>
-                  
-                <div *ngIf="lz.capacity!=0">    
-                  <div *ngIf="lz.matrix else elseblock">  
-                          <tr>
-                            <td>  </td>
-                              <td *ngFor="let other of counter(lz.col)" align="top|center">
-                                  {{other}}
-                              
-                              </td>
-
-                          </tr>
-                <tr *ngFor="let item of counter(lz.row)">
-                    <td align="top|center">{{item}}</td>
-                        <td *ngFor="let other of counter(lz.col)">
-                                    <div class="foo yellow"></div>
-                                
-                                </td>
-                        
-                          
-                    </tr>
+          <button  class="btn btn-danger" (click)="remove(lz.id)">Remove</button> 
+          <div *ngIf="lz.capacity!=0">    
+            <div *ngIf="lz.matrix else elseblock"> 
+                <div id="div-inline">
+                    <div class="outer-seat2"><div class="inner-seat2"></div></div>
+                        <div *ngFor="let other of counter(lz.col)" align="top|center">
+                            <div class="outer-seat2"><div class="inner-seat2"><label class="labelText">{{other}}</label></div></div>
+                        </div>
+                </div> 
+                <div *ngFor="let item of counter(lz.row)">
+                  <div id="div-inline">
+                    <div class="outer-seat2"><div class="inner-seat2"><label class="labelText">{{item}}</label></div></div>
+                        <div *ngFor="let other of counter(lz.col)" >
+                            <div class="outer-seat"><div class="inner-seat"></div></div>
+                        </div>
+                       
                   </div>
-                  <ng-template #elseblock>
-                    <tr><td>Capacity: {{lz.capacity}}</td></tr>
-                      <div class="foo2 yellow"></div>
-                  </ng-template>
-                  </div>
-                </table>
-              
-            <br/>   
+                </div>
+                </div>
+                <ng-template #elseblock>
+                  <tr><td>Capacity: {{lz.capacity}}</td></tr>
+                  <div class="outer-seat3"><div class="inner-seat3"></div></div>
+                </ng-template>
+            </div> 
         </div>
+      <br/>
+      
       </div>
     
  
