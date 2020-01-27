@@ -1,20 +1,12 @@
 package com.nvt.kts.team3.dto;
 
+import java.util.List;
+
 public class UploadFileDTO {
-	public String name;
-	public String pathToFile;
+	public List<String> pathToFile;
 
-	public String getPathToFile() {
-		return pathToFile;
-	}
-
-	public void setPathToFile(String pathToFile) {
-		this.pathToFile = pathToFile;
-	}
-
-	public UploadFileDTO(String name, String pathToFile) {
+	public UploadFileDTO(List<String> pathToFile) {
 		super();
-		this.name = name;
 		this.pathToFile = pathToFile;
 	}
 
@@ -22,12 +14,13 @@ public class UploadFileDTO {
 		super();
 	}
 
-	public String getName() {
-		return name;
+	public List<String> getPathToFile() {
+		return pathToFile;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setPathToFile(List<String> pathToFile) {
+		this.pathToFile = pathToFile;
 	}
 
+	
 }

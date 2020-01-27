@@ -103,10 +103,10 @@ public class EventController {
 	}
 
 	@PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<?> upload(@RequestBody UploadFileDTO uploadFileDTO)
 			throws ParseException, GeneralSecurityException, IOException {
-		String path = this.eventService.uploadFile(uploadFileDTO);
+		List<String> path = this.eventService.uploadFile(uploadFileDTO);
 		return new ResponseEntity<>(path, HttpStatus.OK);
 
 	}
