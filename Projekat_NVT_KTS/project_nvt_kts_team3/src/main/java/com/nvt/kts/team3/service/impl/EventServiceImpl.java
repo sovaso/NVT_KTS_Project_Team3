@@ -488,32 +488,35 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public String uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException {
+	public List<String> uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException {
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-		File item = new File();
-
-		Permission permission = new Permission();
-		permission.setRole("reader");
-		permission.setType("anyone");
-		List<Permission> permis = new ArrayList<Permission>();
-		// permis.add(permission);
-		File fileMetadata = new File();
-		fileMetadata.setName(uploadFileDTO.getName());
-		java.io.File filePath = new java.io.File(uploadFileDTO.getPathToFile());
-		if (!filePath.exists()) {
-			throw new WrongPath();
-		} else {
-			FileContent mediaContent = new FileContent("image/jpeg", filePath);
-			Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-					DriveQuickstart.getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME).build();
-
-			item = service.files().create(fileMetadata, mediaContent).setFields("id,webViewLink").execute();
-			Permission perm = service.permissions().create(item.getId(), permission).execute();
-			permis.add(perm);
-			System.out.println("File ID: " + item.getWebViewLink());
-			item.setPermissions(permis);
-			return item.getWebViewLink();
+		List<String> webLinks=new ArrayList<String>();
+		for(String element: uploadFileDTO.getPathToFile()) {
+			File item = new File();
+			Permission permission = new Permission();
+			permission.setRole("reader");
+			permission.setType("anyone");
+			List<Permission> permis = new ArrayList<Permission>();
+			// permis.add(permission);
+			File fileMetadata = new File();
+			fileMetadata.setName(element);
+			java.io.File filePath = new java.io.File(element);
+			if (!filePath.exists()) {
+				throw new WrongPath();
+			} else {
+				FileContent mediaContent = new FileContent("image/jpeg", filePath);
+				Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+						DriveQuickstart.getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME).build();
+	
+				item = service.files().create(fileMetadata, mediaContent).setFields("id,webViewLink").execute();
+				Permission perm = service.permissions().create(item.getId(), permission).execute();
+				permis.add(perm);
+				System.out.println("File ID: " + item.getWebViewLink());
+				item.setPermissions(permis);
+				webLinks.add(item.getWebViewLink());
+			}
 		}
+		return webLinks;
 	}
 	
 	
