@@ -9,7 +9,6 @@ import { LocationDetailsComponent } from './location-details/location-details.co
 import { Event } from '../model/event.model';
 import { LocationReportComponent } from './location-report/location-report.component';
 import {LocationZone} from  '../model/location_zone.model'
-import { Router } from '@angular/router';
 import { LocationCreateComponent } from './location-create/location-create.component';
 import {LocationEditComponent} from './location-edit/location-edit.component'
 import {Location} from  '../model/location.model'
@@ -42,7 +41,9 @@ export class LocationsComponent implements OnInit {
   showCreate: boolean = false;
   modalOption: NgbModalOptions = {};
 
-  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService,private router: Router) {}
+  modalRef:any;
+
+  constructor(private modalService: NgbModal, private alertService: AlertService, private sharedService: SharedService, private locationsService: LocationsService) {}
 
   ngOnInit() {
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -66,8 +67,8 @@ export class LocationsComponent implements OnInit {
     this.locationsService.delete(location.id).subscribe(data => {
         console.log(data);
         this.sharedService.updateAll();
-        const modalRef = this.modalService.open(AlertBoxComponent);
-        modalRef.componentInstance.message=data.header;
+        this.modalRef = this.modalService.open(AlertBoxComponent);
+        this.modalRef.componentInstance.message=data.header;
     }
     );
   }
@@ -77,8 +78,8 @@ export class LocationsComponent implements OnInit {
     this.modalOption.keyboard = false;
     this.modalOption.windowClass='my-class2';
     this.locationsService.seeReport(event.id).subscribe(data => {
-        const modalRef = this.modalService.open(LocationReportComponent,this.modalOption);
-        modalRef.componentInstance.data = data;
+        this.modalRef = this.modalService.open(LocationReportComponent,this.modalOption);
+        this.modalRef.componentInstance.data = data;
   });
   }
 
@@ -86,7 +87,7 @@ export class LocationsComponent implements OnInit {
     this.modalOption.backdrop = 'static';
     this.modalOption.keyboard = false;
     this.modalOption.windowClass='my-full-screen-dialog';
-    const modalRef=this.modalService.open(LocationCreateComponent,this.modalOption);
+    this.modalRef=this.modalService.open(LocationCreateComponent,this.modalOption);
     
   }
 
@@ -94,8 +95,8 @@ export class LocationsComponent implements OnInit {
     this.modalOption.backdrop = 'static';
     this.modalOption.keyboard = false;
     this.modalOption.windowClass='my-full-screen-dialog';
-    const modalRef=this.modalService.open(LocationEditComponent,this.modalOption);
-    modalRef.componentInstance.location=location;
+    this.modalRef=this.modalService.open(LocationEditComponent,this.modalOption);
+    this.modalRef.componentInstance.location=location;
   }
 
 

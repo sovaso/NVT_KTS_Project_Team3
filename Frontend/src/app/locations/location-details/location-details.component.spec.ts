@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LocationDetailsComponent } from './location-details.component';
+import { NgbModal, NgbActiveModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap' ;
 
 describe('LocationDetailsComponent', () => {
   let component: LocationDetailsComponent;
@@ -8,7 +9,8 @@ describe('LocationDetailsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LocationDetailsComponent ]
+      declarations: [ LocationDetailsComponent ],
+      providers: [NgbModal]
     })
     .compileComponents();
   }));

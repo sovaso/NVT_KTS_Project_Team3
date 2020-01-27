@@ -16,13 +16,13 @@ import { LocationZoneDto } from 'src/app/dto/location_zone.dto';
   styleUrls: ['./location-create.component.css']
 })
 export class LocationCreateComponent implements OnInit {
-  name: string;
-  address: string;
-  description: string;
-  status: boolean;
-  locationZones: LocationZoneDto[];
+  name: string='';
+  address: string='';
+  description: string='';
+  status: boolean=false;
+  locationZones: LocationZoneDto[]=[];
   newZone: boolean=false;
-  lzname: string;
+  lzname: string='';
   rowNumber: number=0;
   colNumber: number=0;
   matrix: boolean=false;
@@ -31,7 +31,6 @@ export class LocationCreateComponent implements OnInit {
   numOfLocationZones:number=0;
   isModelShow: boolean=false;
   done: number=0;
-  @Input() showMePartially: boolean;
 
   ngOnInit() {
       this.locationZones=[];

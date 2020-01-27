@@ -92,7 +92,8 @@ import { LoginComponent } from './pages/login/login.component';
     EventReportComponent,
     LocationReportComponent,
     LocationCreateComponent,
-    LocationEditComponent
+    LocationEditComponent,
+    LocationDetailsComponent
   ],
   exports: [ EditProfileComponent ]
 })
