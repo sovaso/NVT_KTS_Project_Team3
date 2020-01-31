@@ -10,11 +10,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
 
 import com.test.e2e.pages.HomePage;
-import com.test.e2e.pages.HomePageLogin;
-import com.test.e2e.pages.LoginPage;
 
 public class TestLogin {
-
+/*
 	private WebDriver browser;
 	
 	HomePageLogin homePage;
@@ -75,4 +73,5 @@ public class TestLogin {
 	public void closeSelenium() {
 		browser.quit();
 	}
+	*/
 }

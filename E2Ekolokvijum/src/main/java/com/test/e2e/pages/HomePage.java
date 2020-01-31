@@ -10,31 +10,37 @@ public class HomePage {
 	
 	private WebDriver driver;
 	
-	@FindBy(xpath="//*[@id=\"contact-link\"]/a")
-	WebElement contactLink;
+	@FindBy(id="loginButton")
+	WebElement loginButton;
+	
+	@FindBy(id="registerButton")
+	WebElement registerButton;
 	
 	public HomePage(WebDriver driver) {
 		this.driver = driver;
 	}
 
 
-	public WebElement getContactLink() {
-		return contactLink;
+	public WebElement getLoginButton() {
+		return loginButton;
 	}
 
-	public void setContactLink(WebElement contactLink) {
-		this.contactLink = contactLink;
+	public void setLoginButton(WebElement loginButton) {
+		this.loginButton = loginButton;
+	}
+	
+	public WebElement getRegisterButton() {
+		return registerButton;
+	}
+
+	public void setRegisterButton(WebElement registerButton) {
+		this.registerButton = registerButton;
 	}
 
 	//Zato i uzimas ovaj element contactLink-da bi proverila da je stranica vidljiva
 	public void ensureHomePageVisible() {
-		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(contactLink));
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(loginButton));
 		
 	}
-
 	
-
-	
-	
-
 }
