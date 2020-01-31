@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: E2Ekolokvijum
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: marina
+Implementation-Vendor-Id: com.test.e2e
+Build-Jdk: 1.8.0_121
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/E2Ekolokvijum
+Created-By: Maven Integration for Eclipse
+
