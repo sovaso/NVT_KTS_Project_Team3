@@ -33,58 +33,54 @@ export class RegisterUserComponent implements OnInit {
 }
   register():void{
     this.user.enabled = false;
-    if (this.user.name != undefined && this.user.surname != undefined && this.user.email != undefined &&
-      this.user.username != undefined && this.user.password!=undefined){
-
-      if (this.user.password==this.repeatedPassword){
-        if (this.validateEmail(this.user.email) == true){
-          console.log('validan je email');
-          this.registerUserService.register(this.user).subscribe(
-            (registered:boolean) => {
-              console.log("nestooo");
-              if(registered){
-                console.log("is registered in");
-                this.message = "Successful registration, congratulations! Please go to email to verify your registration!",
-                "success";
-                this.type = 'success';
-                var username = this.user.username;
-                let mail = new Mail();
-                mail.emailAddress = this.user.email;
-                mail.subject = "Register verification";
-                mail.body = `Please click on the following link in order to activate your account:\nhttp://localhost:8080/api/confirmRegistration/${username}`;
+    if (this.user.name != "" && this.user.surname != "" && this.user.email != "" &&
+        this.user.username != "" && this.user.password!="" && this.repeatedPassword!=""){
+        if (this.user.password==this.repeatedPassword){
+          if (this.validateEmail(this.user.email) == true){
+              console.log('validan je email');
+              this.registerUserService.register(this.user).subscribe(
+                (registered:boolean) => {
+                  console.log("nestooo");
+                  if(registered){
+                    console.log("is registered in");
+                    this.message = "Successful registration, congratulations! Please go to email to verify your registration!",
+                    "success";
+                    this.type = 'success';
+                    var username = this.user.username;
+                    let mail = new Mail();
+                    mail.emailAddress = this.user.email;
+                    mail.subject = "Register verification";
+                    mail.body = `Please click on the following link in order to activate your account:\nhttp://localhost:8080/api/confirmRegistration/${username}`;
+                    this.registerUserService.sendMail(mail).subscribe(
+                      () =>{
       
-                this.registerUserService.sendMail(mail).subscribe(
-                  () =>{
-  
+                      }
+                    );
+              
                   }
-                );
-          
-              }
+                }
+              ,
+                (err:Error) => {
+                    this.user.username='';
+                      this.message = 'Username already exist.';
+                      this.type = 'danger';
+                    console.log(err);    
+                });
+            }else {
+              this.message = 'Invalid email.';
+              this.type = 'danger';
             }
-          ,
-            (err:Error) => {
-                this.user.username='';
-                  this.message = 'Username already exist.';
-                  this.type = 'danger';
-                console.log(err);
             
-            });
-        }else {
-          this.message = 'Invalid email.';
-          this.type = 'danger';
-        }
-        
+          }else {
+            
+            this.message = 'Passwords must match.';
+            this.type = 'danger';
+          }
+          
       }else {
-        
-        this.message = 'Passwords must match.';
+        this.message = 'Please fill all fields.';
         this.type = 'danger';
       }
-      
-  }else {
-   
-    this.message = 'Please fill all fields.';
-    this.type = 'danger';
-  }
-  }
+    }
 
 }

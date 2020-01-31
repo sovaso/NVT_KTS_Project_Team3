@@ -77,7 +77,7 @@ export class EventDetailsComponent implements OnInit {
   }
 
   close(){
-    location.reload();
+    this.modalService.dismissAll();
   }
 
 }
