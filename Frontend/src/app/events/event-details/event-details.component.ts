@@ -6,6 +6,7 @@ import { MaintenancesService } from 'src/app/services/maintenances/maintenances.
 import { Maintenance } from 'src/app/model/maintenance.model';
 import { MaintRepr } from 'src/app/model/maintRepr.model';
 import { CurrentUser } from 'src/app/model/currentUser';
+import { NgbModal,NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-event-details',
   templateUrl: './event-details.component.html',
@@ -23,7 +24,7 @@ export class EventDetailsComponent implements OnInit {
   maintenancesString : String[] = [];
   expiries: String[]; */
   maintRepr : MaintRepr[]=[];
-  constructor(private reservationsService: ReservationsService, private maintenancesService: MaintenancesService) { }
+  constructor(private modalService: NgbModal,private reservationsService: ReservationsService, private maintenancesService: MaintenancesService) { }
 
   ngOnInit() {
     /*
@@ -77,7 +78,7 @@ export class EventDetailsComponent implements OnInit {
   }
 
   close(){
-    location.reload();
+    this.modalService.dismissAll();
   }
 
 }
