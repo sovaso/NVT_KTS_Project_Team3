@@ -43,4 +43,9 @@ public class HomePage {
 		
 	}
 	
+	public void ensureRegisterButtonVisible() {
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(registerButton));
+		
+	}
+	
 }
