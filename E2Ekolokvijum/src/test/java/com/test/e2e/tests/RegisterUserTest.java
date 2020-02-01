@@ -7,9 +7,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
 
 import org.junit.After;
 import org.junit.Test;
@@ -28,10 +25,6 @@ public class RegisterUserTest {
 
 	HomePage homePage;
 	RegisterUserPage registerPage;
-	
-	Class.forName("com.mysql.jdbc.Driver");
-	Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/dbteam3SeleniumTest", "root", "root");
-	
 	
 	
 	
@@ -69,8 +62,27 @@ public class RegisterUserTest {
 		registerPage.getRegisterButton().click();
 		registerPage.ensureMessageVisible();
 		String message=registerPage.getMessage().getText();
-		System.out.println(message);
 		assertTrue(message.contains("Please fill all fields."));
+		
+		browser.navigate().to("http://localhost:4200/dashboard");
+		homePage.getRegisterButton().click();
+		
+		registerPage.setName("user");
+		registerPage.setSurname("user");
+		registerPage.setEmail("leona.nedeljkovic@gmail.com");
+		registerPage.setPassword("user");
+		registerPage.setUsername("userCoffe");
+		registerPage.setRepeatedPassword("user");
+		registerPage.ensureRegisterVisible();
+		registerPage.getRegisterButton().click();
+		registerPage.ensureMessageVisible();
+		message=registerPage.getMessage().getText();
+		System.out.println(message);
+		assertTrue(message.contains("Successfully"));
+		
+		browser.navigate().to("http://localhost:4200/dashboard");
+		homePage.getRegisterButton().click();
+		
 		
 		registerPage.setName("user");
 		registerPage.setSurname("user");
@@ -84,6 +96,9 @@ public class RegisterUserTest {
 		message=registerPage.getMessage().getText();
 		assertTrue(message.contains("Username already exist."));
 		
+		browser.navigate().to("http://localhost:4200/dashboard");
+		homePage.getRegisterButton().click();
+		
 		registerPage.setName("user");
 		registerPage.setSurname("user");
 		registerPage.setEmail("a");
@@ -95,6 +110,9 @@ public class RegisterUserTest {
 		registerPage.ensureMessageVisible();
 		message=registerPage.getMessage().getText();
 		assertTrue(message.contains("Invalid email."));
+		
+		browser.navigate().to("http://localhost:4200/dashboard");
+		homePage.getRegisterButton().click();
 		
 		
 		registerPage.setName("user");
@@ -110,26 +128,14 @@ public class RegisterUserTest {
 		assertTrue(message.contains("Passwords must match."));
 		
 		
-		registerPage.setName("user");
-		registerPage.setSurname("user");
-		registerPage.setEmail("leona.nedeljkovic@gmail.com");
-		registerPage.setPassword("user");
-		registerPage.setUsername("userCoffe");
-		registerPage.setRepeatedPassword("user");
-		registerPage.ensureRegisterVisible();
-		registerPage.getRegisterButton().click();
-		registerPage.ensureMessageVisible();
-		message=registerPage.getMessage().getText();
-		System.out.println(message);
-		Statement stmt = con.createStatement();	
-		stmt.executeQuery("delete u from user where u.username='userCoffe';");
+		
+		
 		
 	}
 	
 	@After
 	public void closeSelenium() {
 		// Shutdown the browser
-		con.close();
 		browser.quit();
 		
 	}

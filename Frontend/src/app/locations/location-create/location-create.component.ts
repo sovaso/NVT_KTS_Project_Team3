@@ -68,9 +68,10 @@ export class LocationCreateComponent implements OnInit {
   }
 
   createLocation2(){
+      this.newZone=false;
       let k:number=0;
       for(k;k<this.locationZones.length;k++){
-        if(this.locationZones[k].name==''|| this.locationZones[k].capacity==0){
+        if(this.locationZones[k].name==''|| this.locationZones[k].capacity==0 || this.locationZones[k].row==0 || this.locationZones[k].col==0){
           this.numOfLocationZones-=1;
           this.locationZones.splice(k,1);
         }

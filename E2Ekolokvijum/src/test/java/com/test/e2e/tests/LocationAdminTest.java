@@ -42,11 +42,11 @@ public class LocationAdminTest {
 		locationAdminPage = PageFactory.initElements(browser, LocationAdminPage.class);
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Test
 	@Transactional
 	@Rollback(true)
 	public void test_locationAdmin() throws InvocationTargetException {
+		//go to location list, ensure list is not empty
 		homePage.ensureHomePageVisible();
 		homePage.getLoginButton().click();
 		WebElement username=  browser.findElement(By.xpath("/html/body/ngb-modal-window/div/div/app-login/div/div/div[2]/form/input[1]"));
@@ -66,6 +66,8 @@ public class LocationAdminTest {
 		  .until(ExpectedConditions.numberOfElementsToBeMoreThan(
 				  By.cssSelector("tr"), 0));
 		
+		
+		//open reports
 		WebElement showReport=(new WebDriverWait(browser, 10)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[1]/ngb-tab/td[3]/button")));
 		assertTrue(showReport.isDisplayed());
 		showReport.click();
@@ -73,7 +75,136 @@ public class LocationAdminTest {
 		  .until(ExpectedConditions.textToBePresentInElementLocated(
 				  By.xpath("/html/body/ngb-modal-window/div/div/app-location-report/div/h4[1]"),"A) Daily"));
 		
+		WebElement x=(new WebDriverWait(browser, 10)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/ngb-modal-window/div/div/app-location-report/div/button")));
+		assertTrue(x.isDisplayed());
+		x.click();
+		
+		//add new location emptyFields
+		WebElement createNew=(new WebDriverWait(browser, 10)).until(ExpectedConditions.presenceOfElementLocated(By.xpath("/html/body/app-root/div/app-dashboard/div/app-locations/div/ngb-tab/button")));
+		assertTrue(createNew.isDisplayed());
+		createNew.click();
+		locationAdminPage.getCreateLocationButton().click();
+		locationAdminPage.ensureMessageVisible();
+		String message=locationAdminPage.getMessage().getText();
+		assertTrue(message.contains("Location name,address and description cannot be blank!"));
+		locationAdminPage.ensureCloseButtonVisible();
+		locationAdminPage.getCloseMessage().click();
+		
+		//locaion with this name and address already exists
+		locationAdminPage.setNewName("Name1");
+		locationAdminPage.setNewAddress("Address1");
+		locationAdminPage.setNewDescription("Description1");
+		locationAdminPage.getCreateLocationButton().click();
+		locationAdminPage.ensureMessageVisible();
+		message=locationAdminPage.getMessage().getText();
+		assertTrue(message.contains("Location with this name and address already exists!"));
+		locationAdminPage.ensureCloseButtonVisible();
+		locationAdminPage.getCloseMessage().click();
+
+		
+		
+		//must have at least one location zone
+		locationAdminPage.setNewName("Name50");
+		locationAdminPage.setNewAddress("Address1");
+		locationAdminPage.setNewDescription("Description1");
+		locationAdminPage.getCreateLocationButton().click();
+		locationAdminPage.ensureMessageVisible();
+		message=locationAdminPage.getMessage().getText();
+		assertTrue(message.contains("Must have at least one location zone!"));
+		locationAdminPage.ensureCloseButtonVisible();
+		locationAdminPage.getCloseMessage().click();
+		
+		//must have at least one location zone
+		locationAdminPage.setNewName("Name50");
+		locationAdminPage.setNewAddress("Address1");
+		locationAdminPage.setNewDescription("Description1");
+		locationAdminPage.getCreateLocationButton().click();
+		locationAdminPage.ensureMessageVisible();
+		message=locationAdminPage.getMessage().getText();
+		assertTrue(message.contains("Must have at least one location zone!"));
+		locationAdminPage.ensureCloseButtonVisible();
+		locationAdminPage.getCloseMessage().click();
+		
+		//must have at least one location zone
+		locationAdminPage.setNewName("Name50");
+		locationAdminPage.setNewAddress("Address1");
+		locationAdminPage.setNewDescription("Description1");
+		locationAdminPage.ensureAddLZVisible();
+		locationAdminPage.getAddNewLocationZoneButton().click();
+		locationAdminPage.ensureAddFinalLZButtonVisible();
+		locationAdminPage.getAddLZFinalButton().click();
+		message=locationAdminPage.getMessage().getText();
+		assertTrue(message.contains("Name of location zone is required!"));
+		locationAdminPage.ensureCloseButtonVisible();
+		locationAdminPage.getCloseMessage().click();
+		
+
+        //Row and colomn number must be integers greater than 0!
+		locationAdminPage.setNewName("Name50");
+		locationAdminPage.setNewAddress("Address1");
+		locationAdminPage.setNewDescription("Description1");
+		locationAdminPage.ensureAddLZVisible();
+		locationAdminPage.getAddNewLocationZoneButton().click();
+		locationAdminPage.setLocationZoneName("LZ1");
+		locationAdminPage.ensureAddFinalLZButtonVisible();
+		locationAdminPage.getAddLZFinalButton().click();
+		message=locationAdminPage.getMessage().getText();
+		assertTrue(message.contains("Row and colomn number must be integers greater than 0!"));
+		locationAdminPage.ensureCloseButtonVisible();
+		locationAdminPage.getCloseMessage().click();
+		
+		//success
+		locationAdminPage.setNewName("Nam109");
+		locationAdminPage.setNewAddress("Address1");
+		locationAdminPage.setNewDescription("Description1");
+		locationAdminPage.ensureAddLZVisible();
+		locationAdminPage.setLocationZoneName("LZ1");
+		locationAdminPage.setLocationZoneRow("10");
+		locationAdminPage.setLocationZoneCol("10");
+		locationAdminPage.ensureAddFinalLZButtonVisible();
+		locationAdminPage.getAddLZFinalButton().click();
+		locationAdminPage.getCreateLocationButton().click();
+		locationAdminPage.ensureMessageFinalVisible();
+		String message2=locationAdminPage.getMessageFinal().getText();
+		System.out.println("Message2 "+message2);
+		assertTrue(message2.contains("Location successfully created."));
+		locationAdminPage.ensureCloseSuccessVisible();
+		locationAdminPage.getCloseSuccess().click();
+		
+		//delete location not allowed
+		locationAdminPage.ensureDLNAVisible();
+		locationAdminPage.getDeleteLocationNotAllowed().click();
+		locationAdminPage.ensureMessageFinalVisible();
+		message=locationAdminPage.getMessageFinal().getText();
+		System.out.println("Not visible "+message);
+		assertTrue(message.contains("Location not changeable."));
+		locationAdminPage.ensureCloseSuccessVisible();
+		locationAdminPage.getCloseSuccess().click();
+		
+		//delete location allowed
+		locationAdminPage.ensureDLAVisible();
+		locationAdminPage.getDeleteLocationAllowed().click();
+		locationAdminPage.ensureMessageFinalVisible();
+		message=locationAdminPage.getMessageFinal().getText();
+		System.out.println("visible "+message);
+		assertTrue(message.contains("Location successfully deleted."));
+		locationAdminPage.ensureCloseSuccessVisible();
+		locationAdminPage.getCloseSuccess().click();
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
+	
 	
 	@After
 	public void closeSelenium() {
