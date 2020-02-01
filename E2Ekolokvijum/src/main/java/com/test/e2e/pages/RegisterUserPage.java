@@ -60,6 +60,11 @@ public class RegisterUserPage {
 		el.clear();
 		el.sendKeys(name);
 	}
+	
+	public void setNameEmpty() {
+		WebElement el = getName();
+		el.clear();
+	}
 
 	public WebElement getSurname() {
 		return surname;
@@ -69,6 +74,11 @@ public class RegisterUserPage {
 		WebElement el = getSurname();
 		el.clear();
 		el.sendKeys(surname);
+	}
+	
+	public void setSurnameEmpty() {
+		WebElement el = getSurname();
+		el.clear();
 	}
 
 	public WebElement getEmail() {
@@ -80,6 +90,11 @@ public class RegisterUserPage {
 		el.clear();
 		el.sendKeys(email);
 	}
+	
+	public void setEmailEmpty() {
+		WebElement el = getEmail();
+		el.clear();
+	}
 
 	public WebElement getUsername() {
 		return username;
@@ -89,6 +104,11 @@ public class RegisterUserPage {
 		WebElement el = getUsername();
 		el.clear();
 		el.sendKeys(username);
+	}
+	
+	public void setUsernameEmpty() {
+		WebElement el = getUsername();
+		el.clear();
 	}
 
 	public WebElement getPassword() {
@@ -100,6 +120,13 @@ public class RegisterUserPage {
 		el.clear();
 		el.sendKeys(password);
 	}
+	
+	public void setPasswordEmpty() {
+		WebElement el = getPassword();
+		el.clear();
+	}
+	
+	
 
 	public WebElement getRepeatedPassword() {
 		return repeatedPassword;
@@ -109,6 +136,11 @@ public class RegisterUserPage {
 		WebElement el = getRepeatedPassword();
 		el.clear();
 		el.sendKeys(repeatedPassword);
+	}
+	
+	public void setRepeatedPasswordEmpty() {
+		WebElement el = getRepeatedPassword();
+		el.clear();
 	}
 
 	public WebElement getRegisterButton() {
