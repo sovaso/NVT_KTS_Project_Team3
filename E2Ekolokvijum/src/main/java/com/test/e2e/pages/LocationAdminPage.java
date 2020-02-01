@@ -61,6 +61,60 @@ public class LocationAdminPage {
 	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[1]/ngb-tab/td[1]/button")
 	WebElement deleteLocationNotAllowed;
 	
+	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[1]/ngb-tab/td[2]/button")
+	WebElement editButtonLocationFirst;
+	
+	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[8]/ngb-tab/td[2]/button")
+	WebElement editButtonLocationLast;
+
+	@FindBy(xpath="/html/body/ngb-modal-window/div/div/app-location-edit/div/div[2]/div/table/tr[1]/td/input")
+	WebElement nameNotChangebleEdit;
+	
+	
+	@FindBy(xpath="/html/body/ngb-modal-window/div/div/app-location-edit/div/div[2]/div/table/tr[6]/button")
+	WebElement changeLocationZone;
+	
+	@FindBy(xpath="/html/body/ngb-modal-window/div/div/app-location-edit/div/div[1]/button[2]")
+	WebElement xEditModal;
+	
+	
+	public WebElement getxEditModal() {
+		return xEditModal;
+	}
+
+
+
+	public WebElement getNameNotChangebleEdit() {
+		return nameNotChangebleEdit;
+	}
+
+
+
+	public void setNameNotChangebleEdit(String nameNotChangebleEdit) {
+		WebElement el=getNameNotChangebleEdit();
+		el.clear();
+		el.sendKeys(nameNotChangebleEdit);
+	}
+
+
+
+	public WebElement getChangeLocationZone() {
+		return changeLocationZone;
+	}
+
+
+
+	public WebElement getEditButtonLocationFirst() {
+		return editButtonLocationFirst;
+	}
+
+
+
+	public WebElement getEditButtonLocationLast() {
+		return editButtonLocationLast;
+	}
+
+
 
 	public LocationAdminPage(WebDriver driver) {
 		this.driver = driver;
@@ -174,6 +228,26 @@ public class LocationAdminPage {
 	
 	public void ensureDLNAVisible() {
 		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(deleteLocationNotAllowed));
+
+	}
+	
+	public void ensureEditNotAllowed() {
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(editButtonLocationFirst));
+
+	}
+	
+	public void ensureEditAllowed() {
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(editButtonLocationLast));
+
+	}
+	
+	public void ensureChangeLocationZoneVisible() {
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(changeLocationZone));
+
+	}
+	
+	public void ensureXEditModalVisible() {
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(xEditModal));
 
 	}
 	
