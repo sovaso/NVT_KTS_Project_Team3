@@ -43,6 +43,12 @@ public class RegisterUserPage {
 		this.driver = driver;
 	}
 
+	public void emptyMessage() {
+		WebElement el=getMessage();
+		el.clear();
+		el.sendKeys("");
+	}
+
 	public WebDriver getDriver() {
 		return driver;
 	}
