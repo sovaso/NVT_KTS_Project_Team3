@@ -10,6 +10,7 @@ import { of, Observable } from 'rxjs';
 import { LocationZone } from 'src/app/model/location_zone.model';
 import { Location } from 'src/app/model/location.model';
 import { FormsModule } from '@angular/forms';
+import { NgbModal, NgbActiveModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap' ;
 
 describe('LocationEditComponent', () => {
   let component: LocationEditComponent;
@@ -20,6 +21,7 @@ describe('LocationEditComponent', () => {
       declarations: [ LocationEditComponent ],
       imports: [NgbModule, FormsModule ],
       providers: [
+        NgbModal,
         {provide: LocationsService, useClass: LocationServiceMock},
         {provide: AlertService, useClass: AlertServiceMock},
         {provide: EventsService, useClass: EventsServiceMock},

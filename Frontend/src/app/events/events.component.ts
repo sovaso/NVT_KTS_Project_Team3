@@ -59,7 +59,7 @@ export class EventsComponent implements OnInit {
     if (this.events.length === 0 || this.locations.length===0) {
       this.sharedService.updateAll();
     }
-    this.modalRef = this.modalService.open(AlertBoxComponent);
+    //this.modalRef = this.modalService.open(AlertBoxComponent);
 
 
   }

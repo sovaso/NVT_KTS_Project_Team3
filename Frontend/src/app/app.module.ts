@@ -94,7 +94,8 @@ import { EventCreateComponent } from './events/event-create/event-create.compone
     EventReportComponent,
     LocationReportComponent,
     LocationCreateComponent,
-    LocationEditComponent
+    LocationEditComponent,
+    LocationDetailsComponent
   ],
   exports: [ EditProfileComponent ]
 })
