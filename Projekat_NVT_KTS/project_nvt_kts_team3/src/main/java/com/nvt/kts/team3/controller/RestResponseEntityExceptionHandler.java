@@ -49,156 +49,156 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
 	@ExceptionHandler(value = EventNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleEventNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Event Not Changeable", "Event is not active, so, it could not be updated."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Event Not Changeable", "Event is not active, so, it could not be updated."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = EventNotFound.class)
     protected ResponseEntity<MessageDTO> handleEventNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Event Not Found", "Event with this ID does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Event Not Found", "Event with this ID does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = InvalidDate.class)
     protected ResponseEntity<MessageDTO> handleInvalidDate() {
-		return new ResponseEntity<>(new MessageDTO("Invalid Date", "Event must be created at least 7 days before maintenance and date must be valid."), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new MessageDTO("Invalid Date", "Event must be created at least 7 days before maintenance and date must be valid."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = InvalidEventType.class)
     protected ResponseEntity<MessageDTO> handleInvalidEventType() {
-		return new ResponseEntity<>(new MessageDTO("Invalid Event Type", "Choosen event type does not exist. Please choose: SPORTS, CULTURAL or ENTERTAINMENT event type."), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new MessageDTO("Invalid Event Type", "Choosen event type does not exist. Please choose: SPORTS, CULTURAL or ENTERTAINMENT event type."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = InvalidLocationZone.class)
     protected ResponseEntity<MessageDTO> handleInvalidLocationZone() {
-		return new ResponseEntity<>(new MessageDTO("Invalid Location Zone", "Arguments for location zone are not valid."), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new MessageDTO("Invalid Location Zone", "Arguments for location zone are not valid."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = InvalidPrice.class)
     protected ResponseEntity<MessageDTO> handleInvalidPrice() {
-		return new ResponseEntity<>(new MessageDTO("Invalid Price", "Please set a price of ticket that is between 1$ and 10000$."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Invalid Price", "Please set a price of ticket that is between 1$ and 10000$."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LeasedZoneNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleLeasedZoneNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Leased Zone Not Changeable", "There are reserved tickets for this zone, so, it can not be changed."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Leased Zone Not Changeable", "There are reserved tickets for this zone, so, it can not be changed."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LeasedZoneNotFound.class)
     protected ResponseEntity<MessageDTO> handleLeasedZoneNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Leased Zone Not Found", "Leased zone with this ID does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Leased Zone Not Found", "Leased zone with this ID does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationNotAvailable.class)
     protected ResponseEntity<MessageDTO> handleLocationNotAvailable() {
-		return new ResponseEntity<>(new MessageDTO("Location Not Available", "Location is not available for specified period."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Location Not Available", "Location is not available for specified period."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleLocationNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Location Not Changeable", "Location could not be updated because there are reserved tickets for this location."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Location Not Changeable", "Location could not be updated because there are reserved tickets for this location."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationNotFound.class)
     protected ResponseEntity<MessageDTO> handleLocationNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Location Not Found", "Choosen location does not exist or is not active."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Location Not Found", "Choosen location does not exist or is not active."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationZoneNotAvailable.class)
     protected ResponseEntity<MessageDTO> handleLocationZoneNotAvailable() {
-		return new ResponseEntity<>(new MessageDTO("Location Zone Not Available", "Please make sure to choose location zone that exists and belongs to choosen location."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Location Zone Not Available", "Please make sure to choose location zone that exists and belongs to choosen location."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = MaintenanceNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleMaintenanceNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Maintenance Not Changeable", "Choosen maintenance could not be updated because there are reserved tickets for it."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Maintenance Not Changeable", "Choosen maintenance could not be updated because there are reserved tickets for it."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = MaintenanceNotFound.class)
     protected ResponseEntity<MessageDTO> handleMaintenanceNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Maintenance Not Found", "Maintenance with this ID does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Maintenance Not Found", "Maintenance with this ID does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = ParseException.class)
     protected ResponseEntity<MessageDTO> handleParseException() {
-		return new ResponseEntity<>(new MessageDTO("Bad date format", "Please make sure that your date format is: yyyy-MM-dd HH:mm."), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new MessageDTO("Bad date format", "Please make sure that your date format is: yyyy-MM-dd HH:mm."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationZoneNotFound.class)
     protected ResponseEntity<MessageDTO> handleLocationZoneNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Location Zone Not Found", "Location zone with this ID does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Location Zone Not Found", "Location zone with this ID does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationZoneNotChangeable.class)
     protected ResponseEntity<MessageDTO> handleLocationZoneNotChangeable() {
-		return new ResponseEntity<>(new MessageDTO("Location Zone Not Changeable", "There are active events that take place on this location zone, so, it can not be changed. Please wait for all events that take place on this location to pass."), HttpStatus.NOT_MODIFIED);
+		return new ResponseEntity<>(new MessageDTO("Location Zone Not Changeable", "There are active events that take place on this location zone, so, it can not be changed. Please wait for all events that take place on this location to pass."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = LocationExists.class)
     protected ResponseEntity<MessageDTO> handleLocationExists() {
-		return new ResponseEntity<>(new MessageDTO("Location Already Exists", "Location with this name and address already exists."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Location Already Exists", "Location with this name and address already exists."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = ReservationCannotBeCancelled.class)
     protected ResponseEntity<MessageDTO> handleReservationCannotBeCancelled() {
-		return new ResponseEntity<>(new MessageDTO("Reservation cannot be cancelled", "Some tickets in reservation could have expired."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Reservation cannot be cancelled", "Some tickets in reservation could have expired."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = ReservationNotFound.class)
     protected ResponseEntity<MessageDTO> handleReservationNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Reservation Not Found", "Reservation with this ID does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Reservation Not Found", "Reservation with this ID does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = EventNotActive.class)
     protected ResponseEntity<MessageDTO> handleEventNotActive() {
-		return new ResponseEntity<>(new MessageDTO("Event not active", "Event with this ID is no more active."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Event not active", "Event with this ID is no more active."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = ReservationExpired.class)
     protected ResponseEntity<MessageDTO> handleReservationExpired() {
-		return new ResponseEntity<>(new MessageDTO("Reservation expired", "All the reserved tickets expired."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Reservation expired", "All the reserved tickets expired."), HttpStatus.OK);
     }
 	@ExceptionHandler(value = ReservationAlreadyPaid.class)
     protected ResponseEntity<MessageDTO> handleReservationAlreadyPaid() {
-		return new ResponseEntity<>(new MessageDTO("Reservation is already paid", "Reservation is already paid."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Reservation is already paid", "Reservation is already paid."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = TicketExpired.class)
     protected ResponseEntity<MessageDTO> handleticketExpired() {
-		return new ResponseEntity<>(new MessageDTO("Ticket has expired", "Unable to cancel ticket it has expired."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Ticket has expired", "Unable to cancel ticket it has expired."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = TicketNotFound.class)
     protected ResponseEntity<MessageDTO> handleTicketNotFound() {
-		return new ResponseEntity<>(new MessageDTO("Ticket not found", "Ticket with this ID does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Ticket not found", "Ticket with this ID does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = TicketNotReserved.class)
     protected ResponseEntity<MessageDTO> handleTicketNotReserved() {
-		return new ResponseEntity<>(new MessageDTO("Ticket is not reserved", "Ticket is not reserved."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Ticket is not reserved", "Ticket is not reserved."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = TooManyTicketsReserved.class)
     protected ResponseEntity<MessageDTO> handleTooManyTicketsReserved() {
-		return new ResponseEntity<>(new MessageDTO("Too many tickets reserved", "Cannot reserve more than 10 tickets for one event."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Too many tickets reserved", "Cannot reserve more than 10 tickets for one event."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = NoLoggedUser.class)
     protected ResponseEntity<MessageDTO> handleNoLoggedUser() {
-		return new ResponseEntity<>(new MessageDTO("No logged user", "Must log in first."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("No logged user", "Must log in first."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = ReservationCannotBeCreated.class)
     protected ResponseEntity<MessageDTO> handleReservationCannotBeCreated() {
-		return new ResponseEntity<>(new MessageDTO("Reservation cannot be created", "None of the tickets you chose is available."), HttpStatus.NOT_ACCEPTABLE);
+		return new ResponseEntity<>(new MessageDTO("Reservation cannot be created", "None of the tickets you chose is available."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = NotUserReservation.class)
     protected ResponseEntity<MessageDTO> handleNotUserReservation() {
-		return new ResponseEntity<>(new MessageDTO("Not user reservation", "Reservation does not belong to logged user."), HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(new MessageDTO("Not user reservation", "Reservation does not belong to logged user."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = WrongPath.class)
     protected ResponseEntity<MessageDTO> handleWrongPath() {
-		return new ResponseEntity<>(new MessageDTO("Wrong path", "Given path does not exist."), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(new MessageDTO("Wrong path", "Given path does not exist."), HttpStatus.OK);
     }
 	
 	@ExceptionHandler(value = AddressException.class)
