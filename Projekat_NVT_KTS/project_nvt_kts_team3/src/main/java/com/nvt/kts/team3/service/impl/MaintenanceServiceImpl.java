@@ -422,4 +422,43 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 			LocalDateTime endDate) {
 		return maintenanceRepository.getMaintenancesForDate(locationId, startDate, endDate);
 	}
+
+	@Override
+	public void checkDates(MaintenanceDTO maintenanceDTO) throws ParseException {
+		Date maintenanceStartDate = null;
+		Date maintenanceEndDate = null;
+		Date today = new Date();
+		Calendar expiry = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DATE, 7);
+		Date validDate = calendar.getTime();
+		maintenanceStartDate = sdf.parse(maintenanceDTO.getStartDate());
+		maintenanceEndDate = sdf.parse(maintenanceDTO.getEndDate());
+		
+		//Proveravas validnost datuma
+		if (maintenanceStartDate.before(validDate) || maintenanceStartDate.before(today)
+				|| maintenanceEndDate.before(maintenanceStartDate)) {
+			throw new InvalidDate();
+		}
+		//Postvljas expiry date
+		expiry.setTime(maintenanceStartDate);
+		expiry.add(Calendar.DATE, -3);
+		
+		//Neka provera pocetka i kraja odrzavanja
+		long diff = maintenanceEndDate.getTime() - maintenanceStartDate.getTime();
+		long hours = TimeUnit.MILLISECONDS.toHours(diff);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(diff); 
+		if (hours > 24 || minutes < 30) {
+			throw new InvalidDate();
+		}
+
+		//Proveravas da li je lokacija na kojoj zelimo odrzavanje dostupna u zeljenom periodu.
+		ArrayList<Event> locationEvents = locationService.checkIfAvailable(maintenanceDTO.getId(), LocalDateTime.parse( sdf.format(maintenanceStartDate),df ),
+				LocalDateTime.parse( sdf.format(maintenanceEndDate),df ));
+		if (locationEvents.isEmpty() == false) {
+			throw new LocationNotAvailable();
+		}
+		
+	}
 }

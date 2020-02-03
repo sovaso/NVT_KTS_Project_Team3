@@ -12,6 +12,7 @@ import { EventReportComponent } from './event-report/event-report.component';
 import { Reservation } from '../model/reservation.model';
 import { Maintenance } from '../model/maintenance.model';
 import { log } from 'util';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -42,7 +43,8 @@ export class EventsComponent implements OnInit {
 
   modalRef : any;
 
-  constructor(private modalService: NgbModal, public sharedService: SharedService, private eventsService: EventsService) {}
+  constructor(private modalService: NgbModal, public sharedService: SharedService, private eventsService: EventsService,
+    private router: Router) {}
 
   ngOnInit() {
     
@@ -147,7 +149,7 @@ export class EventsComponent implements OnInit {
     }
     }
 
-    
+
 
     seeReport(event){
     this.modalOption.backdrop = 'static';
@@ -158,7 +160,9 @@ export class EventsComponent implements OnInit {
     });
     }
 
-    
+    newEvent(){
+      this.router.navigate(['dashboard/create-event']);
+    }
     
 
   

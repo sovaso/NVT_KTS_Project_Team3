@@ -9,6 +9,7 @@ import { LocationReportDto } from 'src/app/dto/location_report.dto';
 import { LocationDto } from 'src/app/dto/location.dto';
 import { Reservation } from 'src/app/model/reservation.model';
 import { Maintenance } from 'src/app/model/maintenance.model';
+import {MaintenanceDto} from  'src/app/dto/maintenance.dto';
 
 
 @Injectable({
@@ -24,5 +25,9 @@ export class MaintenancesService {
     return this.http.get<Maintenance[]>(
       `/api/getMaintenances/${eventId}`
     );
+  }
+
+  checkMaintenance(maintenanceDTO: MaintenanceDto): Observable<MessageDto> {
+    return this.http.post<MessageDto>("/api/checkMaintenanceDate",maintenanceDTO);
   }
 }

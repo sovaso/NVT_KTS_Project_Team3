@@ -83,6 +83,13 @@ public class MaintenanceController {
 		return new ResponseEntity<>(maintenances, HttpStatus.OK);
 	}
 	
+	@PostMapping(value = "/checkMaintenanceDate", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<MessageDTO> checkDates(@RequestBody MaintenanceDTO maintenanceDTO) throws ParseException{
+		maintenanceService.checkDates(maintenanceDTO);
+		return new ResponseEntity<>(new MessageDTO("OK", "Maintenance is valid."), HttpStatus.OK);
+	}
+	
 	@Scheduled(cron = "0 0 * * * *") //the top of every hour
 	//@Scheduled(cron = "*/10 * * * * *") //every ten seconds (FOR TEST PURPOSE ONLY)
 	public void doHourlyTasks() throws AddressException, MessagingException{

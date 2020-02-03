@@ -8,6 +8,7 @@ import { LocationsComponent } from './locations/locations.component';
 import { MyReservationsComponent } from './my-reservations/my-reservations.component';
 import { ReportsComponent } from './reports/reports.component';
 import {LocationCreateComponent} from 'src/app/locations/location-create/location-create.component'
+import { EventCreateComponent } from './events/event-create/event-create.component';
 
 
 
@@ -29,12 +30,12 @@ const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
     children: [
-      { path: 'events', component: EventsComponent},
+      { path: 'events', component: EventsComponent },
       { path: 'locations', component: LocationsComponent},
       { path: 'myReservations', component: MyReservationsComponent},
       { path : 'reports' , component : ReportsComponent},
       { path : 'addNewAdmin', component : RegisterUserComponent},
-
+      { path: 'create-event', component: EventCreateComponent },
     ] 
   },
 
