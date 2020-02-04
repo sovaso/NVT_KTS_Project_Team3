@@ -29,6 +29,7 @@ public class LocationAdminPage {
 	WebElement addNewLocationZoneButton;
 	
 	
+	
 	@FindBy(xpath="/html/body/ngb-modal-window[2]/div/div/app-alert-box/div/div/div[2]/form")
 	WebElement message;
 	
@@ -64,12 +65,11 @@ public class LocationAdminPage {
 	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[1]/ngb-tab/td[2]/button")
 	WebElement editButtonLocationFirst;
 	
-	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[8]/ngb-tab/td[2]/button")
-	WebElement editButtonLocationLast;
+	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-locations/div/div/table/tbody/tr[2]/ngb-tab/td[2]/button")
+	WebElement editButtonLocationSecond;
 
 	@FindBy(xpath="/html/body/ngb-modal-window/div/div/app-location-edit/div/div[2]/div/table/tr[1]/td/input")
 	WebElement nameNotChangebleEdit;
-	
 	
 	@FindBy(xpath="/html/body/ngb-modal-window/div/div/app-location-edit/div/div[2]/div/table/tr[6]/button")
 	WebElement changeLocationZone;
@@ -110,8 +110,8 @@ public class LocationAdminPage {
 
 
 
-	public WebElement getEditButtonLocationLast() {
-		return editButtonLocationLast;
+	public WebElement getEditButtonLocationSecond() {
+		return editButtonLocationSecond;
 	}
 
 
@@ -237,7 +237,7 @@ public class LocationAdminPage {
 	}
 	
 	public void ensureEditAllowed() {
-		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(editButtonLocationLast));
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(editButtonLocationSecond));
 
 	}
 	
