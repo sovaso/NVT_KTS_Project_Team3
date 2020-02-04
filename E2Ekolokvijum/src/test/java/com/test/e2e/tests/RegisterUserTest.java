@@ -71,14 +71,14 @@ public class RegisterUserTest {
 		registerPage.setSurname("user");
 		registerPage.setEmail("leona.nedeljkovic@gmail.com");
 		registerPage.setPassword("user");
-		registerPage.setUsername("userCoffe");
+		registerPage.setUsername("user9");
 		registerPage.setRepeatedPassword("user");
 		registerPage.ensureRegisterVisible();
 		registerPage.getRegisterButton().click();
 		registerPage.ensureMessageVisible();
 		message=registerPage.getMessage().getText();
 		System.out.println(message);
-		assertTrue(message.contains("Successfully"));
+		assertTrue(message.contains("Successful registration, congratulations! Please go to email to verify your registration!"));
 		
 		browser.navigate().to("http://localhost:4200/dashboard");
 		homePage.getRegisterButton().click();
