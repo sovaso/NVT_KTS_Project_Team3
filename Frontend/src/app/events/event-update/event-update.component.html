@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="block_container">
+        <h2 class="form-signin-heading">Basic Informations</h2>
+        <br/>
+        <p>Name of event</p>
+        <label for="name" class="sr-only">Name of event:</label>
+        <input type="text" id="name" class="form-control" name="name" [(ngModel)]="event.name" placeholder="Name" (change)="checkEventName()" required autofocus>
+        <div class="errorMessage"><p id="error_message_basics"></p></div>
+        <br/>
+        <p>Type of event</p>
+        <label for="type" class="sr-only">Type of event:</label>
+        <select id="type" class="form-control" name="type" [(ngModel)]="event.type" placeholder="Type of event" required autofocus>
+            <option value="SPORTS" id="sports_type">Sports</option>
+            <option value="ENTERTAINMENT" id="entertainment_type">Entertainment</option>
+            <option value="CULTURAL" id="cultural_type">Cultural</option>
+        </select>
+        <br/>
+        <p>Location of event</p>
+        <select id="location_selector" class="form-control" [(ngModel)]="event.locationInfo.id" (click)="initLocationZones(event.locationInfo.id)" placeholder="Locations" required autofocus></select>
+        <div class="errorMessage"><p id="error_message_location_info"></p></div>
+    </div>
+    <div class="block_container">
+        <h2 class="form-signin-heading">Event dates</h2>
+        <br/>
+        <p>Define date and time of event days, select location zones you want to lease for each day and define the ticket price per zone.</p>
+        <button class="btn btn-primary" style="margin-left:80%; width: 20%;" (click)="addNewDay()">New day</button>
+        <div id="addedDays"></div>
+        <br/>
+        <div class="errorMessage"><p id="maintenance_error"></p></div>
+        <br/>
+    </div>
+    <div class="media_container">
+        <h2 class="form-signin-heading">Media</h2>
+        <input type="file" id="fileUpload" class="form-control" name="file-upload" [(ngModel)]="picture" required autofocus>
+        <button class="btn btn-primary" (click)="upload()">Upload</button>
+    </div>
+</div>

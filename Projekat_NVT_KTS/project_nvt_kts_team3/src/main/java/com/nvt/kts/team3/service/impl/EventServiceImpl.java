@@ -488,10 +488,15 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public List<String> uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException {
+	public List<String> uploadFile(UploadFileDTO uploadFileDTO, long id) throws IOException, GeneralSecurityException {
+		Event event = findById(id);
+		System.out.println("USAO U SERVIS");
+		System.out.println(event.getId());
+		System.out.println(uploadFileDTO.pathToFile);
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		List<String> webLinks=new ArrayList<String>();
-		for(String element: uploadFileDTO.getPathToFile()) {
+		String element = uploadFileDTO.getPathToFile();
+			System.out.println(element);
 			File item = new File();
 			Permission permission = new Permission();
 			permission.setRole("reader");
@@ -515,7 +520,10 @@ public class EventServiceImpl implements EventService {
 				item.setPermissions(permis);
 				webLinks.add(item.getWebViewLink());
 			}
+		for(String link : webLinks){
+			event.getPictures().add(link);
 		}
+		this.eventRepository.save(event);
 		return webLinks;
 	}
 	

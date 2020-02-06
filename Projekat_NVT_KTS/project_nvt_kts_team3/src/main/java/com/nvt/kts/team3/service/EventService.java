@@ -20,7 +20,7 @@ public interface EventService {
 	boolean eventIsActive(long eventId);
 	public EventReportDTO getEventReport(Long id);
 	public double getEventIncome(Long id);
-	public List<String> uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException;
+	public List<String> uploadFile(UploadFileDTO uploadFileDTO, long id) throws IOException, GeneralSecurityException;
 	public List<Event> findAllSortedName();
 	public List<Event> findAllSortedDateDesc();
 	public List<Event> findAllSortedDateAcs();

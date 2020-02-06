@@ -9,6 +9,7 @@ import { MyReservationsComponent } from './my-reservations/my-reservations.compo
 import { ReportsComponent } from './reports/reports.component';
 import {LocationCreateComponent} from 'src/app/locations/location-create/location-create.component'
 import { EventCreateComponent } from './events/event-create/event-create.component';
+import { EventUpdateComponent } from './events/event-update/event-update.component';
 
 
 
@@ -36,10 +37,11 @@ const routes: Routes = [
       { path : 'reports' , component : ReportsComponent},
       { path : 'addNewAdmin', component : RegisterUserComponent},
       { path: 'create-event', component: EventCreateComponent },
+      { path: 'event-update', component: EventUpdateComponent },
     ] 
   },
 
-  {path: '**', redirectTo: 'dashboard'}
+  {path: '**', redirectTo: 'dashboard/events'}
 ];
 
 @NgModule({

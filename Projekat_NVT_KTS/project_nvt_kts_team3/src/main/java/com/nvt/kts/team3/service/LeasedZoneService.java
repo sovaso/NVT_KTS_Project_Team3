@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
+import com.nvt.kts.team3.dto.LeasedZoneUpdatable;
 import com.nvt.kts.team3.model.LeasedZone;
 
 public interface LeasedZoneService {
@@ -13,5 +14,6 @@ public interface LeasedZoneService {
 	public List<LeasedZone> findAll();
 	public void remove(Long id);
 	public ArrayList<LeasedZone> getEventLeasedZones(long eventId);
+	public ArrayList<LeasedZoneUpdatable> getEventLeasedZonesDto(long eventId);
 	public List<LeasedZone> deleteByMaintenanceId(long maintenanceId);
 }
