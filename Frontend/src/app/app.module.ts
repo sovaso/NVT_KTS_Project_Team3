@@ -39,7 +39,8 @@ import { LocationEditComponent } from './locations/location-edit/location-edit.c
 import { LoginComponent } from './pages/login/login.component';
 import { EventCreateComponent } from './events/event-create/event-create.component';
 import { EventUpdateComponent } from './events/event-update/event-update.component';
-import { DatePipe } from '@angular/common'
+import { DatePipe } from '@angular/common';
+import { ReservationComponent } from './reservation/reservation.component'
 
 
 @NgModule({
@@ -65,7 +66,8 @@ import { DatePipe } from '@angular/common'
     LocationCreateComponent,
     LocationEditComponent,
     EventCreateComponent,
-    EventUpdateComponent
+    EventUpdateComponent,
+    ReservationComponent
   ],
   imports: [
     NgbModule,

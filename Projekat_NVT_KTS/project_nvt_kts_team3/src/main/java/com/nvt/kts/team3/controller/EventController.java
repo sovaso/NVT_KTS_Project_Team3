@@ -28,6 +28,7 @@ import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.dto.UploadFileDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.Location;
+import com.nvt.kts.team3.model.Media;
 import com.nvt.kts.team3.service.EventService;
 
 import exception.EventNotChangeable;
@@ -177,10 +178,10 @@ public class EventController {
 	@GetMapping(value = "/getMedia/{id}")
 	public ResponseEntity<?> getMedia(@PathVariable(name = "id") long id) {
 		Event e = eventService.findById(id);
-		if (e.getPictures() != null) {
-			return new ResponseEntity<>(e.getPictures(), HttpStatus.OK);
+		if (e.getMedia() != null) {
+			return new ResponseEntity<>(e.getMedia(), HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(new ArrayList<String>(), HttpStatus.OK);
+			return new ResponseEntity<>(new ArrayList<Media>(), HttpStatus.OK);
 		}
 	}
 

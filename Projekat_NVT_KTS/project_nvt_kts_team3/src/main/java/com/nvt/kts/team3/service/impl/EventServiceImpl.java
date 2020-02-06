@@ -41,6 +41,7 @@ import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.model.Maintenance;
+import com.nvt.kts.team3.model.Media;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.repository.EventRepository;
@@ -49,6 +50,7 @@ import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
+import com.nvt.kts.team3.service.MediaService;
 import com.nvt.kts.team3.service.TicketService;
 
 import exception.EventNotActive;
@@ -84,6 +86,9 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private LocationZoneService locationZoneService;
 
+	@Autowired
+	private MediaService mediaService;
+	
 	@Autowired
 	private ReservationRepository reservationRepository;
 
@@ -522,18 +527,18 @@ public class EventServiceImpl implements EventService {
 			item.setPermissions(permis);
 			webLinks.add(item.getWebViewLink());
 		}
-		ArrayList<String> pictures=new ArrayList<String>();
-		if(event.getPictures()==null) {
-			event.setPictures(pictures);
+		ArrayList<Media> pictures=new ArrayList<Media>();
+		if(event.getMedia()==null) {
+			event.setMedia(pictures);
 		}
 		for(String link : webLinks){
-			event.getPictures().add(link);
+			Media m=new Media();
+			m.setEvent(event);
+			m.setLink(link);
+			event.getMedia().add(m);
+			this.mediaService.save(m);
 		}
 		this.eventRepository.save(event);
-		Event event2=findById(id);
-		for(String el: event2.getPictures()) {
-			System.out.println("LINK: "+el);
-		}
 		return webLinks;
 	}
 	

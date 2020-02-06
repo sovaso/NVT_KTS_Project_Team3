@@ -17,6 +17,7 @@ import { LeasedZonesService } from 'src/app/services/leased-zones/leased-zones.s
 import { LeasedZoneUpdatableDto } from 'src/app/dto/leased_zone_updatable.dto';
 import { DatePipe } from '@angular/common';
 import { UploadFileDto } from 'src/app/dto/upload_file.dto';
+import { Media } from 'src/app/model/media.model';
 
 @Component({
   selector: 'app-event-update',
@@ -36,6 +37,11 @@ export class EventUpdateComponent implements OnInit {
   daysNum = 1;
   errors: number = 0;
   picture:string;
+
+
+  selectedFiles: FileList;
+  currentFileUpload: File;
+  strings: String[]=[];
 
   noNameError: string = "Name and type of event are both required.";
   nameExistsError: string = "Name of event already exists. Please choose another name.";
@@ -65,6 +71,7 @@ export class EventUpdateComponent implements OnInit {
     
     this.eventsService.getById(eventId).subscribe(data => {
       self.event = data;
+      self.getMedia();
       self.locationId = self.event.locationInfo.id;
       this.sharedService.locations.subscribe(locations => {
         self.locations = locations
@@ -97,6 +104,7 @@ export class EventUpdateComponent implements OnInit {
         self.initLocationZones(self.event.locationInfo.id);
       })
     });
+    
   }
 
   refreshLocation(locationId){
@@ -680,6 +688,37 @@ export class EventUpdateComponent implements OnInit {
     var element = document.getElementById("maintenance_error");
     element.innerText = "";
   }
+  }
+
+  selectFile(event) {
+    this.selectedFiles = event.target.files;
+  
+  }
+
+  save() {
+    if (this.selectedFiles) this.currentFileUpload = this.selectedFiles.item(0);
+    console.log("FILE: ",this.currentFileUpload);
+    this.eventsService.uploadFile(this.currentFileUpload,this.event.id).subscribe(data => {
+      this.strings = data;
+      console.log(this.strings);
+      this.getMedia();
+    }
+    );
+  }
+
+  getMedia(){
+    document.getElementById('media_container1').removeChild;
+    this.eventsService.getAllMedia(this.event.id).subscribe(data => {
+      let div= document.getElementById('media_container1');
+      data.forEach(function (media) {
+        var element=document.createElement("img");
+        let el=media.link.split("/");
+        let fixedLink=el[0]+"//"+el[2]+"/"+"uc?export=view&id="+el[5];
+        element.src=fixedLink;
+        element.className="div_media";
+        div.append(element);
+      });
+    });
   }
 
   // upload(){

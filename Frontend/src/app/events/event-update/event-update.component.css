@@ -32,3 +32,8 @@
     border-style: ridge;
     padding: 5%;
 }
+
+.div_media{
+    float: left;
+    height: 20%;
+}
