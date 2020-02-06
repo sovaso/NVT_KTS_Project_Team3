@@ -58,9 +58,9 @@ public class Event {
 
 	// slike i videi...
 	@Column(name = "pictures")
-	private ArrayList<String> pictures;
+	private ArrayList<String> pictures=new ArrayList<String>();
 	@Column(name = "videos")
-	private ArrayList<String> videos;
+	private ArrayList<String> videos=new ArrayList<String>();
 
 	public Event(long id, String name, boolean status, EventType type, Set<Reservation> reservations,
 			Set<Maintenance> maintenances, Location locationInfo, ArrayList<String> pictures,
@@ -73,8 +73,16 @@ public class Event {
 		this.reservations = reservations;
 		this.maintenances = maintenances;
 		this.locationInfo = locationInfo;
-		this.pictures = pictures;
-		this.videos = videos;
+		if(pictures!=null) {
+			this.pictures = pictures;
+		}else {
+			this.pictures=new ArrayList<String>();
+		}
+		if(videos!=null) {
+			this.videos = videos;
+		}else {
+			this.videos=new ArrayList<String>();
+		}
 	}
 
 	public Event(String name, boolean status, EventType type, Set<Reservation> reservations,

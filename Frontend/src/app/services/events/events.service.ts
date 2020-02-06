@@ -69,8 +69,14 @@ export class EventsService {
   getIncome = (id:string): Observable<any> =>
   this.http.get<any>(`/api/getEventIncome/${id}`);
 
-  uploadFile(file: UploadFileDto, id:string): Observable<String[]> {
-    var retval = this.http.post<String[]>(`/api/upload/${id}`,file);
+  uploadFile(file: File, id:string): Observable<String[]> {
+
+    const data: FormData = new FormData();
+    data.append('file', file);
+    var retval = this.http.post<String[]>(`/api/upload/${id}`,data,{
+      reportProgress: true,
+      responseType: 'json'
+      });
     return retval;
   }
 
