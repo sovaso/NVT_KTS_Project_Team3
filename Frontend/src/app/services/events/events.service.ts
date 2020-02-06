@@ -6,6 +6,7 @@ import { MessageDto } from 'src/app/dto/message.dto';
 import { EventReportDto } from 'src/app/dto/event_report.dto';
 import { UploadFileDto } from 'src/app/dto/upload_file.dto';
 import { Event } from 'src/app/model/event.model';
+import { Media } from 'src/app/model/media.model';
 
 
 @Injectable({
@@ -79,5 +80,8 @@ export class EventsService {
       });
     return retval;
   }
+
+  getAllMedia = (id:string): Observable<Media[]> =>
+  this.http.get<Media[]>(`/api/getMedia/${id}`);
 
 }

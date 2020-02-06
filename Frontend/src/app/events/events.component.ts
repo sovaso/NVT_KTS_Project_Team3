@@ -43,6 +43,8 @@ export class EventsComponent implements OnInit {
 
   modalRef : any;
 
+  allActive: Event[]=[];
+
   constructor(private modalService: NgbModal, public sharedService: SharedService, private eventsService: EventsService,
     private router: Router) {}
 
@@ -59,6 +61,12 @@ export class EventsComponent implements OnInit {
     if (this.events.length === 0 || this.locations.length===0) {
       this.sharedService.updateAll();
     }
+
+    this.eventsService.getActive().subscribe(
+      events => (this.allActive = events)
+    );
+
+
     //this.modalRef = this.modalService.open(AlertBoxComponent);
 
 

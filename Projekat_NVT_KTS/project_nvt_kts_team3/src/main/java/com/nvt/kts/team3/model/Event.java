@@ -2,6 +2,7 @@ package com.nvt.kts.team3.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -61,6 +62,10 @@ public class Event {
 	private ArrayList<String> pictures=new ArrayList<String>();
 	@Column(name = "videos")
 	private ArrayList<String> videos=new ArrayList<String>();
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Media> media=new ArrayList<Media>();
 
 	public Event(long id, String name, boolean status, EventType type, Set<Reservation> reservations,
 			Set<Maintenance> maintenances, Location locationInfo, ArrayList<String> pictures,
@@ -97,6 +102,25 @@ public class Event {
 		this.locationInfo = locationInfo;
 		this.pictures = pictures;
 		this.videos = videos;
+	}
+	
+	
+
+	public Event(long id, String name, boolean status, EventType type, Long version, Set<Reservation> reservations,
+			Set<Maintenance> maintenances, Location locationInfo, ArrayList<String> pictures, ArrayList<String> videos,
+			List<Media> media) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.status = status;
+		this.type = type;
+		this.version = version;
+		this.reservations = reservations;
+		this.maintenances = maintenances;
+		this.locationInfo = locationInfo;
+		this.pictures = pictures;
+		this.videos = videos;
+		this.media = media;
 	}
 
 	public ArrayList<String> getPictures() {
@@ -182,4 +206,14 @@ public class Event {
 	public void setVersion(Long version) {
 		this.version = version;
 	}
+
+	public List<Media> getMedia() {
+		return media;
+	}
+
+	public void setMedia(List<Media> media) {
+		this.media = media;
+	}
+	
+	
 }
