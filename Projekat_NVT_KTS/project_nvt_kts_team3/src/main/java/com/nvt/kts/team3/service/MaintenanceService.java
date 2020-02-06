@@ -23,4 +23,5 @@ public interface MaintenanceService {
 	public void warnUsersAboutExpiry() throws AddressException, MessagingException;
 	public ArrayList<Maintenance> getMaintenancesForDate(Long locationId, LocalDateTime startDate, LocalDateTime endDate);
 	public void checkDates(MaintenanceDTO maintenanceDTO) throws ParseException;
+	public void checkDatesEvent(MaintenanceDTO maintenanceDTO, long eventId) throws ParseException;
 }

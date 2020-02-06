@@ -31,7 +31,8 @@ export class EventsService {
   }
 
   create(event: EventDto): Observable<MessageDto> {
-    return this.http.post<MessageDto>(`/api/createEvent`, event);
+    var retval = this.http.post<MessageDto>(`/api/createEvent`, event);
+    return retval;
   }
 
   update = (event: EventDto): Observable<MessageDto> =>
@@ -51,9 +52,6 @@ export class EventsService {
   seeReport = (id: string): Observable<EventReportDto> =>
   this.http.get<EventReportDto>(`/api/getEventReport/${ id }`);
 
-  uploadFile = (uploadFile: UploadFileDto): Observable<string> =>
-  this.http.post<string>(`/api/upload`, uploadFile);
-
   search = (field: string, startDate: string, endDate: string): Observable<any> =>
     
  this.http.get<any>(`/api/findEvent/${field}/${startDate}/${endDate}`);
@@ -70,4 +68,10 @@ export class EventsService {
 
   getIncome = (id:string): Observable<any> =>
   this.http.get<any>(`/api/getEventIncome/${id}`);
+
+  uploadFile(file: UploadFileDto, id:string): Observable<String[]> {
+    var retval = this.http.post<String[]>(`/api/upload/${id}`,file);
+    return retval;
+  }
+
 }

@@ -102,11 +102,12 @@ public class EventController {
 		return new ResponseEntity<>(retVal, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/upload", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	//@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<?> upload(@RequestBody UploadFileDTO uploadFileDTO)
+	@PostMapping(value = "/upload/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public ResponseEntity<?> upload(@RequestBody UploadFileDTO uploadFileDTO, @PathVariable long id)
 			throws ParseException, GeneralSecurityException, IOException {
-		List<String> path = this.eventService.uploadFile(uploadFileDTO);
+		System.out.println("USAO U KONTROLER");
+		List<String> path = this.eventService.uploadFile(uploadFileDTO,id);
 		return new ResponseEntity<>(path, HttpStatus.OK);
 
 	}

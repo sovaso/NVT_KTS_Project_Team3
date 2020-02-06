@@ -164,7 +164,10 @@ export class EventsComponent implements OnInit {
       this.router.navigate(['dashboard/create-event']);
     }
     
-
+    updateEvent(event){
+      localStorage.setItem("eventForUpdate", event.id);
+      this.router.navigate(['dashboard/event-update']);
+    }
   
 }
 

@@ -24,12 +24,13 @@ export class EventCreateComponent implements OnInit {
   locations: Location[];
   events: Event[];
   maintenances : MaintenanceDto[] = [];
-  leasedZones: LeasedZoneDto[]=[];
+  leasedZones : LeasedZoneDto[] = [];
   public choosenLocationId: string = "";
   startDate: string;
   endDate: string;
   daysNum = 1;
   errors: number = 0;
+  picture:string;
 
   noNameError: string = "Name and type of event are both required.";
   nameExistsError: string = "Name of event already exists. Please choose another name.";
@@ -61,6 +62,8 @@ export class EventCreateComponent implements OnInit {
         selector.append(option);
       }
   });
+  this.initLocationZones();
+
   var slides = document.getElementsByClassName("adding_window");
     for (let i = 0; i < slides.length; i++) {
       const slide = slides[i] as HTMLElement;
@@ -103,21 +106,20 @@ export class EventCreateComponent implements OnInit {
 
   checkRequirements(slide_id){
     var errors = 0;
-    if(slide_id == "location_info"){
+    if(slide_id == "maintenance"){
       var error = this.checkEventName();
       errors = errors + error;
       errors = errors + this.checkEventType();
-    }
-    else if(slide_id == "maintenance"){
-        errors = errors + this.checkPrices();
-        errors = errors + this.checkLeasedZones();
-        errors = errors + this.checkLocation();
+      errors = errors + this.checkLocation();
     }
     else if(slide_id == "finish"){
-      errors = errors + this.checkAllDates();
-      if(errors == 0){
-        this.createEvent();
-      }
+        errors = errors + this.checkPrices();
+        errors = errors + this.checkLeasedZones();
+        errors = errors + this.checkAllDates();
+        if(errors == 0){
+          this.createEvent();
+          return false;
+        }
     }
     if(errors > 0){
       return false;
@@ -167,19 +169,27 @@ export class EventCreateComponent implements OnInit {
     }
   }
 
-  initLocationZones(){
+  resetLocationZones(){
     this.leasedZones = [];
+    this.initLocationZones();
+  }
+
+  initLocationZones(){
     let choosen = {id: this.choosenLocationId};
     let self = this;
+    let nums = self.daysNum + 0;
     if(choosen.id != ""){
-        document.querySelector('div#zoneDisplay').innerHTML = "";
+        document.querySelector('div#zoneDisplay'+nums).innerHTML = "";
 
-        var div = document.getElementById("zoneDisplay");
-        var table = document.getElementById("zoneTable");
+        var div = document.getElementById("zoneDisplay"+nums);
+        var table = document.getElementById("zoneTable"+nums);
         table.innerHTML = ""
 
+        var br = document.createElement("br");
+
         var p = document.createElement("p");
-        p.innerText = "Select location zones you want to lease for this event and define the ticket price per zone:";
+        p.innerText = "Location zones:";
+        div.append(br);
         div.append(p);
 
         var th = document.createElement("tr");
@@ -213,7 +223,7 @@ export class EventCreateComponent implements OnInit {
 
         this.locationZonesService.getLocationZones(choosen.id).subscribe(locationZones => {
           locationZones.forEach(function(locationZone){
-           var table = document.getElementById("zoneTable");
+           var table = document.getElementById("zoneTable"+nums);
            var tr = document.createElement("tr");
          
            var td1 = document.createElement("td");
@@ -226,18 +236,18 @@ export class EventCreateComponent implements OnInit {
     
            var td3 = document.createElement("td");
            td3.style.width = "15%";
-           td3.id="td"+locationZone.id;
+           td3.id="td"+locationZone.id+nums;
     
            var td4 = document.createElement("td");
            td4.style.width = "15%";
            var checkbox = document.createElement("button");
            checkbox.className = "btn btn-primary";
            checkbox.innerText = "Select";
-           checkbox.name = locationZone.id;
-           checkbox.id = "checkbox"+locationZone.id;
-           let zoneId = locationZone.id;
+           checkbox.name = locationZone.id + nums;
+           checkbox.id = "checkbox"+locationZone.id + nums;
+           let zon = locationZone;
            checkbox.onclick = function(e){
-            self.selectZoneButton(zoneId);
+            self.selectZoneButton(zon.id, nums);
            }
            checkbox.style.width = '90%';
            td4.append(checkbox);
@@ -252,47 +262,51 @@ export class EventCreateComponent implements OnInit {
     }
   }
 
-  selectZoneButton(zoneId){
+  selectZoneButton(zoneId, maintenanceId){
     let self = this;
     let _id = zoneId;
-    let button = document.getElementById("checkbox"+zoneId);
+    let __mid = maintenanceId;
+    let button = document.getElementById("checkbox"+zoneId +maintenanceId);
     if(button.textContent == "Select"){
       button.innerText = "Unselect";
-      var zone : LeasedZoneDto = {id : "", zoneId : _id, maintenanceId: "", price : 0};
-      self.leasedZones.push(zone);
-      var priceInput = document.getElementById("td"+_id);
+      let zone : LeasedZoneDto = {id : "", zoneId : _id, maintenanceId: maintenanceId, price : 0};
+      this.leasedZones.push(zone)
+      var priceInput = document.getElementById("td"+_id+__mid);
       var input = document.createElement("input");
       input.type = "number";
-      input.name = _id;
-      input.id = "input"+_id;
+      input.name = _id +__mid+"";
+      input.id = "input"+_id +__mid;
       input.className = "price_input";
       input.onchange = function(e){
-        self.initPrice(_id);
+        self.initPrice(_id, __mid);
       }
-      
       input.style.width = '90%';
       priceInput.append(input);
     }
+
     else{
       button.innerText = "Select";
-      var priceInput = document.getElementById("td"+_id);
+      var priceInput = document.getElementById("td"+_id+__mid);
       priceInput.innerHTML = "";
       self.leasedZones.forEach(function(data, index){
-        if(data.zoneId == _id){
+        if(data.zoneId == _id && data.maintenanceId == maintenanceId){
           self.leasedZones.splice(index,1);
         }
-      });
+      })
     }
   }
 
-  initPrice(id){
+  initPrice(id, mid){
     let self = this;
+    let _mid = mid;
+    let _id = id;
     self.leasedZones.forEach(function(data){
-      if(data.zoneId == id){
-        var input = <HTMLInputElement> document.getElementById("input"+id);
+      if(data.zoneId == _id && data.maintenanceId == _mid){
+        var input = <HTMLInputElement> document.getElementById("input"+_id+_mid);
         data.price = parseInt(input.value);
       }
     });
+    this.checkPrices();
   }
 
   checkLocation(){
@@ -309,17 +323,27 @@ export class EventCreateComponent implements OnInit {
 
   checkPrices(){
     let self = this;
-    let retval = 0;
-    if(self.leasedZones.length > 0){
-      self.leasedZones.forEach(function(data){
-        if(data.price < 1 || data.price > 10000){
-          var error = document.getElementById("error_message_location_info");
-          error.innerText = self.invalidPriceError;
-          retval += 1;
-        }
-      });
-    }
-    if(retval > 0){
+    let error_indexes = [];
+    let all_indexes = [];
+    self.leasedZones.forEach(function(lz){
+      if(lz.price < 1 || lz.price > 10000){
+        error_indexes.push(lz.maintenanceId);
+        all_indexes.push(lz.maintenanceId);
+      }
+      else{
+        all_indexes.push(lz.maintenanceId);
+      }
+    })
+    all_indexes.forEach(function(index){
+      var error = document.getElementById("error_zones"+index);
+      if(error_indexes.indexOf(index) > -1){
+        error.innerText = self.invalidPriceError;
+      }
+      else{
+        error.innerText = "";
+      }
+    })
+    if(error_indexes.length > 0){
       return 1;
     }
     else{
@@ -329,13 +353,26 @@ export class EventCreateComponent implements OnInit {
 
   checkLeasedZones(){
     let self = this;
-    let retval = 0;
-    if(self.leasedZones.length == 0){
-      var error = document.getElementById("error_message_location_info");
-      error.innerText = self.noLocationZoneError;
-      retval = 1;
-    }
-    if(retval > 0){
+    let ret = 0;
+    self.maintenances.forEach(function(m){
+      let maintenNum = 0;
+      let _m = m;
+      self.leasedZones.forEach(function(data){
+        if(data.maintenanceId == _m.eventId){
+          maintenNum = maintenNum + 1;
+        }
+      })
+      if(maintenNum ==0){
+        var error = document.getElementById("error_zones"+m.eventId);
+        error.innerText = self.noLocationZoneError;
+        ret = 1;
+      }
+      else{
+        var error = document.getElementById("error_zones"+m.eventId);
+        error.innerText = "";
+      }
+    })
+    if(ret > 0){
       return 1;
     }
     else{
@@ -345,6 +382,7 @@ export class EventCreateComponent implements OnInit {
 
   addNewDay(){
     this.daysNum +=1;
+    let nums = this.daysNum+0;
     var mainDiv = document.getElementById("addedDays");
     var div = document.createElement("div");
     div.className = "day_display";
@@ -362,14 +400,9 @@ export class EventCreateComponent implements OnInit {
     close.style.width = "5%";
     let self = this;
     close.onclick = function(e){
-      self.removeDay(self.daysNum+"");
+      self.removeDay(nums);
     }
     div.append(close);
-
-    var h4 = document.createElement("h4");
-    h4.className = "form-signin-heading";
-    h4.innerText = "Day "+ this.daysNum;
-    div.append(h4);
 
     var p1 = document.createElement("p");
     p1.innerText = "Start date and time:";
@@ -377,11 +410,11 @@ export class EventCreateComponent implements OnInit {
 
     var input1 = document.createElement("input");
     input1.type = "datetime-local";
-    input1.id = "start"+this.daysNum;
+    input1.id = "start"+nums;
     input1.className = "form-control";
     input1.name = "date_of_event";
     input1.onblur = function(){
-      self.checkDate(self.daysNum);
+      self.checkDate(nums);
     }
     div.append(input1);
 
@@ -394,20 +427,37 @@ export class EventCreateComponent implements OnInit {
 
     var input2 = document.createElement("input");
     input2.type = "datetime-local";
-    input2.id = "end"+this.daysNum;
+    input2.id = "end"+nums;
     input2.className = "form-control";
     input2.name = "date_of_event";
     input2.onblur = function(){
-      self.checkDate(self.daysNum);
+      self.checkDate(nums);
     }
+
     div.append(input2);
 
     var erorDiv = document.createElement("div");
     erorDiv.style.color = "red";
-    erorDiv.id = "error_day"+this.daysNum;
+    erorDiv.id = "error_day"+nums;
     div.append(erorDiv);
 
+    var divZone = document.createElement("div");
+    divZone.id = "zoneDisplay"+nums;
+    div.append(divZone);
+
+    var tableZone = document.createElement("table");
+    tableZone.id = "zoneTable"+nums;
+    tableZone.style.width = "100%";
+    tableZone.style.border = "1px solid";
+    div.append(tableZone);
+
+    var erorDivZ = document.createElement("div");
+    erorDivZ.style.color = "red";
+    erorDivZ.id = "error_zones"+nums;
+    div.append(erorDivZ);
+
     mainDiv.appendChild(div);
+    this.initLocationZones();
   }
 
   removeDay(id){
@@ -421,6 +471,11 @@ export class EventCreateComponent implements OnInit {
         self.maintenances.splice(index,1);
       }
     });
+    self.leasedZones.forEach(function(loc, indx){
+      if(loc.maintenanceId == _id){
+        self.leasedZones.splice(indx,1);
+      }
+    })
   }
 
   checkAllDates(){
@@ -480,24 +535,42 @@ export class EventCreateComponent implements OnInit {
   }
 
   createEvent(){
-    console.log(this.type);
+    this.generateLoader();
     let self = this;
     self.maintenances.forEach(function(m){
+      let _m_ = m;
       self.leasedZones.forEach(function(lz){
-        m.locationZones.push(lz);
+        if(lz.maintenanceId == _m_.eventId){
+          _m_.locationZones.push(lz);
+        }
       })
-    });
+    })
     var event : EventDto = {id:"0", name:self.name, description:"", eventType:self.type,
-     maintenance:self.maintenances, locationZones:self.leasedZones, locationId:self.choosenLocationId};
+     maintenance:self.maintenances, locationZones:[], locationId:self.choosenLocationId};
      this.eventsService.create(event).subscribe(data => {
        console.log(data.header);
        console.log(data.message);
        this.sharedService.updateEvents();
+       self.removeLoader();
+       self.switch_prev_slide("finish");
      })
+  }
+
+  generateLoader(){
+    var loader = document.getElementById("loader");
+    loader.style.display = "block";
+  }
+
+  removeLoader(){
+    var loader = document.getElementById("loader");
+    loader.style.display = "none";
   }
 
   redirectToEvents(){
     this.router.navigate(['dashboard/events']);
   }
 
+  upload(){
+    console.log(this.picture);
+  }
 }

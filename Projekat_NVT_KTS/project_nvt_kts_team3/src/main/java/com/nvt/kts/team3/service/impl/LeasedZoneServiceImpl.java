@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
+import com.nvt.kts.team3.dto.LeasedZoneUpdatable;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.LocationZone;
@@ -192,6 +193,27 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 			throw new MaintenanceNotFound();
 		}
 		return leasedZoneRepository.deleteByMaintenanceId(maintenanceId);
+	}
+
+	@Override
+	public ArrayList<LeasedZoneUpdatable> getEventLeasedZonesDto(long eventId) {
+		ArrayList<LeasedZone> zones = leasedZoneRepository.getEventLeasedZones(eventId);
+		ArrayList<LeasedZoneUpdatable> zonesDto = new ArrayList<LeasedZoneUpdatable>();
+		for(LeasedZone zone : zones){
+			LeasedZoneUpdatable lz = new LeasedZoneUpdatable();
+			if (ticketService.getLeasedZoneReservedTickets(zone.getId()).isEmpty() == false) {
+				lz.setUpdatable(false);
+			}
+			else{
+				lz.setUpdatable(true);
+			}
+			lz.setId(zone.getId());
+			lz.setMaintenanceId(zone.getMaintenance().getId());
+			lz.setPrice(zone.getSeatPrice());
+			lz.setZoneId(zone.getZone().getId());
+			zonesDto.add(lz);
+		}
+		return zonesDto;
 	}
 
 }
