@@ -1,4 +1,9 @@
 <div class="container">
+    <div class="media_container">
+        <h2 class="form-signin-heading">Media</h2>
+        <input type="file" id="fileUpload" class="form-control" name="file-upload" [(ngModel)]="picture" required autofocus>
+        <button class="btn btn-primary" (click)="upload()">Upload</button>
+    </div>
     <div class="block_container">
         <h2 class="form-signin-heading">Basic Informations</h2>
         <br/>
@@ -16,7 +21,7 @@
         </select>
         <br/>
         <p>Location of event</p>
-        <select id="location_selector" class="form-control" [(ngModel)]="event.locationInfo.id" (click)="initLocationZones(event.locationInfo.id)" placeholder="Locations" required autofocus></select>
+        <select id="location_selector" class="form-control" [(ngModel)]="event.locationInfo.id" (click)="refreshLocation(event.locationInfo.id)" placeholder="Locations" required autofocus></select>
         <div class="errorMessage"><p id="error_message_location_info"></p></div>
     </div>
     <div class="block_container">
@@ -28,10 +33,5 @@
         <br/>
         <div class="errorMessage"><p id="maintenance_error"></p></div>
         <br/>
-    </div>
-    <div class="media_container">
-        <h2 class="form-signin-heading">Media</h2>
-        <input type="file" id="fileUpload" class="form-control" name="file-upload" (change)="selectFile($event)" required autofocus>
-        <button class="btn btn-primary" (click)="save()">Save</button>
     </div>
 </div>

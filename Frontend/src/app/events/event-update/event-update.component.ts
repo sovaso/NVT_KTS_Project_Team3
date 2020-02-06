@@ -37,10 +37,6 @@ export class EventUpdateComponent implements OnInit {
   errors: number = 0;
   picture:string;
 
-  selectedFiles: FileList;
-  currentFileUpload: File;
-  strings: String[]=[];
-
   noNameError: string = "Name and type of event are both required.";
   nameExistsError: string = "Name of event already exists. Please choose another name.";
   noLocationError: string = "Location of event is required.";
@@ -70,6 +66,18 @@ export class EventUpdateComponent implements OnInit {
     this.eventsService.getById(eventId).subscribe(data => {
       self.event = data;
       self.locationId = self.event.locationInfo.id;
+      this.sharedService.locations.subscribe(locations => {
+        self.locations = locations
+        var selector = document.getElementById("location_selector");
+        self.locations.forEach(function (location) {
+          if(location.status == true){
+            var option = document.createElement("option");
+            option.value = location.id;
+            option.innerText = location.name + ", " + location.address;
+            selector.append(option);
+          }
+        });
+      });
       self.maintenancesService.getByEventId(eventId).subscribe(maintenances=> {
         maintenances.forEach(function(m){
           let m__ = m;
@@ -89,34 +97,36 @@ export class EventUpdateComponent implements OnInit {
         self.initLocationZones(self.event.locationInfo.id);
       })
     });
-    this.sharedService.locations.subscribe(locations => {
-      self.locations = locations
-      var selector = document.getElementById("location_selector");
-      self.locations.forEach(function (location) {
-        if(location.status == true){
-          var option = document.createElement("option");
-          option.value = location.id;
-          option.innerText = location.name + ", " + location.address;
-          selector.append(option);
-        }
-      });
-    });
+  }
+
+  refreshLocation(locationId){
+    let self = this;
+    this.maintenancesDto.forEach(function(ma){
+      if(ma.locationZones.length == 0){
+        let ma_ = ma;
+        self.leasedZonesDto.forEach(function(lz,index){
+          if(lz.maintenanceId == ma_.id){
+            self.leasedZonesDto.slice(1, index);
+          }
+        })
+      }
+    })
+    this.initLocationZones(locationId);
+    this.checkPrices();
   }
 
   initLocationZones(locationId){
     let choosen = locationId;
     this.locationId = locationId;
     let self = this;
-    let printedZones = [];
     this.locationZonesService.getLocationZones(choosen).subscribe(locationZones => {
       let _location_zones = locationZones;
-      self.maintenancesDto.forEach(function(m){
-        let _m = m;
+      self.maintenancesDto.forEach(function(mian){
         if(choosen != ""){
-          document.querySelector('div#zoneDisplay'+m.id).innerHTML = "";
+          document.querySelector('div#zoneDisplay'+mian.id).innerHTML = "";
   
-          var div = document.getElementById("zoneDisplay"+m.id);
-          var table = document.getElementById("zoneTable"+m.id);
+          var div = document.getElementById("zoneDisplay"+mian.id);
+          var table = document.getElementById("zoneTable"+mian.id);
           table.innerHTML = ""
   
           var p = document.createElement("p");
@@ -152,16 +162,20 @@ export class EventUpdateComponent implements OnInit {
           th.append(td4);
           table.append(th);
         }
-        m.locationZones.forEach(function(lz){
-          let lzo = lz;
-          let upo = true;
-          self.leasedZonesUpdatable.forEach(function(upd){
-            if(upd.id == lzo.id){
-              upo = upd.updatable;
-            }
+        let printedZones = [];
+        if(mian.locationZones.length > 0){
+          mian.locationZones.forEach(function(lz){
+            let lzo = lz;
+            let upo = true;
+            self.leasedZonesUpdatable.forEach(function(upd){
+              if(upd.id == lzo.id){
+                upo = upd.updatable;
+              }
+            })
+            printedZones.push({zone_Id:lz.zoneId, price:lz.price, updatable:upo, id:lz.id});
           })
-          printedZones.push({zone_Id:lz.zoneId, price:lz.price, updatable:upo});
-        })
+        }
+        let _m = mian;
         _location_zones.forEach(function(locationZone){
           let _lz = locationZone;
           let price = 0;
@@ -184,9 +198,11 @@ export class EventUpdateComponent implements OnInit {
           td3.id="td"+zoneId_+_m.id+"";
 
           let updatable_ = 1;
+          let ls_id = "";
           printedZones.forEach(function(added){
             if(added.zone_Id == zoneId_){
               price = added.price;
+              ls_id = added.id;
               if(added.updatable == false){
                 updatable_ = 0;
               }
@@ -204,7 +220,7 @@ export class EventUpdateComponent implements OnInit {
             input.value = price+"";
             input.style.width = '90%';
             td3.append(input);
-            var zone : LeasedZoneDto = {id : "", zoneId : locationZone.id, maintenanceId: "", price : price};
+            var zone : LeasedZoneDto = {id : ls_id, zoneId : locationZone.id, maintenanceId: _m.id, price : price};
             self.leasedZonesDto.push(zone);
             var td4 = document.createElement("td");
             td4.style.width = "15%";
@@ -226,7 +242,7 @@ export class EventUpdateComponent implements OnInit {
             var p8 = document.createElement("p");
             p8.innerText = price+"";
             p8.style.width = '90%';
-            var zone : LeasedZoneDto = {id : "", zoneId : zoneId_, maintenanceId: "", price : price};
+            var zone : LeasedZoneDto = {id : ls_id, zoneId : zoneId_, maintenanceId: _m.id, price : price};
             self.leasedZonesDto.push(zone);
             var td4 = document.createElement("td");
             td4.style.width = "15%";
@@ -407,6 +423,7 @@ export class EventUpdateComponent implements OnInit {
       }
     })
     all_indexes.forEach(function(index){
+      console.log("error_zones"+index);
       var error = document.getElementById("error_zones"+index);
       if(error_indexes.indexOf(index) > -1){
         error.innerText = self.invalidPriceError;
@@ -456,9 +473,6 @@ export class EventUpdateComponent implements OnInit {
       input1.id = "start"+mid;
       input1.className = "form-control";
       input1.name = "date_of_event";
-      console.log("DDDDDDDDDDDDDDDDDDDDDDDDDD1111");
-      console.log(m.startDate);
-      console.log(m.endDate);
       input1.value = m.startDate;
       input1.onblur = function(){
         self.checkDate(mid);
@@ -582,21 +596,25 @@ export class EventUpdateComponent implements OnInit {
     var erorDivZ = document.createElement("div");
     erorDivZ.style.color = "red";
     erorDivZ.id = "error_zones"+nums;
+    erorDivZ.className = "erZone";
     div.append(erorDivZ);
 
     mainDiv.appendChild(div);
+    var maintenance : MaintenanceDto = {id:nums+"", startDate:"", endDate:"",eventId:"-1", locationZones:[]};
+    self.maintenancesDto.push(maintenance);
     self.newLocationZones(self.locationId, nums);
   }
 
   removeDay(id){
     // DELETE
     this.daysNum -=1;
+    console.log(id);
     var element = document.getElementById("day"+id);
     element.parentNode.removeChild(element);
     let self = this;
     let _id = id;
     self.maintenancesDto.forEach(function(data, index){
-      if(data.eventId == _id){
+      if(data.id == _id){
         self.maintenancesDto.splice(index,1);
       }
     });
@@ -620,7 +638,7 @@ export class EventUpdateComponent implements OnInit {
       element.innerText = "";
     }
     self.maintenancesDto.forEach(function(data){
-      if(data.id == "-1"){
+      if(data.eventId == "-1"){
         retval_ = 1;
       }
     });
@@ -644,63 +662,33 @@ export class EventUpdateComponent implements OnInit {
           var error = document.getElementById("error_day"+_id);
           error.innerText = data.header;
           self.errors = 1;
-          maintenance.id = "-1";
+          maintenance.eventId = "-1";
         }
         else{
           var error = document.getElementById("error_day"+_id);
           error.innerText = "";
-          maintenance.id = "1";
+          maintenance.eventId = "1";
         }
     });
     self.maintenancesDto.forEach(function(data,index){
-      if(data.eventId == _id){
+      if(data.id == _id){
         self.maintenancesDto.splice(index,1);
       }
     });
-    self.maintenancesDto.push(maintenance);
+    let maintenance2: MaintenanceDto = {startDate: start, endDate:end, id:_id, eventId:maintenance.eventId, locationZones:[]}; 
+    self.maintenancesDto.push(maintenance2);
     var element = document.getElementById("maintenance_error");
     element.innerText = "";
   }
   }
 
-  
-
-  formatDate(date : Date): string {
-    return date.getFullYear
-              + '-' + this.leftpad(date.getMonth)
-              + '-' + this.leftpad(date.getDate)
-              + ' ' + this.leftpad(date.getHours)
-              + ':' + this.leftpad(date.getMinutes)
-  }
-
-  leftpad(val, resultLength = 2, leftpadChar = '0'): string {
-    return (String(leftpadChar).repeat(resultLength)
-          + String(val)).slice(String(val).length);
-  }
-
-  selectFile(event) {
-    this.selectedFiles = event.target.files;
-  
-  }
-
-  save() {
-    if (this.selectedFiles) this.currentFileUpload = this.selectedFiles.item(0);
-    console.log("FILE: ",this.currentFileUpload);
-    this.eventsService.uploadFile(this.currentFileUpload,this.event.id).subscribe(data => {
-      this.strings = data;
-      console.log(this.strings);
-    }
-    );
-  }
-
   // upload(){
-  //   // let self = this;
-  //   // console.log(self.picture);
-  //   // var upload : UploadFileDto = {pathToFile: self.picture}; 
-  //   // this.eventsService.uploadFile(upload, this.event.id).subscribe(links=> {
-  //   //   console.log(links);
-  //   // });
+  //   let self = this;
+  //   console.log(self.picture);
+  //   var upload : UploadFileDto = {pathToFile: self.picture}; 
+  //   this.eventsService.uploadFile(upload, this.event.id).subscribe(links=> {
+  //     console.log(links);
+  //   });
   // }
-
 
 }
