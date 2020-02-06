@@ -37,6 +37,10 @@ export class EventUpdateComponent implements OnInit {
   errors: number = 0;
   picture:string;
 
+  selectedFiles: FileList;
+  currentFileUpload: File;
+  strings: String[]=[];
+
   noNameError: string = "Name and type of event are both required.";
   nameExistsError: string = "Name of event already exists. Please choose another name.";
   noLocationError: string = "Location of event is required.";
@@ -674,13 +678,29 @@ export class EventUpdateComponent implements OnInit {
           + String(val)).slice(String(val).length);
   }
 
-  upload(){
-    let self = this;
-    console.log(self.picture);
-    var upload : UploadFileDto = {pathToFile: self.picture}; 
-    this.eventsService.uploadFile(upload, this.event.id).subscribe(links=> {
-      console.log(links);
-    });
+  selectFile(event) {
+    this.selectedFiles = event.target.files;
+  
   }
+
+  save() {
+    if (this.selectedFiles) this.currentFileUpload = this.selectedFiles.item(0);
+    console.log("FILE: ",this.currentFileUpload);
+    this.eventsService.uploadFile(this.currentFileUpload,this.event.id).subscribe(data => {
+      this.strings = data;
+      console.log(this.strings);
+    }
+    );
+  }
+
+  // upload(){
+  //   // let self = this;
+  //   // console.log(self.picture);
+  //   // var upload : UploadFileDto = {pathToFile: self.picture}; 
+  //   // this.eventsService.uploadFile(upload, this.event.id).subscribe(links=> {
+  //   //   console.log(links);
+  //   // });
+  // }
+
 
 }
