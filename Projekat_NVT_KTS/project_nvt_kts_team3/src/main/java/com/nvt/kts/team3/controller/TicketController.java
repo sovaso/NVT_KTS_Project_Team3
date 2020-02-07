@@ -25,6 +25,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.nvt.kts.team3.dto.QRCodeDTO;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.TicketService;
 
@@ -39,7 +40,7 @@ public class TicketController {
 	private TicketService ticketService;
 
 	@GetMapping(value = "/getQRCodeImage/{id}", produces = MediaType.IMAGE_PNG_VALUE)
-	public byte[] getQRCodeImage(@PathVariable(value = "id") Long ticketId) throws WriterException, IOException {
+	public byte[]  getQRCodeImage(@PathVariable(value = "id") Long ticketId) throws WriterException, IOException {
 		// TODO Proveriti da li karta ima vlasnika
 		// TODO Provera da li je vlasnik karte poslao zahtev
 		Ticket ticket = ticketService.findById(ticketId);
@@ -53,48 +54,51 @@ public class TicketController {
         BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", bao);
-		return bao.toByteArray();
+        return bao.toByteArray();
+//        QRCodeDTO dto=new QRCodeDTO();
+//        dto.setQrBytes(bao.toByteArray());
+//        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 	
 	@GetMapping(value = "/getEventTickets/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getEventTickets(@PathVariable long eventId) {
 		List<Ticket> tickets=ticketService.getEventTickets(eventId);
 		return new ResponseEntity<>(tickets, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getEventReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getEventReservedTickets(@PathVariable(value = "id") Long eventId) {
 		return new ResponseEntity<>(ticketService.getEventReservedTickets(eventId), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getEventSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getEventSoldTickets(@PathVariable(value = "id") Long eventId) {
 		return new ResponseEntity<>(ticketService.getEventSoldTickets(eventId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenanceTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getMaintenanceTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getMaintenanceTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenanceReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getMaintenanceReservedTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getMaintenanceReservedTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenanceSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getMaintenanceSoldTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getMaintenanceSoldTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getLeasedZoneSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getLeasedZoneSoldTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getLeasedZoneSoldTickets(maintenanceId), HttpStatus.OK);
 	}
@@ -107,7 +111,6 @@ public class TicketController {
 	}
 	
 	@GetMapping(value = "/getLeasedZoneTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Ticket>> getLeasedZoneTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getLeasedZoneTickets(maintenanceId), HttpStatus.OK);
 	}

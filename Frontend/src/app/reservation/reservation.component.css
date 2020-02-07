@@ -1,0 +1,12 @@
+.block_div{
+    margin-top: 5%;
+    float: left;
+    position: relative;
+}
+
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+

@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
+import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.model.User;
 
 public interface ReservationService {
@@ -19,4 +20,5 @@ public interface ReservationService {
 	public boolean payReservation(Long id);
 	public List<Reservation> getLocationReservations(Long id);
 	public void delete(Long id);
+	public List<Reservation> findReservationsLoggedUser();
 }

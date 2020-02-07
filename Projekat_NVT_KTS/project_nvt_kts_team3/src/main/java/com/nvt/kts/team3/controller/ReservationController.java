@@ -3,6 +3,7 @@ package com.nvt.kts.team3.controller;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import com.nvt.kts.team3.dto.ReservationDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.RegularUser;
 import com.nvt.kts.team3.model.Reservation;
+import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.ReservationService;
 import com.nvt.kts.team3.service.TicketService;
@@ -109,6 +111,14 @@ public class ReservationController {
 					HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	
+	@GetMapping(value = "/getLoggedUserReservations", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public ResponseEntity<List<Reservation>> getLoggedUserReservations() {
+		List<Reservation> reservations=this.reservationService.findReservationsLoggedUser();
+		return new ResponseEntity<>(reservations, HttpStatus.OK);
+	}
 
 	@GetMapping(value = "/getReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -149,5 +159,17 @@ public class ReservationController {
 		Boolean b = this.ticketService.cancelTicket(ticketId);
 		return new ResponseEntity<>(new MessageDTO("Success", "Ticket successfuly cancelled!"), HttpStatus.OK);
 	}
+	
+	@GetMapping(value = "/getReservationTickets/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public ResponseEntity<Set<Ticket>> getReservationTickets(@PathVariable long reservationId) {
+		Optional<Reservation> res=this.reservationService.findById(reservationId);
+		Reservation reservation=res.get();
+		Set<Ticket> tickets=reservation.getReservedTickets();
+		return new ResponseEntity<>(tickets, HttpStatus.OK);
+	}
+	
+	
+	
 
 }
