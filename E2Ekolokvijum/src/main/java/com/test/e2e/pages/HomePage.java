@@ -16,6 +16,13 @@ public class HomePage {
 	@FindBy(id="registerButton")
 	WebElement registerButton;
 	
+	@FindBy(id="eventsLink")
+	WebElement eventsLink;
+	
+	@FindBy(xpath = "/html/body/app-root/div/app-dashboard/div/app-header/div/div[3]/div/a")
+	WebElement userButton;
+	
+	
 	public HomePage(WebDriver driver) {
 		this.driver = driver;
 	}
@@ -36,6 +43,15 @@ public class HomePage {
 	public void setRegisterButton(WebElement registerButton) {
 		this.registerButton = registerButton;
 	}
+	
+	public WebElement getEventsLink() {
+		return eventsLink;
+	}
+
+	public WebElement getUserButton() {
+		return userButton;
+	}
+
 
 	//Zato i uzimas ovaj element contactLink-da bi proverila da je stranica vidljiva
 	public void ensureHomePageVisible() {
@@ -47,5 +63,11 @@ public class HomePage {
 		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(registerButton));
 		
 	}
+	
+	public void ensureUserButtonVisible() {
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(userButton));
+		
+	}
+	
 	
 }
