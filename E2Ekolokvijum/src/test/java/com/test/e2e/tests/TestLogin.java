@@ -1,6 +1,7 @@
 package com.test.e2e.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,12 +11,13 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
 
 import com.test.e2e.pages.HomePage;
+import com.test.e2e.pages.LoginPage;
 
 public class TestLogin {
-/*
+
 	private WebDriver browser;
 	
-	HomePageLogin homePage;
+	HomePage homePage;
 	LoginPage loginPage;
 	
 	@Before
@@ -23,49 +25,54 @@ public class TestLogin {
 		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
 		browser = new ChromeDriver();
 		browser.manage().window().maximize();
-		browser.navigate().to("http://automationpractice.com/index.php");
-		homePage = PageFactory.initElements(browser, HomePageLogin.class);
+		browser.navigate().to("http://localhost:4200/dashboard");
+		homePage = PageFactory.initElements(browser, HomePage.class);
 		loginPage = PageFactory.initElements(browser, LoginPage.class);
 	}
 	
 	@Test
 	public void login_test() {
 		homePage.ensureHomePageVisible();
-		homePage.getLoginLink().click();
-		assertEquals("http://automationpractice.com/index.php?controller=authentication&back=my-account", browser.getCurrentUrl());
+		homePage.getLoginButton().click();
 		
 		//prazna polja
 		loginPage.ensureButtonVisible();
 		loginPage.getButton().click();
-		String errorMessage1 = loginPage.getError().getText();
-		assertEquals("An email address required.", errorMessage1);
-		
+		String errorMessage1 = loginPage.getMessage().getText();
+		assertTrue(errorMessage1.contains("Please enter username and password."));
 		
 		//prazan password
-		loginPage.setEmail("marina.vojnovic1997@gmail.com");
+		loginPage.setUsername("maki");
 		loginPage.getButton().click();
-		String errorMessage2 = loginPage.getError().getText();
-		assertEquals("Password is required.", errorMessage2);
+		String errorMessage2 = loginPage.getMessage().getText();
+		assertTrue(errorMessage2.contains("Please enter username and password."));
 		
-		
-		//neispravna adresa
-		loginPage.setEmail("marina");
+		//prazan username
+		loginPage.setPassword("maki");
 		loginPage.getButton().click();
-		String errorMessage3 = loginPage.getError().getText();
-		assertEquals("Invalid email address.", errorMessage3);
+		String errorMessage3 = loginPage.getMessage().getText();
+		assertTrue(errorMessage3.contains("Please enter username and password."));
+		
+		//neispravan username
+		loginPage.setUsername("maki");
+		loginPage.setPassword("123");
+		loginPage.getButton().click();
+		String errorMessage4 = loginPage.getMessage().getText();
+		assertTrue(errorMessage4.contains("Wrong password or username."));
 		
 		//neispravan password
-		loginPage.setEmail("test@kts.com");
-		loginPage.setPassword("j");
+		loginPage.setUsername("user1");
+		loginPage.setPassword("nesto");
 		loginPage.getButton().click();
-		String errorMessage4 = loginPage.getError().getText();
-		assertEquals("Invalid password.", errorMessage4);
+		String errorMessage5 = loginPage.getMessage().getText();
+		assertTrue(errorMessage5.contains("Wrong password or username."));
 		
 		//sve ispravno
-		loginPage.setEmail("test@kts.com");
-		loginPage.setPassword("johnsmith");
+		loginPage.setUsername("user1");
+		loginPage.setPassword("123");
 		loginPage.getButton().click();
-		assertEquals("http://automationpractice.com/index.php?controller=my-account", browser.getCurrentUrl());
+		homePage.ensureUserButtonVisible();
+		
 		
 	}
 	
@@ -73,5 +80,5 @@ public class TestLogin {
 	public void closeSelenium() {
 		browser.quit();
 	}
-	*/
+	
 }
