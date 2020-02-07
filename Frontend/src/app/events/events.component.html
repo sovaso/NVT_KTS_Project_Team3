@@ -39,7 +39,7 @@
             <tbody>
                 <tr *ngFor="let event of events">
                     <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
-                    <td *ngIf="event.id">{{event.id}}</td>
+                    <td class="eventIdClass" *ngIf="event.id">{{event.id}}</td>
                     <td *ngIf="event.name">{{event.name}}</td>
                     <td *ngIf="event.type">{{event.type.toLowerCase()}}</td>
                     <td *ngIf="event.id">{{event.status}}</td>

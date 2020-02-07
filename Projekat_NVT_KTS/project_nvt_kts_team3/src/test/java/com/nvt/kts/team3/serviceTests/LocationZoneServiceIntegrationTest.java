@@ -64,21 +64,7 @@ public class LocationZoneServiceIntegrationTest {
 	private static final int COL_INVALID = -5;
 	private static final int CAPACITY_INVALID = -50;
 	/*
-	@Test
-	@Transactional
-	public void getActiveMaintenances_successfull() {
-		ArrayList<Maintenance> maintenances = locationZoneService.getActiveMaintenances(1L);
-		assertEquals(1, maintenances.size());
-		assertEquals(1, maintenances.get(0).getId());
-	}
 	
-	@Test
-	@Transactional
-	public void findAll_successfull() {
-		List<LocationZone> maintenances = locationZoneService.findAll();
-		assertEquals(1, maintenances.size());
-		assertEquals(1, maintenances.get(0).getId());
-	}
 	*/
 	@Test
 	@Transactional
