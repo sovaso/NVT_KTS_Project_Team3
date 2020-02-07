@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nvt.kts.team3.dto.LeasedZoneDTO;
+import com.nvt.kts.team3.dto.LeasedZoneUpdatable;
 import com.nvt.kts.team3.dto.MessageDTO;
 import com.nvt.kts.team3.model.Event;
 import com.nvt.kts.team3.model.LeasedZone;
@@ -80,6 +81,15 @@ public class LeasedZoneController {
 			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(leasedZoneService.getEventLeasedZones(eventId), HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/getEventLeasedZonesDto/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<LeasedZoneUpdatable>> getEventLeasedZonesDTO(@PathVariable(value = "eventId") Long eventId){
+		Event event = eventService.findById(eventId);
+		if(event == null){
+			return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(leasedZoneService.getEventLeasedZonesDto(eventId), HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/deleteLeasedZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

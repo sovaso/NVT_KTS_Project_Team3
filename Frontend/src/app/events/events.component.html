@@ -1,63 +1,63 @@
 
 <div class="container">
     
-    <ngb-tab  title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
-        <button class="btn btn-primary" (click)="newEvent()">New Event</button>
+        <ngb-tab  title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+            <button class="btn btn-primary" (click)="newEvent()">New Event</button>
+            <div class="divider"></div>
+        </ngb-tab>
+        <button id = "sortByDateAcs" class="btn btn-primary" (click)="sortByDateAcs()">Sort by date acs</button>
         <div class="divider"></div>
-    </ngb-tab>
-    <button id = "sortByDateAcs" class="btn btn-primary" (click)="sortByDateAcs()">Sort by date acs</button>
-    <div class="divider"></div>
-    <button id = "sortByDateDesc" class="btn btn-primary" (click)="sortByDateDesc()">Sort by date desc</button>
-    <div class="divider"></div>
-    <button id = "sortByName"class="btn btn-primary" (click)="sortByName()">Sort by name</button>
-    <input type="text" id="field" class="form-control" name="field" [(ngModel)]="field" placeholder="Enter name, location or type of event"
-    required autofocus>
-    <label>Start date</label>
-    <div class="divider"></div>
-    <input type = "datetime-local" id = "startDate" name = "startDate" [(ngModel)]="startDate">
-    <label>End date</label>
-    <div class="divider"></div>
-    <input type = "datetime-local" id = "endDate" name = "endDate" [(ngModel)]="endDate">
-    <button id = "search"class="btn btn-primary" (click)="search()">Search</button>
-    <div class="divider"></div>
-    <button id = "reset"class="btn btn-primary" (click)="reset()">Reset</button>
-    <div *ngIf="message!==''">
-        <ngb-alert [type]="type" >{{message}}</ngb-alert>  
-    </div>
-    <div *ngIf="message===''">
-
+        <button id = "sortByDateDesc" class="btn btn-primary" (click)="sortByDateDesc()">Sort by date desc</button>
+        <div class="divider"></div>
+        <button id = "sortByName"class="btn btn-primary" (click)="sortByName()">Sort by name</button>
+        <input type="text" id="field" class="form-control" name="field" [(ngModel)]="field" placeholder="Enter name, location or type of event"
+        required autofocus>
+        <label>Start date</label>
+        <div class="divider"></div>
+        <input type = "datetime-local" id = "startDate" name = "startDate" [(ngModel)]="startDate">
+        <label>End date</label>
+        <div class="divider"></div>
+        <input type = "datetime-local" id = "endDate" name = "endDate" [(ngModel)]="endDate">
+        <button id = "search"class="btn btn-primary" (click)="search()">Search</button>
+        <div class="divider"></div>
+        <button id = "reset"class="btn btn-primary" (click)="reset()">Reset</button>
+        <div *ngIf="message!==''">
+            <ngb-alert [type]="type" >{{message}}</ngb-alert>  
+        </div>
+        <div *ngIf="message===''">
     
-    <table class="table table-striped">
-        <thead>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Active</th>
-            <th>Location</th>
         
-        </thead>
-        <tbody>
-            <tr *ngFor="let event of events">
-                <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
-                <td *ngIf="event.id">{{event.id}}</td>
-                <td *ngIf="event.name">{{event.name}}</td>
-                <td *ngIf="event.type">{{event.type.toLowerCase()}}</td>
-                <td *ngIf="event.id">{{event.status}}</td>
-                <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
+        <table class="table table-striped">
+            <thead>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Active</th>
+                <th>Location</th>
             
-                <td><button id = "button"class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
-                <ngb-tab title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
-                <td><button class="btn btn-danger" (click)="deleteEvent(event)" >Delete</button></td>
-                <td><button class="btn btn-primary" (click)="updateEvent(event)">Edit</button></td>
-                <td><button class="btn btn-primary" (click)="seeReport(event)">See report</button></td>
-                <td><button class="btn btn-primary" (click)="getIncome(event)">Get income</button></td>
-            <!-- </ngb-tab> -->
-            </ngb-tab> 
-
-            </tr>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <tr *ngFor="let event of events">
+                    <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
+                    <td *ngIf="event.id">{{event.id}}</td>
+                    <td *ngIf="event.name">{{event.name}}</td>
+                    <td *ngIf="event.type">{{event.type.toLowerCase()}}</td>
+                    <td *ngIf="event.id">{{event.status}}</td>
+                    <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
+                
+                    <td><button id = "button"class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
+                    <ngb-tab title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+                    <td><button class="btn btn-danger" (click)="deleteEvent(event)" >Delete</button></td>
+                    <td><button class="btn btn-primary" (click)="updateEvent(event)">Edit</button></td>
+                    <td><button class="btn btn-primary" (click)="seeReport(event)">See report</button></td>
+                    <td><button class="btn btn-primary" (click)="getIncome(event)">Get income</button></td>
+                <!-- </ngb-tab> -->
+                </ngb-tab> 
     
-<div>
-   
-</div>
+                </tr>
+            </tbody>
+        </table>
+        
+    <div>
+       
+    </div>

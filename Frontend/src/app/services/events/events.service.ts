@@ -6,6 +6,7 @@ import { MessageDto } from 'src/app/dto/message.dto';
 import { EventReportDto } from 'src/app/dto/event_report.dto';
 import { UploadFileDto } from 'src/app/dto/upload_file.dto';
 import { Event } from 'src/app/model/event.model';
+import { Media } from 'src/app/model/media.model';
 
 
 @Injectable({
@@ -31,7 +32,8 @@ export class EventsService {
   }
 
   create(event: EventDto): Observable<MessageDto> {
-    return this.http.post<MessageDto>(`/api/createEvent`, event);
+    var retval = this.http.post<MessageDto>(`/api/createEvent`, event);
+    return retval;
   }
 
   update = (event: EventDto): Observable<MessageDto> =>
@@ -51,9 +53,6 @@ export class EventsService {
   seeReport = (id: string): Observable<EventReportDto> =>
   this.http.get<EventReportDto>(`/api/getEventReport/${ id }`);
 
-  uploadFile = (uploadFile: UploadFileDto): Observable<string> =>
-  this.http.post<string>(`/api/upload`, uploadFile);
-
   search = (field: string, startDate: string, endDate: string): Observable<any> =>
     
  this.http.get<any>(`/api/findEvent/${field}/${startDate}/${endDate}`);
@@ -70,4 +69,19 @@ export class EventsService {
 
   getIncome = (id:string): Observable<any> =>
   this.http.get<any>(`/api/getEventIncome/${id}`);
+
+  uploadFile(file: File, id:string): Observable<String[]> {
+
+    const data: FormData = new FormData();
+    data.append('file', file);
+    var retval = this.http.post<String[]>(`/api/upload/${id}`,data,{
+      reportProgress: true,
+      responseType: 'json'
+      });
+    return retval;
+  }
+
+  getAllMedia = (id:string): Observable<Media[]> =>
+  this.http.get<Media[]>(`/api/getMedia/${id}`);
+
 }

@@ -1,5 +1,6 @@
 package com.nvt.kts.team3.service.impl;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.FileContent;
@@ -39,6 +41,7 @@ import com.nvt.kts.team3.model.LeasedZone;
 import com.nvt.kts.team3.model.Location;
 import com.nvt.kts.team3.model.LocationZone;
 import com.nvt.kts.team3.model.Maintenance;
+import com.nvt.kts.team3.model.Media;
 import com.nvt.kts.team3.model.Reservation;
 import com.nvt.kts.team3.model.Ticket;
 import com.nvt.kts.team3.repository.EventRepository;
@@ -47,6 +50,7 @@ import com.nvt.kts.team3.service.EventService;
 import com.nvt.kts.team3.service.LocationService;
 import com.nvt.kts.team3.service.LocationZoneService;
 import com.nvt.kts.team3.service.MaintenanceService;
+import com.nvt.kts.team3.service.MediaService;
 import com.nvt.kts.team3.service.TicketService;
 
 import exception.EventNotActive;
@@ -82,6 +86,9 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private LocationZoneService locationZoneService;
 
+	@Autowired
+	private MediaService mediaService;
+	
 	@Autowired
 	private ReservationRepository reservationRepository;
 
@@ -488,34 +495,50 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public List<String> uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException {
+	public List<String> uploadFile(MultipartFile file, long id) throws IOException, GeneralSecurityException {
+		Event event = findById(id);
+		System.out.println("USAO U SERVIS");
+		System.out.println(event.getId());
 		final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 		List<String> webLinks=new ArrayList<String>();
-		for(String element: uploadFileDTO.getPathToFile()) {
-			File item = new File();
-			Permission permission = new Permission();
-			permission.setRole("reader");
-			permission.setType("anyone");
-			List<Permission> permis = new ArrayList<Permission>();
-			// permis.add(permission);
-			File fileMetadata = new File();
-			fileMetadata.setName(element);
-			java.io.File filePath = new java.io.File(element);
-			if (!filePath.exists()) {
-				throw new WrongPath();
-			} else {
-				FileContent mediaContent = new FileContent("image/jpeg", filePath);
-				Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-						DriveQuickstart.getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME).build();
-	
-				item = service.files().create(fileMetadata, mediaContent).setFields("id,webViewLink").execute();
-				Permission perm = service.permissions().create(item.getId(), permission).execute();
-				permis.add(perm);
-				System.out.println("File ID: " + item.getWebViewLink());
-				item.setPermissions(permis);
-				webLinks.add(item.getWebViewLink());
-			}
+		File item = new File();
+		Permission permission = new Permission();
+		permission.setRole("reader");
+		permission.setType("anyone");
+		List<Permission> permis = new ArrayList<Permission>();
+		// permis.add(permission);
+		File fileMetadata = new File();
+		fileMetadata.setName(file.getName());
+		java.io.File filePath = new java.io.File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream( filePath );
+        fos.write( file.getBytes() );
+        fos.close();
+		if (!filePath.exists()) {
+			throw new WrongPath();
+		} else {
+			FileContent mediaContent = new FileContent("image/jpeg",filePath);
+			Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY,
+					DriveQuickstart.getCredentials(HTTP_TRANSPORT)).setApplicationName(APPLICATION_NAME).build();
+
+			item = service.files().create(fileMetadata, mediaContent).setFields("id,webViewLink").execute();
+			Permission perm = service.permissions().create(item.getId(), permission).execute();
+			permis.add(perm);
+			System.out.println("File ID: " + item.getWebViewLink());
+			item.setPermissions(permis);
+			webLinks.add(item.getWebViewLink());
 		}
+		ArrayList<Media> pictures=new ArrayList<Media>();
+		if(event.getMedia()==null) {
+			event.setMedia(pictures);
+		}
+		for(String link : webLinks){
+			Media m=new Media();
+			m.setEvent(event);
+			m.setLink(link);
+			event.getMedia().add(m);
+			this.mediaService.save(m);
+		}
+		this.eventRepository.save(event);
 		return webLinks;
 	}
 	

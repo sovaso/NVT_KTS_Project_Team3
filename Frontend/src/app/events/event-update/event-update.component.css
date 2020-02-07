@@ -1,0 +1,39 @@
+.container{
+    width: 95%;
+}
+
+.block_container{
+    margin-top: 5%;
+    float: left;
+    padding: 5%;
+    width:50%;
+    position: relative;
+
+}
+
+.media_container{
+    width:90%;
+    float: left;
+    padding-right: 5%;
+    padding-left: 5%;
+    position: relative;
+}
+
+.x{
+    position: absolute;
+    float: right;
+    background: red;
+    color: white;
+    top: 0px;
+    right: 0px;
+}
+
+.day_display{
+    border-style: ridge;
+    padding: 5%;
+}
+
+.div_media{
+    float: left;
+    height: 20%;
+}

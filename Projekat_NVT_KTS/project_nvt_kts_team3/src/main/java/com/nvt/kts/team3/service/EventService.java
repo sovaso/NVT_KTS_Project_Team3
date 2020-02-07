@@ -5,6 +5,8 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.nvt.kts.team3.dto.EventDTO;
 import com.nvt.kts.team3.dto.EventReportDTO;
 import com.nvt.kts.team3.dto.UploadFileDTO;
@@ -20,7 +22,7 @@ public interface EventService {
 	boolean eventIsActive(long eventId);
 	public EventReportDTO getEventReport(Long id);
 	public double getEventIncome(Long id);
-	public List<String> uploadFile(UploadFileDTO uploadFileDTO) throws IOException, GeneralSecurityException;
+	public List<String> uploadFile(MultipartFile file, long id) throws IOException, GeneralSecurityException;
 	public List<Event> findAllSortedName();
 	public List<Event> findAllSortedDateDesc();
 	public List<Event> findAllSortedDateAcs();
