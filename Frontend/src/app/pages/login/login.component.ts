@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   }
   
    login():void{
-    if (this.user.username !=null && this.user != null){
+    if (this.user.username !=undefined && this.user.password != undefined && this.user.username != "" && this.user.password != ""){
 
     
     this.authenticationService.login(this.user.username, this.user.password).subscribe(

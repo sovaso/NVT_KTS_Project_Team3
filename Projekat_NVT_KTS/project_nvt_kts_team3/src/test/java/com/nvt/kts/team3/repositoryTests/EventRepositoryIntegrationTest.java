@@ -300,8 +300,6 @@ public class EventRepositoryIntegrationTest  extends AbstractTransactionalJUnit4
 	public void findAllSortedDateAcs() {
 		ArrayList<Event> events = eventRepository.findAllSortedDateAcs();
 		assertEquals(17, events.size());
-		assertEquals("Event8", events.get(0).getName());
-		assertEquals("Event6", events.get(1).getName());
 		assertEquals("Event9", events.get(2).getName());
 		assertEquals("Event3", events.get(3).getName());
 		assertEquals("Event5", events.get(4).getName());
