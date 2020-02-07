@@ -26,7 +26,7 @@
         </div>
         <div *ngIf="message===''">
     
-        
+        <ngb-tab title="admin" *ngIf ="loggedUser && loggedUser.userRoleName=='ROLE_ADMIN'">
         <table class="table table-striped">
             <thead>
                 <th>Id</th>
@@ -46,18 +46,69 @@
                     <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
                 
                     <td><button id = "button"class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
-                    <ngb-tab title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
+                    <ngb-tab title="Create new" id="createEventTab">
                     <td><button class="btn btn-danger" (click)="deleteEvent(event)" >Delete</button></td>
                     <td><button class="btn btn-primary" (click)="updateEvent(event)">Edit</button></td>
                     <td><button class="btn btn-primary" (click)="seeReport(event)">See report</button></td>
                     <td><button class="btn btn-primary" (click)="getIncome(event)">Get income</button></td>
                 <!-- </ngb-tab> -->
                 </ngb-tab> 
-    
                 </tr>
             </tbody>
         </table>
+        </ngb-tab>
+
+        <ngb-tab title="user" *ngIf ="loggedUser && loggedUser.userRoleName=='ROLE_USER'">
+        <table class="table table-striped">
+                <thead>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                
+                </thead>
+                <tbody>
+                    <tr *ngFor="let event of allActiveEvents">
+                        <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
+                        <td *ngIf="event.id">{{event.id}}</td>
+                        <td *ngIf="event.name">{{event.name}}</td>
+                        <td *ngIf="event.type">{{event.type.toLowerCase()}}</td>
+                        <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
+                        <ngb-tab title="reserve" id="reserve">
+                        <td><button id = "button"class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
+                        <td><button id = "button"class="btn btn-primary" (click)="reserve(event)">Reserve</button></td>
+                    </ngb-tab> 
+                    </tr>
+                </tbody>
+            </table>
+        </ngb-tab>
+
+
+        <ngb-tab title="user" *ngIf ="!loggedUser || loggedUser==null">
+                <table class="table table-striped">
+                        <thead>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                        
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let event of allActiveEvents">
+                                <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
+                                <td *ngIf="event.id">{{event.id}}</td>
+                                <td *ngIf="event.name">{{event.name}}</td>
+                                <td *ngIf="event.type">{{event.type.toLowerCase()}}</td>
+                                <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
+                                <td><button id = "button"class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </ngb-tab>
+        <!-- <input type="number" [(ngModel)]="finalAmount" style="padding-bottom: 10px;">
+        <h2 *ngIf="paypalLoad">Paypal button is loading</h2>
+        <div id="paypal-checkout-btn"></div> -->
         
-    <div>
+    </div>
        
     </div>

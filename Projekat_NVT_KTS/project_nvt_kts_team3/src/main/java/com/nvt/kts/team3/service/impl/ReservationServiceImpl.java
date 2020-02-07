@@ -88,7 +88,7 @@ public class ReservationServiceImpl implements ReservationService {
 					for (Reservation r : userReservations) {
 						numTickets += r.getReservedTickets().size();
 					}
-					if (numTickets > 10) { //100
+					if (numTickets > 3) { //100
 						throw new TooManyTicketsReserved();
 					}
 					boolean created = false;
@@ -243,6 +243,16 @@ public class ReservationServiceImpl implements ReservationService {
 	@Modifying
 	public void delete(Long id) {
 		reservationRepository.deleteById(id);
+	}
+	
+	
+
+	@Override
+	public List<Reservation> findReservationsLoggedUser() {
+		RegularUser logged = (RegularUser) userRepository
+				.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<Reservation> reservations=findByUser(logged);
+		return reservations;
 	}
 
 }

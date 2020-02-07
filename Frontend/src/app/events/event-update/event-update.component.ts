@@ -709,6 +709,7 @@ export class EventUpdateComponent implements OnInit {
   getMedia(){
     document.getElementById('media_container1').removeChild;
     this.eventsService.getAllMedia(this.event.id).subscribe(data => {
+      console.log("VELICINA: ",data.length)
       let div= document.getElementById('media_container1');
       data.forEach(function (media) {
         var element=document.createElement("img");

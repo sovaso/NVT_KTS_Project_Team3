@@ -1,1 +1,44 @@
-<p>my-reservations works!</p>
+<div id="container">
+<ngb-tab *ngIf ="loggedUser && loggedUser.userRoleName=='ROLE_USER' && myReservations.length>0">
+        <table class="table table-striped">
+            <thead>
+                <th>Event name</th>
+                <th>TotalPrice</th>
+                <th>Date of reservation</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let reservation of myReservations">
+                    <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
+                    <td>{{reservation.event.name}}</td>
+                    <td>{{reservation.totalPrice}}</td>
+                    <td>{{formatDate(reservation.dateOfReservation)}}</td>
+                    <ngb-tab id="createEventTab" *ngIf="!reservation.paid">
+                    <td><button class="btn btn-primary" (click)="pay(reservation)" >Pay</button></td>
+                    <td><button class="btn btn-danger" (click)="cancel(reservation)">Cancel</button></td>
+                    <td><button class="btn btn-primary" (click)="showTickets(reservation)">Show tickets</button></td>
+                </ngb-tab> 
+                <ngb-tab id="createEventTab" *ngIf="reservation.paid">
+                        <td style="width: 85px"></td>
+                        <td style="width: 85px"></td>
+                        <td><button class="btn btn-primary" (click)="showTickets(reservation)">Show tickets</button></td>
+                    </ngb-tab> 
+                    
+                <!-- </ngb-tab> -->
+                
+                </tr>
+            </tbody>
+        </table>
+        </ngb-tab>
+
+
+        <div id="myModal" class="modal">
+
+                <!-- Modal content -->
+                <span class="close" id="close" (click)="closeModal()">&times;</span>
+                <div class="modal-content" id="modall">
+                 
+                </div>
+              
+              </div>
+
+</div>

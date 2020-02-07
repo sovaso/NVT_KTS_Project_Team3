@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
 import { CurrentUser } from '../model/currentUser';
 import { SharedService } from '../services/shared/shared.service';
 import { EventsService } from '../services/events/events.service';
@@ -15,13 +15,16 @@ import { log } from 'util';
 import { Router } from '@angular/router';
 
 
+declare var payPal: any;
+
 @Component({
   selector: 'app-events',
   templateUrl: './events.component.html',
   styleUrls: ['./events.component.css']
 })
-export class EventsComponent implements OnInit {
-
+export class EventsComponent implements OnInit{
+  @ViewChild('payPal',{static:true}) paypalElement: ElementRef;
+  
   events: Event[] = [];
   locations: Location[];
   
@@ -43,7 +46,16 @@ export class EventsComponent implements OnInit {
 
   modalRef : any;
 
-  allActive: Event[]=[];
+  allActiveEvents: Event[]=[];
+
+  addScript: boolean = false;
+  paypalLoad: boolean = true;
+  
+  finalAmount: number = 1;
+
+
+ 
+  
 
   constructor(private modalService: NgbModal, public sharedService: SharedService, private eventsService: EventsService,
     private router: Router) {}
@@ -51,6 +63,7 @@ export class EventsComponent implements OnInit {
   ngOnInit() {
     
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
+
 
     this.sharedService.events.subscribe(
       events => (this.events = events)
@@ -63,7 +76,7 @@ export class EventsComponent implements OnInit {
     }
 
     this.eventsService.getActive().subscribe(
-      events => (this.allActive = events)
+      events => (this.allActiveEvents = events)
     );
 
 
@@ -75,13 +88,54 @@ export class EventsComponent implements OnInit {
     this.activeTab = $event.nextId;
   }
 
+  // paypalConfig = {
+  //   env: 'sandbox',
+  //   client: {
+  //     sandbox: 'AQhPuCAwEEOLPE1EGRJPKQIZxv4-xsSx0AvcM7tLX1x1chXe3jXPXCZJ7F_gIK09W_DK3Sy3iNdRj3f6',
+  //   },
+  //   commit: true,
+  //   payment: (data, actions) => {
+  //     return actions.payment.create({
+  //       payment: {
+  //         transactions: [
+  //           { amount: { total: this.finalAmount, currency: 'USD' } }
+  //         ]
+  //       }
+  //     });
+  //   },
+  //   onAuthorize: (data, actions) => {
+  //     return actions.payment.execute().then((payment) => {
+  //       //Do something when payment is successful.
+  //     })
+  //   }
+  // };
+ 
+  // ngAfterViewChecked(): void {
+  //   if (!this.addScript) {
+  //     this.addPayPalScript().then(() => {
+  //       payPal.Button.render(this.paypalConfig, '#paypal-checkout-btn');
+  //       this.paypalLoad = false;
+  //     });
+  //   }
+  // }
+  
+  // addPayPalScript(){
+  //   this.addScript=true;
+  //   return new Promise((resolve,reject)=>{
+  //     let scriptTagElement=document.createElement('script');
+  //     scriptTagElement.src='https://www.paypalobjects.com/api/checkout.js';
+  //     scriptTagElement.onload=resolve;
+  //     document.body.appendChild(scriptTagElement);
+  //   });
+  // };
+
+
   deleteEvent(event){
     this.eventsService.delete(event.id).subscribe(data => {
         this.sharedService.updateAll();
         this.modalRef = this.modalService.open(AlertBoxComponent);
         this.modalRef.componentInstance.message=data.header;
-    }
-    );
+    });
   }
 
   showDetails(e){
@@ -175,6 +229,11 @@ export class EventsComponent implements OnInit {
     updateEvent(event){
       localStorage.setItem("eventForUpdate", event.id);
       this.router.navigate(['dashboard/event-update']);
+    }
+
+    reserve(event){
+      localStorage.setItem("reservation",event.id);
+      this.router.navigate(['dashboard/reservation']);
     }
   
 }
