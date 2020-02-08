@@ -50,8 +50,6 @@ export class ReservationComponent implements OnInit {
             let lz=leasedZone;
             let lzId;
             if(!lz.zone.matrix){
-              
-              
               self.ticketsService.getLeasedZoneReservedTickets(lz.id).subscribe(data=>{
                 capa=lz.zone.capacity-data.length;
                 lz.zone.capacity=capa;
@@ -68,6 +66,16 @@ export class ReservationComponent implements OnInit {
                 });
               });
 
+            }
+            else{
+              lzId=self.printLeasedZone(lz,maintenanceDiv);
+              self.ticketsService.getTickets(lz.id).subscribe(data3=>{
+                let tickets=data3;
+                tickets.forEach(function(ticket){
+                    self.ticketsAll.push(ticket);
+                })
+                self.printTickets(tickets,lzId,lz);
+              });
             }
           });
         });
