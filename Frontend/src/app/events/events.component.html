@@ -68,7 +68,7 @@
             <th>Location</th>
         </thead>
         <tbody>
-            <tr *ngFor="let event of events" >
+            <tr *ngFor="let event of activeEvents" >
                 <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
                 <td *ngIf="event.id">{{event.id}}</td>
                 <td *ngIf="event.name">{{event.name}}</td>
@@ -76,7 +76,6 @@
                 <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
             
                 <td><button id = "button" class="btn btn-primary" (click)="showDetails(event)">Show details</button><div class="divider"></div><button *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_USER'" id = "button" class="btn btn-primary" (click)="reserve(event)">Reserve</button></td>
-                
             </tr>
         </tbody> 
     </table>

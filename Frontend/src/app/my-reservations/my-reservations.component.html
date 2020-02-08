@@ -7,13 +7,15 @@
                 <th>Date of reservation</th>
             </thead>
             <tbody>
-                <tr *ngFor="let reservation of myReservations">
+                <tr *ngFor="let reservation of myReservations;let index;">
                     <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
                     <td>{{reservation.event.name}}</td>
                     <td>{{reservation.totalPrice}}</td>
                     <td>{{formatDate(reservation.dateOfReservation)}}</td>
                     <ngb-tab id="createEventTab" *ngIf="!reservation.paid">
-                    <td><button class="btn btn-primary" (click)="pay(reservation)" >Pay</button></td>
+                    <td><button class="btn btn-primary" (click)="pay(reservation)">Pay</button></td>
+                    <!-- <td><button ><div class="add_paypal" ></div></button></td> -->
+                    <!-- <td><div id="paypal-checkout-btn" (click)=setAmount(reservation.totalPrice)></div></td> -->
                     <td><button class="btn btn-danger" (click)="cancel(reservation)">Cancel</button></td>
                     <td><button class="btn btn-primary" (click)="showTickets(reservation)">Show tickets</button></td>
                 </ngb-tab> 
@@ -40,5 +42,4 @@
                 </div>
               
               </div>
-
 </div>

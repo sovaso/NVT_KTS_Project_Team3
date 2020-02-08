@@ -39,8 +39,8 @@ public class LocationZoneRepositoryIntegrationTest {
 	@Test
 	public void getActiveMaintenance_successfull() {
 		ArrayList<Maintenance> maintenances =  locationZoneRepository.getActiveMaintenances(1L);
-		assertEquals(1, maintenances.size());
-		assertEquals(1, maintenances.get(0).getId());
+		assertEquals(2, maintenances.size());
+		
 	}
 	
 	@Test

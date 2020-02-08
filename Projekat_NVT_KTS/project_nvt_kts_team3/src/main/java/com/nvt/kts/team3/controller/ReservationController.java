@@ -83,9 +83,9 @@ public class ReservationController {
 
 	}
 
-	@PutMapping(value = "/payReservation/{reservationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "/payReservation", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public ResponseEntity<MessageDTO> payReservation(@PathVariable long reservationId) {
+	public ResponseEntity<MessageDTO> payReservation(@RequestBody long reservationId) {
 		boolean value = this.reservationService.payReservation(reservationId);
 		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
 
