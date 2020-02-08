@@ -112,7 +112,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createReservation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Event Not Found", messageDto.getMessage());
 		assertEquals("Event with this ID does not exist.", messageDto.getHeader());
 		
@@ -137,7 +137,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createReservation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Event not active", messageDto.getMessage());
 		assertEquals("Event with this ID is no more active.", messageDto.getHeader());	
 		
@@ -163,7 +163,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createReservation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Too many tickets reserved", messageDto.getMessage());
 		assertEquals("Cannot reserve more than 10 tickets for one event.", messageDto.getHeader());	
 		
@@ -189,7 +189,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/createReservation", HttpMethod.POST,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Reservation cannot be created", messageDto.getMessage());
 		assertEquals("None of the tickets you chose is available.", messageDto.getHeader());	
 		
@@ -205,7 +205,7 @@ public class ReservationControllerIntegrationTest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation/3", HttpMethod.PUT,
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation2/3", HttpMethod.PUT,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -223,10 +223,10 @@ public class ReservationControllerIntegrationTest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation/100", HttpMethod.PUT,
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation2/100", HttpMethod.PUT,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Reservation Not Found", messageDto.getMessage());
 		assertEquals("Reservation with this ID does not exist.", messageDto.getHeader());	
 	}
@@ -242,10 +242,10 @@ public class ReservationControllerIntegrationTest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation/1", HttpMethod.PUT,
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation2/1", HttpMethod.PUT,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Not user reservation", messageDto.getMessage());
 		assertEquals("Reservation does not belong to logged user.", messageDto.getHeader());	
 	}
@@ -260,10 +260,10 @@ public class ReservationControllerIntegrationTest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation/2", HttpMethod.PUT,
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation2/2", HttpMethod.PUT,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Reservation is already paid", messageDto.getMessage());
 		assertEquals("Reservation is already paid.", messageDto.getHeader());	
 	}
@@ -278,10 +278,10 @@ public class ReservationControllerIntegrationTest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation/8", HttpMethod.PUT,
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation2/8", HttpMethod.PUT,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Event not active", messageDto.getMessage());
 		assertEquals("Event with this ID is no more active.", messageDto.getHeader());	
 	}
@@ -296,10 +296,10 @@ public class ReservationControllerIntegrationTest {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(headers);
-		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation/6", HttpMethod.PUT,
+		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/payReservation2/6", HttpMethod.PUT,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Reservation expired", messageDto.getMessage());
 		assertEquals("All the reserved tickets expired.", messageDto.getHeader());	
 	}
@@ -337,7 +337,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteReservation/2", HttpMethod.DELETE,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Reservation is already paid", messageDto.getMessage());
 		assertEquals("Reservation is already paid.", messageDto.getHeader());		
 	}
@@ -355,7 +355,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteReservation/1", HttpMethod.DELETE,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Not user reservation", messageDto.getMessage());
 		assertEquals("Reservation does not belong to logged user.", messageDto.getHeader());	
 	}
@@ -373,7 +373,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/deleteReservation/6", HttpMethod.DELETE,
 				httpEntity, MessageDTO.class);
 		MessageDTO messageDto = responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Reservation cannot be cancelled", messageDto.getMessage());
 		assertEquals("Some tickets in reservation could have expired.", messageDto.getHeader());
 		
@@ -519,7 +519,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/getLocationReservations/100", HttpMethod.GET,
 				httpEntity,MessageDTO.class);
 		MessageDTO messageDto=responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Location Not Found", messageDto.getMessage());
 		assertEquals("Choosen location does not exist or is not active.", messageDto.getHeader());
 		
@@ -554,7 +554,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/cancelTicket/100", HttpMethod.PUT,
 				httpEntity,MessageDTO.class);
 		MessageDTO messageDto=responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Ticket not found", messageDto.getMessage());
 		assertEquals("Ticket with this ID does not exist.", messageDto.getHeader());
 	}
@@ -588,7 +588,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/cancelTicket/2", HttpMethod.PUT,
 				httpEntity,MessageDTO.class);
 		MessageDTO messageDto=responseEntity.getBody();
-		assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Not user reservation", messageDto.getMessage());
 		assertEquals("Reservation does not belong to logged user.", messageDto.getHeader());
 	}
@@ -605,7 +605,7 @@ public class ReservationControllerIntegrationTest {
 		ResponseEntity<MessageDTO> responseEntity = testRestTemplate.exchange("/api/cancelTicket/21", HttpMethod.PUT,
 				httpEntity,MessageDTO.class);
 		MessageDTO messageDto=responseEntity.getBody();
-		assertEquals(HttpStatus.NOT_ACCEPTABLE, responseEntity.getStatusCode());
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 		assertEquals("Ticket has expired", messageDto.getMessage());
 		assertEquals("Unable to cancel ticket it has expired.", messageDto.getHeader());
 	}
