@@ -61,44 +61,44 @@ public class TicketController {
     }
 	
 	@GetMapping(value = "/getEventTickets/{eventId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getEventTickets(@PathVariable long eventId) {
 		List<Ticket> tickets=ticketService.getEventTickets(eventId);
 		return new ResponseEntity<>(tickets, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getEventReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getEventReservedTickets(@PathVariable(value = "id") Long eventId) {
 		return new ResponseEntity<>(ticketService.getEventReservedTickets(eventId), HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/getEventSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getEventSoldTickets(@PathVariable(value = "id") Long eventId) {
 		return new ResponseEntity<>(ticketService.getEventSoldTickets(eventId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenanceTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getMaintenanceTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getMaintenanceTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenanceReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getMaintenanceReservedTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getMaintenanceReservedTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getMaintenanceSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getMaintenanceSoldTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getMaintenanceSoldTickets(maintenanceId), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getLeasedZoneSoldTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN','ROLE_USER')")
 	public ResponseEntity<List<Ticket>> getLeasedZoneSoldTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getLeasedZoneSoldTickets(maintenanceId), HttpStatus.OK);
 	}
@@ -115,7 +115,7 @@ public class TicketController {
 	}
 	
 	@DeleteMapping(value="/deleteByZoneId/{id}",produces=MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Ticket>> deleteByZoneId(@PathVariable(value = "id") Long zoneId){
 		return new ResponseEntity<>(ticketService.deleteByZoneId(zoneId), HttpStatus.OK);
 	}
