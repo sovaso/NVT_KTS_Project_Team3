@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,AfterViewChecked } from '@angular/core';
 import { Reservation } from '../model/reservation.model';
 import {ReservationsService} from '../services/reservations/reservations.service';
 import { CurrentUser } from '../model/currentUser';
@@ -8,21 +8,38 @@ import {TicketsService} from '../services/tickets/tickets.service';
 import { NgbModal,NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import {AlertBoxComponent} from '../alert-box/alert-box.component';
 import { Router } from '@angular/router';
+
+
+declare let paypal: any;
+
 @Component({
   selector: 'app-my-reservations',
   templateUrl: './my-reservations.component.html',
   styleUrls: ['./my-reservations.component.css']
 })
-export class MyReservationsComponent implements OnInit {
+
+
+
+
+
+export class MyReservationsComponent implements OnInit{
 
   myReservations: Reservation[]=[];
   myTickets: Ticket[]=[];
   loggedUser: CurrentUser;
   dateOfRes: string;
+  addScript: boolean = false;
+  paypalLoad: boolean = true;
+  
+  finalAmount: number = 1;
+  reservationId: string='';
 
-  constructor(private reservationsService: ReservationsService,public datepipe: DatePipe,private ticketsService: TicketsService,private modalService: NgbModal,private router:Router) { }
+  constructor(private reservationsService: ReservationsService,public datepipe: DatePipe,private ticketsService: TicketsService,private modalService: NgbModal,private router:Router) { 
+  }
+
 
   ngOnInit() {
+    let self=this;
     var model=document.getElementById("myModal");
     model.style.display="none";
     this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -31,6 +48,93 @@ export class MyReservationsComponent implements OnInit {
       });
   }
 
+  
+
+  paypalConfig = {
+    env: 'sandbox',
+    client: {
+      sandbox: 'AQhPuCAwEEOLPE1EGRJPKQIZxv4-xsSx0AvcM7tLX1x1chXe3jXPXCZJ7F_gIK09W_DK3Sy3iNdRj3f6'
+    },
+    commit: true,
+    payment: (data, actions) => {
+      return actions.payment.create({
+        payment: {
+          transactions: [
+            { amount: { total: this.finalAmount, currency: 'USD' } }
+          ]
+        }
+      });
+    },
+    onAuthorize: (data, actions) => {
+      return actions.payment.execute().then((payment) => {
+        this.reservationsService.payReservation(this.reservationId).subscribe(data=>{
+          const modalRef = this.modalService.open(AlertBoxComponent);
+          modalRef.componentInstance.message=data.message+"\n\n"+data.header;
+          window.location.reload();
+        })
+      })
+    }
+  };
+
+  // setAmount(num){
+  //   this.finalAmount=num;
+  // }
+
+  // ngAfterViewChecked(): void{
+  //     let self=this;
+  //     if (!this.addScript) {
+  //       this.addPaypalScript().then(() => {
+
+  //         var x = document.getElementsByClassName("add_paypal");
+  //         var i;
+  //         for (i = 0; i < x.length; i++) {
+  //             paypal.Button.render(this.paypalConfig,x[i]);
+  //         }
+  //         this.paypalLoad = false;
+  //       }) 
+  //     }
+  //   }
+
+  // addAmount(amount):void{
+  //   console.log("Amount: ",amount);
+
+
+  // }
+
+  pay(reservation){
+    let self=this;
+    self.reservationId=reservation.id;
+    self.finalAmount=reservation.totalPrice;
+    let modal=document.getElementById("modall");
+    var model=document.getElementById("myModal");
+    model.style.display="block";
+    modal.innerHTML="";
+    var div=document.createElement(div);
+    div.id="paypal_element"
+    modal.append(div);
+      if (!self.addScript) {
+        self.addPaypalScript().then(() => {
+              paypal.Button.render(this.paypalConfig,'#paypal_element');
+              this.paypalLoad = false;
+        });
+        
+      }
+
+  }
+  
+  addPaypalScript() {
+    this.addScript = true;
+    return new Promise((resolve, reject) => {
+      let scripttagElement = document.createElement('script');
+
+      scripttagElement.src = 'https://www.paypalobjects.com/api/checkout.js';
+      scripttagElement.onload = resolve;
+      document.body.appendChild(scripttagElement);
+    })
+  }
+ 
+  
+  
   formatDate(date:Date){
     var d=this.datepipe.transform(date, 'yyyy-MM-dd HH:mm');
     return d;
