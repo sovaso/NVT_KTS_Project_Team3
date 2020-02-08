@@ -12,7 +12,7 @@
         <br/>
         <p>Name of event</p>
         <label for="name" class="sr-only">Name of event:</label>
-        <input type="text" id="name" class="form-control" name="name" [(ngModel)]="event.name" placeholder="Name" (change)="checkEventName()" required autofocus>
+        <input type="text" id="name" class="form-control" name="name" [(ngModel)]="event.name" placeholder="Name" required autofocus>
         <div class="errorMessage"><p id="error_message_basics"></p></div>
         <br/>
         <p>Type of event</p>
@@ -24,17 +24,56 @@
         </select>
         <br/>
         <p>Location of event</p>
-        <select id="location_selector" class="form-control" [(ngModel)]="event.locationInfo.id" (click)="refreshLocation(event.locationInfo.id)" placeholder="Locations" required autofocus></select>
-        <div class="errorMessage"><p id="error_message_location_info"></p></div>
+        <select id="location_selector" class="form-control" [(ngModel)]="location.id" (change)="changeLocation(location.id)" placeholder="Locations" *ngIf="locations.length>0" required autofocus>
+            <option *ngFor="let location of locations" value="{{location.id}}">{{location.name}} {{location.address}}</option>
+
+        </select>
+        <br/>
+        <button class="btn btn-primary" (click)="updateEvent()" > Update event </button>
+        <br/>
+        <div class="errorMessage"><p id="errorEvent"></p></div>
     </div>
     <div class="block_container">
         <h2 class="form-signin-heading">Event dates</h2>
         <br/>
         <p>Define date and time of event days, select location zones you want to lease for each day and define the ticket price per zone.</p>
-        <button class="btn btn-primary" style="margin-left:80%; width: 20%;" (click)="addNewDay()">New day</button>
-        <div id="addedDays"></div>
+        <div *ngIf="maintenances.length>0">
+        <div class="day_display" *ngFor="let maintenace of maintenances" >
+            <p>Start date:</p>
+            <input type="datetime-local" class="form-control" id={{maintenace.id}}start (change)="updateMaintenance(maintenace.id)" value="{{format_date(maintenace.maintenanceDate)}}"/>
+            <p>End date:</p>
+            <input type="datetime-local" class="form-control" id={{maintenace.id}}end (change)="updateMaintenance(maintenace.id)" value="{{format_date(maintenace.maintenanceEndTime)}}"/>
+            <br/>
+            <div id="zones" >
+                <div >
+                    <table class="zebra_table">
+                        <thead>
+                            <tr>
+                                <td><b>Zone name</b></td>
+                                <td><b>Ticket price</b></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let zone of leasedZones"> 
+                                <td *ngIf="zone.maintenance.id===maintenace.id">{{zone.zone.name}}</td>
+                                <td *ngIf="zone.maintenance.id===maintenace.id"><input type="number" value={{zone.seatPrice}} id={{zone.zone.id}},{{maintenace.id}} style="width: 80px;"/></td>
+                                <td *ngIf="zone.maintenance.id===maintenace.id"><button class="btn btn-primary" (click)="updateZone(zone.zone.id,maintenace.id)" style="width: 80px;">Update</button></td>
+                                <td *ngIf="zone.maintenance.id===maintenace.id"><button class="btn btn-danger" (click)="removeZone(zone.id,maintenace.id)" style="width: 80px;">Remove</button></td>
+                            </tr>
+                            <tr *ngFor="let locationZone of locationZones"> 
+                                <td *ngIf="locationZoneAdded(locationZone, maintenace.id) === false">{{locationZone.name}}</td>
+                                <td *ngIf="locationZoneAdded(locationZone, maintenace.id) === false"><input type="number" id={{locationZone.id}},{{maintenace.id}} style="width: 80px;"/></td>
+                                <td *ngIf="locationZoneAdded(locationZone, maintenace.id) === false"><button class="btn btn-primary" (click)="addZone(locationZone.id, maintenace.id)" style="width: 80px;"> Add </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p id={{maintenace.id}}error_message></p>
+            </div>
+        </div>
         <br/>
-        <div class="errorMessage"><p id="maintenance_error"></p></div>
         <br/>
+    </div>
     </div>
 </div>

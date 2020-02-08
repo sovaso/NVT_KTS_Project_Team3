@@ -35,7 +35,6 @@ const routes: Routes = [
       { path: 'events', component: EventsComponent },
       { path: 'locations', component: LocationsComponent},
       { path: 'myReservations', component: MyReservationsComponent},
-      { path : 'reports' , component : ReportsComponent},
       { path : 'addNewAdmin', component : RegisterUserComponent},
       { path: 'create-event', component: EventCreateComponent },
       { path: 'event-update', component: EventUpdateComponent },

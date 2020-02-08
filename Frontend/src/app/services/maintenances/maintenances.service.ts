@@ -34,4 +34,8 @@ export class MaintenancesService {
   checkEventDates(maintenanceDTO: MaintenanceDto, eventId: String): Observable<MessageDto> {
     return this.http.post<MessageDto>(`/api/checkMaintenanceDate/${eventId}`,maintenanceDTO);
   }
+
+  updateMaintenance(maintenanceDTO: MaintenanceDto): Observable<any> {
+    return this.http.post<any>(`/api/updateMaintenance`,maintenanceDTO);
+  }
 }

@@ -44,16 +44,15 @@ public class LeasedZoneController {
 	
 	@PostMapping(value = "/createLeasedZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<MessageDTO> createLeasedZone(@RequestBody LeasedZoneDTO lz){
-		leasedZoneService.save(lz);
-		return new ResponseEntity<>(new MessageDTO("Success", "Leased zone successfully added."), HttpStatus.CREATED);
+	public ResponseEntity<LeasedZone> createLeasedZone(@RequestBody LeasedZoneDTO lz){
+		return new ResponseEntity<>(leasedZoneService.save(lz), HttpStatus.CREATED);
 	}
 	
 	@PostMapping(value = "/updateLeasedZone", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<MessageDTO> updateLeasedZone(@RequestBody LeasedZoneDTO lz){
+	public ResponseEntity<LeasedZone> updateLeasedZone(@RequestBody LeasedZoneDTO lz){
 		leasedZoneService.update(lz);
-		return new ResponseEntity<>(new MessageDTO("Success", "Leased zone successfully updated."), HttpStatus.OK);
+		return new ResponseEntity<>(leasedZoneService.update(lz), HttpStatus.OK);
 	}
 	
 	@GetMapping(value = "/getLeasedZone/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
