@@ -50,9 +50,8 @@ public class MaintenanceController {
 	
 	@PostMapping(value = "/updateMaintenance", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public ResponseEntity<MessageDTO> updateMaintenance(@RequestBody MaintenanceDTO maintenanceDTO) throws ParseException{
-		maintenanceService.updateMaintenance(maintenanceDTO);
-		return new ResponseEntity<>(new MessageDTO("Success", "Maintenance successfully updated."), HttpStatus.OK);
+	public ResponseEntity<Maintenance> updateMaintenance(@RequestBody MaintenanceDTO maintenanceDTO) throws ParseException{
+		return new ResponseEntity<>(maintenanceService.updateMaintenance(maintenanceDTO), HttpStatus.OK);
 	}
 	
 	@DeleteMapping(value = "/deleteMaintenance/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

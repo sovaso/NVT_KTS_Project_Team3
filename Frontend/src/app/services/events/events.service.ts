@@ -38,7 +38,7 @@ export class EventsService {
   }
 
   update = (event: EventDto): Observable<MessageDto> =>
-  this.http.put<MessageDto>(`/api/updateEvent`, event);
+  this.http.post<MessageDto>(`/api/updateEvent`, event);
 
   delete = (id: string): Observable<MessageDto> =>{
   

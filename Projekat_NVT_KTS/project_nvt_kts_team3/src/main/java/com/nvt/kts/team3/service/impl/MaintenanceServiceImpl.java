@@ -260,44 +260,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 				throw new LocationNotAvailable();
 			}
 		}
-		
-		if (maintenanceDTO.getLocationZones() == null || maintenanceDTO.getLocationZones().isEmpty()) {
-			throw new InvalidLocationZone();
-		}
-
-		leasedZoneService.deleteByMaintenanceId(maintenance.getId());//Oslobodile smo zone koje su bile zakupljena
-		ArrayList<Long> choosenZones = new ArrayList<Long>();
-		for (LeasedZoneDTO lz : maintenanceDTO.getLocationZones()) {
-			LocationZone locationZone = locationZoneService.findById(lz.getZoneId());
-
-			//Specificirala si zone koje hoces da zakupis i sad to sredjujes
-			if (locationZone == null || locationZone.getLocation().getId() != location.getId()) {
-				throw new LocationZoneNotAvailable();
-			}
-
-			if (choosenZones.contains(lz.getZoneId()) == false) {
-				if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
-					throw new InvalidPrice();
-				}
-				LeasedZone newZone = new LeasedZone(lz.getPrice(), locationZone, maintenance,
-						new HashSet<Ticket>());
-				choosenZones.add(lz.getZoneId());
-				if (locationZone.isMatrix()) {
-					for (int i = 1; i <= locationZone.getColNumber(); i++) {
-						for (int j = 1; j <= locationZone.getRowNumber(); j++) {
-							Ticket ticket = new Ticket(i, j, lz.getPrice(), false, null, newZone);
-							newZone.getTickets().add(ticket);
-						}
-					}
-				} else {
-					for (int i = 0; i < locationZone.getCapacity(); i++) {
-						Ticket ticket = new Ticket(0, 0, lz.getPrice(), false, null, newZone);
-						newZone.getTickets().add(ticket);
-					}
-				}
-				maintenance.getLeasedZones().add(newZone);
-			}
-		}
 		return maintenanceRepository.save(maintenance);
 	}
 

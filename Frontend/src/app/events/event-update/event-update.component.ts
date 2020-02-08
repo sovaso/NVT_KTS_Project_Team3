@@ -18,6 +18,10 @@ import { LeasedZoneUpdatableDto } from 'src/app/dto/leased_zone_updatable.dto';
 import { DatePipe } from '@angular/common';
 import { UploadFileDto } from 'src/app/dto/upload_file.dto';
 import { Media } from 'src/app/model/media.model';
+import { LocationsService } from 'src/app/services/locations/locations.service';
+import { Maintenance } from 'src/app/model/maintenance.model';
+import { Ticket } from 'src/app/model/ticket.model';
+import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 @Component({
   selector: 'app-event-update',
@@ -27,35 +31,25 @@ import { Media } from 'src/app/model/media.model';
 export class EventUpdateComponent implements OnInit {
   event : any;
   loggedUser: CurrentUser;
-  eventLocationId : string;
-  leasedZonesUpdatable : LeasedZoneUpdatableDto[] = [];
-  leasedZonesDto : LeasedZoneDto[] = [];
-  maintenancesDto : MaintenanceDto[] = [];
-  locations: Location[];
-  events: Event[];
-  locationId: string = "";
-  daysNum = 1;
-  errors: number = 0;
+  locationUpatable : boolean;
+
   picture:string;
-
-
   selectedFiles: FileList;
   currentFileUpload: File;
   strings: String[]=[];
-
-  noNameError: string = "Name and type of event are both required.";
-  nameExistsError: string = "Name of event already exists. Please choose another name.";
-  noLocationError: string = "Location of event is required.";
-  noLocationZoneError: string = "At least one of location zones must be selected.";
-  noPriceError: string = "Please define the price for selected location zones.";
-  invalidPriceError: string = "Defined price is not valid. Please insert a number between 1 and 10000.";
-  maintenanceError = "You have to add at least one event day.";
+  locations: Location[]=[];
+  maintenances: Maintenance[]=[];
+  leasedZones: LeasedZone[]=[];
+  location : Location;
+  locationZones : LocationZone[];
+  locationChanges: number = 0;
 
   constructor(private modalService: NgbModal, 
     public sharedService: SharedService,
     private eventsService: EventsService,
     private maintenancesService: MaintenancesService,
     private locationZonesService:LocationZonesService,
+    private locationService:LocationsService,
     private leasedZonesService:LeasedZonesService,
     private router: Router,
     public datepipe: DatePipe) { }
@@ -63,631 +57,32 @@ export class EventUpdateComponent implements OnInit {
   ngOnInit() {
     let eventId = JSON.parse(localStorage.getItem("eventForUpdate"));
     let self = this;
-    this.leasedZonesService.getEventLeasedZonesUpdatable(eventId).subscribe(leasedZones => {
-      self.leasedZonesUpdatable = leasedZones;
-    })
-    this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
-    this.sharedService.events.subscribe(events => (this.events = events));
-    
-    this.eventsService.getById(eventId).subscribe(data => {
+    self.locationService.getActive().subscribe(data=>{
+      self.locations=data;
+    });
+
+    self.eventsService.getById(eventId).subscribe(data => {
       self.event = data;
-      self.getMedia();
-      self.locationId = self.event.locationInfo.id;
-      this.sharedService.locations.subscribe(locations => {
-        self.locations = locations
-        var selector = document.getElementById("location_selector");
-        self.locations.forEach(function (location) {
-          if(location.status == true){
-            var option = document.createElement("option");
-            option.value = location.id;
-            option.innerText = location.name + ", " + location.address;
-            selector.append(option);
-          }
-        });
+      self.location = self.event.locationInfo;
+      self.locationZonesService.getLocationZones(self.location.id).subscribe(lzones => {
+        self.locationZones = lzones;
+      })
+      self.leasedZonesService.getEventLeasedZones(self.event.id).subscribe(leasedZones => {
+        self.leasedZones=leasedZones;
       });
-      self.maintenancesService.getByEventId(eventId).subscribe(maintenances=> {
-        maintenances.forEach(function(m){
-          let m__ = m;
-          var sd = self.datepipe.transform(m__.maintenanceDate, 'yyyy-MM-ddTHH:mm');
-          var ed = self.datepipe.transform(m__.maintenanceEndTime, 'yyyy-MM-ddTHH:mm');
-          let main : MaintenanceDto = {id: m__.id, startDate: sd, 
-            endDate:ed, eventId: self.event.id, locationZones:[]};
-            self.leasedZonesService.getMaintenanceLeasedZones(m__.id).subscribe(lesdZones=> {
-              lesdZones.forEach(function(lesdZone){
-                var liz : LeasedZoneDto = {id:lesdZone.id, zoneId:lesdZone.zone.id, maintenanceId:lesdZone.maintenance.id,price:lesdZone.seatPrice};
-                main.locationZones.push(liz);
-              })
-          })
-          self.maintenancesDto.push(main);
-        })
-        self.initMaintenances();
-        self.initLocationZones(self.event.locationInfo.id);
-      })
+      self.getMedia();
+
+      //self.locationService.locationUpdatable(self.event.locationInfo.id).subscribe(bol => {
+      //  self.locationUpatable = bol;
+      //})
+
+      self.maintenancesService.getByEventId(self.event.id).subscribe(maintenances => {
+        self.maintenances=maintenances;
+      });
     });
-    
-  }
 
-  refreshLocation(locationId){
-    let self = this;
-    this.maintenancesDto.forEach(function(ma){
-      if(ma.locationZones.length == 0){
-        let ma_ = ma;
-        self.leasedZonesDto.forEach(function(lz,index){
-          if(lz.maintenanceId == ma_.id){
-            self.leasedZonesDto.slice(1, index);
-          }
-        })
-      }
-    })
-    this.initLocationZones(locationId);
-    this.checkPrices();
-  }
-
-  initLocationZones(locationId){
-    let choosen = locationId;
-    this.locationId = locationId;
-    let self = this;
-    this.locationZonesService.getLocationZones(choosen).subscribe(locationZones => {
-      let _location_zones = locationZones;
-      self.maintenancesDto.forEach(function(mian){
-        if(choosen != ""){
-          document.querySelector('div#zoneDisplay'+mian.id).innerHTML = "";
-  
-          var div = document.getElementById("zoneDisplay"+mian.id);
-          var table = document.getElementById("zoneTable"+mian.id);
-          table.innerHTML = ""
-  
-          var p = document.createElement("p");
-          p.innerText = "Location zones:";
-          div.append(p);
-  
-          var th = document.createElement("tr");
-          
-          var td1 = document.createElement("td");
-          td1.style.width = "35%";
-          var b1 = document.createElement("b");
-          b1.innerText = "Zone name";
-          td1.append(b1);
-  
-          var td2 = document.createElement("td");
-          var b2 = document.createElement("b");
-          td2.style.width = "35%";
-          b2.innerText = "Capacity";
-          td2.append(b2);
-  
-          var td3 = document.createElement("td");
-          td3.style.width = "15%";
-          var b3 = document.createElement("b");
-          b3.innerText = "Price";
-          td3.append(b3);
-  
-          var td4 = document.createElement("td");
-          td4.style.width = "15%";
-  
-          th.append(td1);
-          th.append(td2);
-          th.append(td3);
-          th.append(td4);
-          table.append(th);
-        }
-        let printedZones = [];
-        if(mian.locationZones.length > 0){
-          mian.locationZones.forEach(function(lz){
-            let lzo = lz;
-            let upo = true;
-            self.leasedZonesUpdatable.forEach(function(upd){
-              if(upd.id == lzo.id){
-                upo = upd.updatable;
-              }
-            })
-            printedZones.push({zone_Id:lz.zoneId, price:lz.price, updatable:upo, id:lz.id});
-          })
-        }
-        let _m = mian;
-        _location_zones.forEach(function(locationZone){
-          let _lz = locationZone;
-          let price = 0;
-          let zoneId_ = _lz.id+"";
-          var table = document.getElementById("zoneTable"+_m.id);
-          var tr = document.createElement("tr");
-
-          var td1 = document.createElement("td");
-          td1.style.width = "35%";
-          td1.innerText = _lz.name;
-    
-          var td2 = document.createElement("td");
-          td2.style.width = "35%";
-          td2.innerText = _lz.capacity + "";
-          tr.append(td1);
-          tr.append(td2);
-
-          var td3 = document.createElement("td");
-          td3.style.width = "15%";
-          td3.id="td"+zoneId_+_m.id+"";
-
-          let updatable_ = 1;
-          let ls_id = "";
-          printedZones.forEach(function(added){
-            if(added.zone_Id == zoneId_){
-              price = added.price;
-              ls_id = added.id;
-              if(added.updatable == false){
-                updatable_ = 0;
-              }
-            }
-          })
-          if(price > 0 && updatable_ == 1){
-            var input = document.createElement("input");
-            input.type = "number";
-            input.name = zoneId_;
-            input.id = "input"+zoneId_+_m.id+"";
-            input.className = "price_input";
-            input.onchange = function(e){
-              self.initPrice(zoneId_,_m.id+"");
-            }
-            input.value = price+"";
-            input.style.width = '90%';
-            td3.append(input);
-            var zone : LeasedZoneDto = {id : ls_id, zoneId : locationZone.id, maintenanceId: _m.id, price : price};
-            self.leasedZonesDto.push(zone);
-            var td4 = document.createElement("td");
-            td4.style.width = "15%";
-            var checkbox = document.createElement("button");
-            checkbox.className = "btn btn-primary";
-            checkbox.innerText = "Unselect";
-            checkbox.name = zoneId_+_m.id+"";
-            checkbox.id = "checkbox"+zoneId_+_m.id+"";
-            checkbox.onclick = function(e){
-              self.selectZoneButton(zoneId_,_m.id);
-            }
-            checkbox.style.width = '90%';
-            td4.append(checkbox);
-            tr.append(td3);
-            tr.append(td4);
-            table.append(tr);
-        }
-        else if(price > 0 && updatable_ == 0){
-            var p8 = document.createElement("p");
-            p8.innerText = price+"";
-            p8.style.width = '90%';
-            var zone : LeasedZoneDto = {id : ls_id, zoneId : zoneId_, maintenanceId: _m.id, price : price};
-            self.leasedZonesDto.push(zone);
-            var td4 = document.createElement("td");
-            td4.style.width = "15%";
-            td3.append(p8);
-            tr.append(td3);
-            tr.append(td4);
-            table.append(tr);
-          }
-          else{
-            var td4 = document.createElement("td");
-            td4.style.width = "15%";
-            var checkbox = document.createElement("button");
-            checkbox.className = "btn btn-primary";
-            checkbox.innerText = "Select";
-            checkbox.name = zoneId_+_m.id+"";
-            checkbox.id = "checkbox"+zoneId_+_m.id+"";
-            checkbox.onclick = function(e){
-              self.selectZoneButton(zoneId_,_m.id);
-            }
-            checkbox.style.width = '90%';
-            td4.append(checkbox);
-            tr.append(td3);
-            tr.append(td4);
-            table.append(tr);
-          }
-        })
-      })
-    });
-  }
-
-  newLocationZones(locationId, nums_){
-    let choosen = locationId;
-    let self = this;
-    let nums = nums_;
-    if(choosen != ""){
-        document.querySelector('div#zoneDisplay'+nums).innerHTML = "";
-
-        var div = document.getElementById("zoneDisplay"+nums);
-        var table = document.getElementById("zoneTable"+nums);
-        table.innerHTML = ""
-
-        var br = document.createElement("br");
-
-        var p = document.createElement("p");
-        p.innerText = "Location zones:";
-        div.append(br);
-        div.append(p);
-
-        var th = document.createElement("tr");
-        
-        var td1 = document.createElement("td");
-        td1.style.width = "35%";
-        var b1 = document.createElement("b");
-        b1.innerText = "Zone name";
-        td1.append(b1);
-
-        var td2 = document.createElement("td");
-        var b2 = document.createElement("b");
-        td2.style.width = "35%";
-        b2.innerText = "Capacity";
-        td2.append(b2);
-
-        var td3 = document.createElement("td");
-        td3.style.width = "15%";
-        var b3 = document.createElement("b");
-        b3.innerText = "Price";
-        td3.append(b3);
-
-        var td4 = document.createElement("td");
-        td4.style.width = "15%";
-
-        th.append(td1);
-        th.append(td2);
-        th.append(td3);
-        th.append(td4);
-        table.append(th);
-
-        this.locationZonesService.getLocationZones(choosen).subscribe(locationZones => {
-          locationZones.forEach(function(locationZone){
-           var table = document.getElementById("zoneTable"+nums);
-           var tr = document.createElement("tr");
-         
-           var td1 = document.createElement("td");
-           td1.style.width = "35%";
-           td1.innerText = locationZone.name;
-    
-           var td2 = document.createElement("td");
-           td2.style.width = "35%";
-           td2.innerText = locationZone.capacity + "";
-    
-           var td3 = document.createElement("td");
-           td3.style.width = "15%";
-           td3.id="td"+locationZone.id+nums;
-    
-           var td4 = document.createElement("td");
-           td4.style.width = "15%";
-           var checkbox = document.createElement("button");
-           checkbox.className = "btn btn-primary";
-           checkbox.innerText = "Select";
-           checkbox.name = locationZone.id + nums;
-           checkbox.id = "checkbox"+locationZone.id + nums;
-           let zon = locationZone;
-           checkbox.onclick = function(e){
-            self.selectZoneButton(zon.id, nums);
-           }
-           checkbox.style.width = '90%';
-           td4.append(checkbox);
-    
-           tr.append(td1);
-           tr.append(td2);
-           tr.append(td3);
-           tr.append(td4);
-           table.append(tr);
-         });
-       });
-    }
-  }
-
-  selectZoneButton(zoneId, maintenanceId){
-    let self = this;
-    let _id = zoneId;
-    let __mid = maintenanceId;
-    let button = document.getElementById("checkbox"+zoneId +maintenanceId);
-    if(button.textContent == "Select"){
-      button.innerText = "Unselect";
-      let zone : LeasedZoneDto = {id : "", zoneId : _id, maintenanceId: maintenanceId, price : 0};
-      this.leasedZonesDto.push(zone)
-      var priceInput = document.getElementById("td"+_id+__mid);
-      var input = document.createElement("input");
-      input.type = "number";
-      input.name = _id +__mid+"";
-      input.id = "input"+_id +__mid;
-      input.className = "price_input";
-      input.onchange = function(e){
-        self.initPrice(_id, __mid);
-      }
-      input.style.width = '90%';
-      priceInput.append(input);
-    }
-
-    else{
-      button.innerText = "Select";
-      var priceInput = document.getElementById("td"+_id+__mid);
-      priceInput.innerHTML = "";
-      self.leasedZonesDto.forEach(function(data, index){
-        if(data.zoneId == _id && data.maintenanceId == maintenanceId){
-          self.leasedZonesDto.splice(index,1);
-        }
-      })
-    }
-  }
-
-  initPrice(id, mid){
-    let self = this;
-    let _mid = mid;
-    let _id = id;
-    self.leasedZonesDto.forEach(function(data){
-      if(data.zoneId == _id && data.maintenanceId == _mid){
-        var input = <HTMLInputElement> document.getElementById("input"+_id+_mid);
-        data.price = parseInt(input.value);
-        //UPDATE
-      }
-    });
-    this.checkPrices();
-  }
-
-  checkPrices(){
-    let self = this;
-    let error_indexes = [];
-    let all_indexes = [];
-    self.leasedZonesDto.forEach(function(lz){
-      if(lz.price < 1 || lz.price > 10000){
-        error_indexes.push(lz.maintenanceId);
-        all_indexes.push(lz.maintenanceId);
-      }
-      else{
-        all_indexes.push(lz.maintenanceId);
-      }
-    })
-    all_indexes.forEach(function(index){
-      console.log("error_zones"+index);
-      var error = document.getElementById("error_zones"+index);
-      if(error_indexes.indexOf(index) > -1){
-        error.innerText = self.invalidPriceError;
-      }
-      else{
-        error.innerText = "";
-      }
-    })
-    if(error_indexes.length > 0){
-      return 1;
-    }
-    else{
-      return 0;
-    }
-  }
-
-  initMaintenances(){
-    let self = this;
-    self.maintenancesDto.forEach(function(m){
-      let mid = m.id+"";
-      var mainDiv = document.getElementById("addedDays");
-      var div = document.createElement("div");
-      div.className = "day_display";
-      div.style.borderStyle = "ridge";
-      div.style.padding = "5%";
-      div.id = "day" +mid;
-
-      var close = document.createElement("button");
-      close.className = "x";
-      close.innerText = "X";
-      close.style.background = "red";
-      close.style.color = "white";
-      close.style.marginLeft = "95%";
-      close.style.marginTop = "0%";
-      close.style.width = "10%";
-      close.onclick = function(e){
-        self.removeDay(mid);
-      }
-      div.append(close);
-
-      var p1 = document.createElement("p");
-      p1.innerText = "Start date and time:";
-      div.append(p1);
-
-      var input1 = document.createElement("input");
-      input1.type = "datetime-local";
-      input1.id = "start"+mid;
-      input1.className = "form-control";
-      input1.name = "date_of_event";
-      input1.value = m.startDate;
-      input1.onblur = function(){
-        self.checkDate(mid);
-      }
-      div.append(input1);
-
-      var br = document.createElement("br");
-      div.append(br);
-
-      var p2 = document.createElement("p");
-      p2.innerText = "End date and time:";
-      div.append(p2);
-
-      var input2 = document.createElement("input");
-      input2.type = "datetime-local";
-      input2.id = "end"+mid;
-      input2.className = "form-control";
-      input2.name = "date_of_event";
-      input2.value = m.endDate;
-      input2.onblur = function(){
-        self.checkDate(mid);
-      }
-
-      div.append(input2);
-
-      var erorDiv = document.createElement("div");
-      erorDiv.style.color = "red";
-      erorDiv.id = "error_day"+mid;
-      div.append(erorDiv);
-
-      var divZone = document.createElement("div");
-      divZone.id = "zoneDisplay"+mid;
-      div.append(divZone);
-
-      var tableZone = document.createElement("table");
-      tableZone.id = "zoneTable"+mid;
-      tableZone.style.width = "100%";
-      tableZone.style.border = "1px solid";
-      div.append(tableZone);
-
-      var erorDivZ = document.createElement("div");
-      erorDivZ.style.color = "red";
-      erorDivZ.id = "error_zones"+mid;
-      div.append(erorDivZ);
-
-      mainDiv.appendChild(div);
-      })
-  }
-
-  addNewDay(){
-    this.daysNum +=1;
-    let nums = this.daysNum+0;
-    var mainDiv = document.getElementById("addedDays");
-    var div = document.createElement("div");
-    div.className = "day_display";
-    div.style.borderStyle = "ridge";
-    div.style.padding = "5%";
-    div.id = "day" + this.daysNum;
-
-    var close = document.createElement("button");
-    close.className = "x";
-    close.innerText = "X";
-    close.style.background = "red";
-    close.style.color = "white";
-    close.style.marginLeft = "95%";
-    close.style.marginTop = "0%";
-    close.style.width = "10%";
-    let self = this;
-    close.onclick = function(e){
-      self.removeDay(nums);
-    }
-    div.append(close);
-
-    var p1 = document.createElement("p");
-    p1.innerText = "Start date and time:";
-    div.append(p1);
-
-    var input1 = document.createElement("input");
-    input1.type = "datetime-local";
-    input1.id = "start"+nums;
-    input1.className = "form-control";
-    input1.name = "date_of_event";
-    input1.onblur = function(){
-      self.checkDate(nums);
-    }
-    div.append(input1);
-
-    var br = document.createElement("br");
-    div.append(br);
-
-    var p2 = document.createElement("p");
-    p2.innerText = "End date and time:";
-    div.append(p2);
-
-    var input2 = document.createElement("input");
-    input2.type = "datetime-local";
-    input2.id = "end"+nums;
-    input2.className = "form-control";
-    input2.name = "date_of_event";
-    input2.onblur = function(){
-      self.checkDate(nums);
-    }
-
-    div.append(input2);
-
-    var erorDiv = document.createElement("div");
-    erorDiv.style.color = "red";
-    erorDiv.id = "error_day"+nums;
-    div.append(erorDiv);
-
-    var divZone = document.createElement("div");
-    divZone.id = "zoneDisplay"+nums;
-    div.append(divZone);
-
-    var tableZone = document.createElement("table");
-    tableZone.id = "zoneTable"+nums;
-    tableZone.style.width = "100%";
-    tableZone.style.border = "1px solid";
-    div.append(tableZone);
-
-    var erorDivZ = document.createElement("div");
-    erorDivZ.style.color = "red";
-    erorDivZ.id = "error_zones"+nums;
-    erorDivZ.className = "erZone";
-    div.append(erorDivZ);
-
-    mainDiv.appendChild(div);
-    var maintenance : MaintenanceDto = {id:nums+"", startDate:"", endDate:"",eventId:"-1", locationZones:[]};
-    self.maintenancesDto.push(maintenance);
-    self.newLocationZones(self.locationId, nums);
-  }
-
-  removeDay(id){
-    // DELETE
-    this.daysNum -=1;
-    console.log(id);
-    var element = document.getElementById("day"+id);
-    element.parentNode.removeChild(element);
-    let self = this;
-    let _id = id;
-    self.maintenancesDto.forEach(function(data, index){
-      if(data.id == _id){
-        self.maintenancesDto.splice(index,1);
-      }
-    });
-    self.leasedZonesDto.forEach(function(loc, indx){
-      if(loc.maintenanceId == _id){
-        self.leasedZonesDto.splice(indx,1);
-      }
-    })
-  }
-
-  checkAllDates(){
-    let self = this;
-    let retval_ = 0;
-    if(self.maintenancesDto.length == 0){
-      retval_ = 1;
-      var element = document.getElementById("maintenance_error");
-      element.innerText = self.maintenanceError;
-    }
-    else{
-      var element = document.getElementById("maintenance_error");
-      element.innerText = "";
-    }
-    self.maintenancesDto.forEach(function(data){
-      if(data.eventId == "-1"){
-        retval_ = 1;
-      }
-    });
-    return retval_;
-  }
-
-  checkDate(id){
-    let self = this;
-    this.errors = 0;
-    var start: string = (<HTMLInputElement> document.getElementById("start"+id)).value;
-    start = start.replace("T", " ");
-    var end: string = (<HTMLInputElement> document.getElementById("end"+id)).value;
-    end = end.replace("T", " ");
-    let _id = id;
-
-    if(start != "" && end != ""){
-      let locationId = this.event.locationInfo.id;
-      let maintenance: MaintenanceDto = {startDate: start, endDate:end, id:locationId, eventId:_id, locationZones:[]}; 
-      this.maintenancesService.checkEventDates(maintenance,self.event.id).subscribe(data => {
-        if(data.message != "OK"){
-          var error = document.getElementById("error_day"+_id);
-          error.innerText = data.header;
-          self.errors = 1;
-          maintenance.eventId = "-1";
-        }
-        else{
-          var error = document.getElementById("error_day"+_id);
-          error.innerText = "";
-          maintenance.eventId = "1";
-        }
-    });
-    self.maintenancesDto.forEach(function(data,index){
-      if(data.id == _id){
-        self.maintenancesDto.splice(index,1);
-      }
-    });
-    let maintenance2: MaintenanceDto = {startDate: start, endDate:end, id:_id, eventId:maintenance.eventId, locationZones:[]}; 
-    self.maintenancesDto.push(maintenance2);
-    var element = document.getElementById("maintenance_error");
-    element.innerText = "";
-  }
+    this.loggedUser = JSON.parse(localStorage.getItem("currentUser"));
+    //this.sharedService.events.subscribe(events => (this.events = events));
   }
 
   selectFile(event) {
@@ -707,28 +102,265 @@ export class EventUpdateComponent implements OnInit {
   }
 
   getMedia(){
-    document.getElementById('media_container1').removeChild;
+    document.getElementById('media_container1').innerHTML = "";
     this.eventsService.getAllMedia(this.event.id).subscribe(data => {
-      console.log("VELICINA: ",data.length)
       let div= document.getElementById('media_container1');
       data.forEach(function (media) {
         var element=document.createElement("img");
         let el=media.link.split("/");
         let fixedLink=el[0]+"//"+el[2]+"/"+"uc?export=view&id="+el[5];
         element.src=fixedLink;
-        element.className="div_media";
+        element.style.height = "200px";
+        element.style.display = "inline-block";
+        element.style.padding = "10px";
         div.append(element);
       });
     });
   }
 
-  // upload(){
-  //   let self = this;
-  //   console.log(self.picture);
-  //   var upload : UploadFileDto = {pathToFile: self.picture}; 
-  //   this.eventsService.uploadFile(upload, this.event.id).subscribe(links=> {
-  //     console.log(links);
-  //   });
-  // }
+  format_date(date:Date){
+    var d=this.datepipe.transform(date, 'yyyy-MM-ddTHH:mm');
+    return d;
+  }
+
+  format_dateDto(date:Date){
+    var d=this.datepipe.transform(date, 'yyyy-MM-dd HH:mm');
+    return d;
+  }
+
+  locationZoneAdded(lozationZone,maintenanceId){
+    let self = this;
+    let locZone : LocationZone = lozationZone;
+    let mid = maintenanceId;
+    let retval:boolean = false;
+    self.leasedZones.forEach(function(lz){
+      if(lz.zone.id == locZone.id && lz.maintenance.id == mid){
+        retval = true;
+      }
+    })
+    return retval;
+  }
+
+  addZone(zoneId, maintenaceId){
+    let self = this;
+    let lzId = zoneId;
+    let mId = maintenaceId;
+
+    var input = (<HTMLInputElement>document.getElementById(zoneId+","+maintenaceId));
+    var price_ = input.value;
+
+    if(price_ == "" || typeof price_ === "undefined"){
+      return;
+    }
+    let price = +input.value;;
+
+    let dto : LeasedZoneDto = {id:"",zoneId:lzId,maintenanceId:mId,price:+price};
+    self.leasedZonesService.createLeasedZone(dto).subscribe(data => {
+      if(self.locationChanges == 0){
+          if(typeof data.message === 'undefined'){
+            self.leasedZones.push(data);
+            var error = document.getElementById(mId+"error_message");
+            error.innerText = "Location zone successfully added!";
+            error.style.color="green";
+          }
+          else{
+            var error = document.getElementById(mId+"error_message");
+            error.innerText = data.header;
+            error.style.color="red";
+          }
+      }
+      else{
+        if(price < 1 || price > 10000){
+          var error = document.getElementById(mId+"error_message");
+            error.innerText = "Invalid ticket price. Please set a number between 1 and 10000.";
+            error.style.color="red";
+        }
+        else{
+          let locationZone : LocationZone;
+          let maintenance : Maintenance;
+          self.locationZones.forEach(function(locz){
+            if(locz.id == lzId){
+              locationZone = locz;
+            }
+          })
+          self.maintenances.forEach(function(mm){
+            if(mm.id == mId){
+              maintenance = mm;
+            }
+          })
+          var newLeasedZone : LeasedZone = {id:"",seatPrice:price,zone:locationZone, maintenance:maintenance, tickets:new Set<Ticket>()};
+          self.leasedZones.push(newLeasedZone);
+        }
+      }
+    })
+  }
+
+  removeZone(zoneId, maintenaceId){
+    let self = this;
+    let lzId = zoneId;
+    let mid = maintenaceId;
+
+    if(self.locationChanges == 0){
+      self.leasedZonesService.removeLeasedZone(lzId).subscribe(data => {
+        if(data.message == 'Success'){
+          self.leasedZones.forEach(function(lz, index){
+            if(lz.id == lzId){
+              self.leasedZones.splice(index,1);
+            }
+          })
+          var error = document.getElementById(mid+"error_message");
+          error.innerText = data.header;
+          error.style.color="green";
+        }
+        else{
+          var error = document.getElementById(mid+"error_message");
+          error.innerText = data.header;
+          error.style.color="red";
+        }
+      })
+    }
+    else{
+      self.leasedZones.forEach(function(lz,index){
+        if(lz.zone.id == lzId && lz.maintenance.id == mid){
+          self.leasedZones.splice(index,1);
+        }
+      })
+    }
+  }
+
+  updateZone(zoneId,maintenaceId){
+    let self = this;
+    let lzId = zoneId;
+    let mid = maintenaceId;
+    var input = (<HTMLInputElement>document.getElementById(zoneId+","+maintenaceId));
+    let price = +input.value;
+    self.leasedZones.forEach(function(data, i){
+      let index = i;
+      if(data.zone.id == lzId && data.maintenance.id == mid){
+        let updatedLeasedZone = data;
+        if(self.locationChanges == 0){
+          var dto : LeasedZoneDto = {id:data.id,zoneId:data.zone.id,maintenanceId:data.maintenance.id,price:+price};
+          self.leasedZonesService.updateLeasedZone(dto).subscribe(data => {
+            if(typeof data.message === 'undefined'){
+              updatedLeasedZone = data;
+              var error = document.getElementById(mid+"error_message");
+              error.innerText = "Location zone successfully updated!";
+              error.style.color="green";
+            }
+            else{
+              var error = document.getElementById(mid+"error_message");
+              error.innerText = data.header;
+              error.style.color="red";
+            }
+          })
+        }
+        else{
+          if(price < 1 || price > 10000){
+            var error = document.getElementById(mid+"error_message");
+              error.innerText = "Invalid ticket price. Please set a number between 1 and 10000.";
+              error.style.color="red";
+          }
+          else{
+            self.leasedZones.forEach(function(oldz,inde){
+              if(oldz.zone.id == lzId && oldz.maintenance.id == mid){
+                self.leasedZones.splice(inde,1);
+              }
+            })
+            let locationZone : LocationZone;
+            let maintenance : Maintenance;
+            self.locationZones.forEach(function(locz){
+              if(locz.id == lzId){
+                locationZone = locz;
+              }
+            })
+            self.maintenances.forEach(function(mm){
+              if(mm.id == mid){
+                maintenance = mm;
+              }
+            })
+            var newLeasedZone : LeasedZone = {id:"",seatPrice:price,zone:locationZone, maintenance:maintenance, tickets:new Set<Ticket>()};
+            self.leasedZones.push(newLeasedZone);
+            }
+        }
+      }
+    })
+  }
+
+  changeLocation(locationId){
+    this.locationChanges++;
+    let self = this;
+    self.locationZonesService.getLocationZones(locationId).subscribe(locZones => {
+      self.locationZones=locZones;
+    });
+    self.locationService.getById(locationId).subscribe(loc => {
+      self.location = loc;
+    });
+    self.leasedZones = [];
+  }
+
+  updateMaintenance(maintenaceId){
+    let self = this;
+    let mid = maintenaceId;
+    let maintenance_ : Maintenance;
+    var start: string = (<HTMLInputElement> document.getElementById(maintenaceId+"start")).value;
+    start = start.replace("T", " ");
+    var end: string = (<HTMLInputElement> document.getElementById(maintenaceId+"end")).value;
+    end = end.replace("T", " ");
+
+    if(start != "" && end != ""){
+      let maintenance: MaintenanceDto = {startDate: start, endDate:end, id:mid, eventId:self.event.id, locationZones:[]}; 
+      this.maintenancesService.updateMaintenance(maintenance).subscribe(data => {
+      if(typeof data.message === "undefined"){
+        self.maintenances.forEach(function(m,i){
+          if(m.id == mid){
+            self.maintenances.splice(i,1);
+          }
+        })
+        var error = document.getElementById(mid+"error_message");
+        error.innerText = "";
+        self.maintenances.push(data);
+      }
+      else{
+        var error = document.getElementById(mid+"error_message");
+        error.style.color = "red";
+        error.innerText = data.header;
+      }
+    });
+    }
+  }
+
+  updateEvent(){
+      let self = this;
+      let maintenancesDto : MaintenanceDto[] = [];
+      self.maintenances.forEach(function(m){
+        let leasedZonesDTO : LeasedZoneDto[] = [];
+        let maintenance = m;
+        self.leasedZones.forEach(function(lz){
+          if(lz.maintenance.id == maintenance.id){
+            var locZone : LeasedZoneDto = {id:"",zoneId:lz.zone.id,maintenanceId:maintenance.id,price:lz.seatPrice}
+            leasedZonesDTO.push(locZone);
+          }
+        })
+        var mDto : MaintenanceDto = {id:maintenance.id, startDate:self.format_dateDto(m.maintenanceDate),
+          endDate:self.format_dateDto(m.maintenanceEndTime),locationZones:leasedZonesDTO,eventId:self.event.id};
+        maintenancesDto.push(mDto);
+      })
+
+      let eventDto : EventDto = {id:self.event.id, name:self.event.name,description:"",locationId:self.location.id,
+        maintenance:maintenancesDto,locationZones:[],eventType:self.event.type};
+      console.log("OVO JE");
+      console.log(eventDto);
+      self.eventsService.update(eventDto).subscribe(data => {
+        if(data.message != "Success"){
+          var error = document.getElementById("errorEvent");
+          error.style.color="red";
+          error.innerText = data.header;
+        }else{
+          var error = document.getElementById("errorEvent");
+          error.style.color="green";
+          error.innerText = data.header;
+        }
+      })
+  }
 
 }

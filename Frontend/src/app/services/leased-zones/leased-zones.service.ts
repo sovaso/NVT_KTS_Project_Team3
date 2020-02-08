@@ -27,4 +27,16 @@ export class LeasedZonesService {
     return this.http.get<LeasedZoneUpdatableDto[]>(`/api/getEventLeasedZonesDto/${eventId}`);
   }
 
+  updateLeasedZone(lz: LeasedZoneDto): Observable<any>{
+    return this.http.post<any>(`/api/updateLeasedZone`,lz);
+  }
+
+  createLeasedZone(lz: LeasedZoneDto): Observable<any>{
+    return this.http.post<any>(`/api/createLeasedZone`,lz);
+  }
+
+  removeLeasedZone(id: string): Observable<MessageDto>{
+    return this.http.delete<MessageDto>(`/api/deleteLeasedZone/${id}`);
+  }
+
 }

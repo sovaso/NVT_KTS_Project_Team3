@@ -25,7 +25,6 @@
                     <ng-template #elseblock>
                         <td>not active</td>
                     </ng-template> 
-                <td><button class="btn btn-primary" (click)="showDetails(location)">Show details</button></td>
                 <ngb-tab title="Create new" id="createLocationTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
                 <td><button class="btn btn-danger" (click)="deleteLocation(location)" >Delete</button></td>
                 <td><button class="btn btn-primary" (click)="updateLocation(location)">Edit</button></td>

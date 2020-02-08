@@ -66,6 +66,7 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 	@Override
 	//@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public LeasedZone save(LeasedZoneDTO lz) {
+		System.out.println("USAO SAM");
 		Maintenance maintenance = maintenanceService.findById(lz.getMaintenanceId());
 		if (maintenance == null) {
 			throw new MaintenanceNotFound();
@@ -129,26 +130,17 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 			throw new LeasedZoneNotChangeable();
 		}
 
-		ticketService.deleteByZoneId(newZone.getId());
-		newZone.setZone(locationZone);
 		if (lz.getPrice() < 1 || lz.getPrice() > 10000) {
 			throw new InvalidPrice();
 		}
-		newZone.setSeatPrice(lz.getPrice());
-
-		if (locationZone.isMatrix()) {
-			for (int i = 1; i <= locationZone.getColNumber(); i++) {
-				for (int j = 1; j <= locationZone.getRowNumber(); j++) {
-					Ticket ticket = new Ticket(i, j, lz.getPrice(), false, null, newZone);
-					newZone.getTickets().add(ticket);
-				}
-			}
-		} else {
-			for (int i = 0; i < locationZone.getCapacity(); i++) {
-				Ticket ticket = new Ticket(0, 0, lz.getPrice(), false, null, newZone);
-				newZone.getTickets().add(ticket);
-			}
+		else{
+			newZone.setSeatPrice(lz.getPrice());
 		}
+		
+		for(Ticket t : newZone.getTickets()){
+			t.setPrice(lz.getPrice());
+		}
+		
 		newZone.setMaintenance(maintenance);
 		maintenance.getLeasedZones().add(newZone);
 		return leasedZoneRepository.save(newZone);
@@ -161,7 +153,8 @@ public class LeasedZoneServiceImpl implements LeasedZoneService {
 		if (newZone == null) {
 			throw new LeasedZoneNotFound();
 		}
-		if(eventService.eventIsActive(newZone.getMaintenance().getEvent().getId()) == false){
+		Maintenance m = maintenanceService.findById(newZone.getMaintenance().getId());
+		if(eventService.eventIsActive(m.getEvent().getId()) == false){
 			throw new EventNotActive();
 		}
 		if (ticketService.getLeasedZoneReservedTickets(id).isEmpty() == false) {
