@@ -42,6 +42,10 @@ export class ReservationsService {
     return this.http.delete<MessageDto>(`/api/deleteReservation/${id}`);
   }
 
+  payReservation(id:string): Observable<MessageDto>{
+    return this.http.put<MessageDto>(`/api/payReservation`,id);
+  }
+
 
   
 
