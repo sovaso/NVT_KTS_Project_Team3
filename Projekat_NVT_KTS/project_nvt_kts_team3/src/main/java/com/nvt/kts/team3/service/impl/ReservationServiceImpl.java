@@ -118,6 +118,7 @@ public class ReservationServiceImpl implements ReservationService {
 					} else {
 						reservation.setUser(logged); //logged
 						reservation.setReservedTickets(resTickets);
+						
 						return this.reservationRepository.save(reservation);
 					}
 				}

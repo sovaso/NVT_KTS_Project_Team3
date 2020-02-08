@@ -105,7 +105,6 @@ public class TicketController {
 	
 	
 	@GetMapping(value = "/getLeasedZoneReservedTickets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public ResponseEntity<List<Ticket>> getLeasedZoneReservedTickets(@PathVariable(value = "id") Long maintenanceId){
 		return new ResponseEntity<>(ticketService.getLeasedZoneReservedTickets(maintenanceId), HttpStatus.OK);
 	}
