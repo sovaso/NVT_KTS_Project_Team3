@@ -34,5 +34,10 @@ export class TicketsService {
       return this.http.get<QRCodeDTO>(`/api/getQRCodeImage/${id}`);
     }
 
+    getLeasedZoneReservedTickets(id: String): Observable<Ticket[]>{
+        return this.http.get<Ticket[]>(`/api/getLeasedZoneReservedTickets/${id}`);
+    }
+
+
 }
   

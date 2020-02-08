@@ -15,6 +15,8 @@ import {TicketDTO} from '../dto/ticket.dto';
 import {ReservationsService} from '../services/reservations/reservations.service';
 import {AlertBoxComponent} from '../alert-box/alert-box.component';
 import { Router } from '@angular/router';
+import { DefaultValueAccessor } from '@angular/forms';
+import { createInput } from '@angular/compiler/src/core';
 
 @Component({
   selector: 'app-reservation',
@@ -25,7 +27,7 @@ export class ReservationComponent implements OnInit {
 
   maintenances:Maintenance[]=[];
   leasedZones: LeasedZone[]=[];
-  tickets: Ticket[]=[];
+  ticketsAll: Ticket[]=[];
   eventId: String='';
   reservedTickets: String[]=[];
   totalPrice: number=0;
@@ -42,18 +44,152 @@ export class ReservationComponent implements OnInit {
         let maintenanceDiv=self.printMaintenance(maintenance);
         self.leasedZoneService.getMaintenanceLeasedZones(maintenance.id).subscribe(data2=>{
           let lz=data2;
+          let capa=0;
           lz.forEach(function (leasedZone) {
-            let lzId=self.printLeasedZone(leasedZone,maintenanceDiv);
-            self.leasedZones.push(leasedZone);
-            let leasedZone2=leasedZone;
-            self.ticketsService.getTickets(leasedZone.id).subscribe(data3=>{
-              let tickets=data3;
-              self.printTickets(tickets,lzId,leasedZone2);
-            });
+            
+            let lz=leasedZone;
+            let lzId;
+            if(!lz.zone.matrix){
+              
+              
+              self.ticketsService.getLeasedZoneReservedTickets(lz.id).subscribe(data=>{
+                capa=lz.zone.capacity-data.length;
+                lz.zone.capacity=capa;
+                console.log("CAPA ",capa);
+                self.leasedZones.push(lz);
+                self.addModal(lz.id,lz.zone.capacity);
+                lzId=self.printLeasedZone(lz,maintenanceDiv);
+                self.ticketsService.getTickets(lz.id).subscribe(data3=>{
+                  let tickets=data3;
+                  tickets.forEach(function(ticket){
+                      self.ticketsAll.push(ticket);
+                  })
+                  self.printTickets(tickets,lzId,lz);
+                });
+              });
+
+            }
           });
         });
       });
     });
+  }
+
+  closeModal(modalId){
+    let id=modalId;
+    var model=document.getElementById(id);
+    model.style.display="none";
+  }
+
+  addModal(idZone,capacity){
+    let self=this;
+    let zoneid = idZone;
+    var modal=document.createElement('div');
+    modal.id="myModal"+idZone;
+    modal.style.display="none";
+    modal.style.position="fixed";
+    modal.style.zIndex="1";
+    modal.style.left="0";
+    modal.style.top="0";
+    modal.style.width="100%";
+    modal.style.height="100%";
+    modal.style.overflow="auto";
+    modal.style.backgroundColor="rgba(0,0,0,0.4)";
+    
+
+    var modal_content=document.createElement('div');
+    modal_content.style.backgroundColor="grey";
+    modal_content.style.margin="15% auto";
+    modal_content.style.padding="20px";
+    modal_content.style.border="1px solid grey";
+    modal_content.style.width="40%";
+    var h3=document.createElement("h3");
+    var p=document.createElement("p");
+    p.innerText="Number of tickets you want to reserve: ";
+    p.style.display="inline-block";
+    p.className="inline";
+    var input=document.createElement("input");
+    input.id="input"+idZone;
+    input.value="0";
+    input.style.display="inline-block";
+    input.className="inline";
+
+    h3.innerText="Tickets left: "+ capacity;
+    modal_content.append(h3);
+    modal_content.append(p);
+    modal_content.append(input);
+    var br=document.createElement("br");
+    modal_content.append(br);
+    var button_cancel=document.createElement('button');
+    button_cancel.innerText="Cancel";
+    button_cancel.className="btn btn-danger";
+    button_cancel.style.textAlign="center";
+    button_cancel.onclick=function(e){
+      self.closeModal("myModal"+zoneid);
+    }
+    var button_ok=document.createElement('ok');
+    button_ok.onclick=function(e){
+      self.reserveParter("input"+zoneid,zoneid);
+    }
+    button_ok.style.textAlign="center";
+    button_ok.innerText="OK";
+    button_ok.className="btn btn-primary";
+    modal_content.append(button_cancel);
+    modal_content.append(button_ok);
+    modal.append(modal_content);
+    var container=document.getElementById("container");
+    container.append(modal);
+  }
+
+  reserveParter(inputId,zoneId){
+    let self=this;
+    let zoneid=zoneId;
+    var input=(<HTMLInputElement>document.getElementById(inputId));
+    let num=+input.value;
+    if(num>=0){
+    console.log("NUMBER: ",num);
+    let tickets: Ticket[]=[];
+    var pp=document.getElementById(zoneId+"ticket");
+    pp.style.display="inline-block";
+    pp.innerText=num+'';
+    var pr=document.getElementById("total_price");
+    
+    self.ticketsAll.forEach(function(ticket){
+      if(self.reservedTickets.indexOf(ticket.id+'') > -1 && ticket.zone.id==zoneid){
+        let elInd=self.reservedTickets.indexOf(ticket.id+'');
+        self.totalPrice-=ticket.price;
+        self.reservedTickets.splice(elInd,1);
+      }
+    })
+
+    let i=0;
+    self.ticketsAll.forEach(function(ticket){
+      if(ticket.reserved==false && ticket.zone.id==zoneid){
+        if(i<num){
+          self.reservedTickets.push(ticket.id+'');
+          i++;
+          self.totalPrice+=ticket.price;
+        }
+        
+
+      }
+
+    })
+  }else{
+    
+    
+  }
+  pr.innerText="Total price: "+self.totalPrice;
+  self.closeModal("myModal"+zoneid);
+  console.log("LEN RESERVED: ",self.reservedTickets.length);
+
+  }
+
+  openModal(modalId){
+    let id=modalId;
+    var model=document.getElementById(id);
+    model.style.display="block";
+
   }
 
   printMaintenance(m){
@@ -118,6 +254,25 @@ export class ReservationComponent implements OnInit {
     console.log("COL ",col);
     console.log(tickets.length);
     if(!matrix){
+      var div=document.createElement("button");
+      div.style.width="300px";
+      div.style.height="200px";
+      div.style.display="inline-block";
+      div.className="ticketDisplay";
+      div.style.padding="15px";
+      div.style.borderColor="white";
+      div.style.textDecoration="none";
+      if(lz.capacity==0){
+        div.style.backgroundColor="red";
+      }else{
+        div.style.backgroundColor="yellow";
+        div.onclick= function(e){
+          self.reserveNonMatrix(zone.id,zone.seatPrice,zone.zone.capacity);
+        }
+
+      }
+      leasedZoneDiv.append(div);
+
 
     }
     else{
@@ -162,6 +317,8 @@ export class ReservationComponent implements OnInit {
     let ticketId=id;
     var div=document.getElementById(id);
     var pp=document.getElementById(zoneId+"ticket");
+    pp.style.display="inline-block";
+    pp.style.display="inline-block";
     let numReserved;
     if(pp.innerText==""){
       numReserved=0;
@@ -184,6 +341,7 @@ export class ReservationComponent implements OnInit {
   unreserveSeat(id,zoneId,price){
     var div=document.getElementById(id);
     var pp=document.getElementById(zoneId+"ticket");
+    pp.style.display="inline-block";
     let numReserved;
     if(pp.innerText==""){
       numReserved=0;
@@ -237,6 +395,12 @@ export class ReservationComponent implements OnInit {
 
     });
     
+  }
+
+  reserveNonMatrix(zoneId, zonePrice,capacity){
+    this.openModal("myModal"+zoneId);
+    //this.addModal(zoneId,capacity);
+
   }
 
 }
