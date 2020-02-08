@@ -233,6 +233,7 @@ export class EventsComponent implements OnInit{
 
     reserve(event){
       localStorage.setItem("reservation",event.id);
+      console.log("EVENT ID: ",event.id);
       this.router.navigate(['dashboard/reservation']);
     }
   

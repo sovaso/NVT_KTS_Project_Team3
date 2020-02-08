@@ -68,7 +68,7 @@
             <th>Location</th>
         </thead>
         <tbody>
-            <tr *ngFor="let event of activeEvents" >
+            <tr *ngFor="let event of events" >
                 <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
                 <td *ngIf="event.id">{{event.id}}</td>
                 <td *ngIf="event.name">{{event.name}}</td>
