@@ -1,3 +1,5 @@
+
+/*
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReservationComponent } from './reservation.component';
@@ -23,3 +25,4 @@ describe('ReservationComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+*/

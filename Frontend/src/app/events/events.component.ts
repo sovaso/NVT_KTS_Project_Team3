@@ -69,8 +69,11 @@ export class EventsComponent implements OnInit{
       events => (this.events = events)
     );
 
+    
+
     this.sharedService.locations.subscribe(locations => (this.locations = locations));
    
+    
     if (this.events.length === 0 || this.locations.length===0) {
       this.sharedService.updateAll();
     }
@@ -78,6 +81,8 @@ export class EventsComponent implements OnInit{
     this.eventsService.getActive().subscribe(
       events => (this.allActiveEvents = events)
     );
+
+    
 
 
     //this.modalRef = this.modalService.open(AlertBoxComponent);

@@ -1,3 +1,5 @@
+/*
+
 import { TestBed } from '@angular/core/testing';
 
 import { LeasedZonesService } from './leased-zones.service';
@@ -10,3 +12,4 @@ describe('LeasedZonesService', () => {
     expect(service).toBeTruthy();
   });
 });
+*/

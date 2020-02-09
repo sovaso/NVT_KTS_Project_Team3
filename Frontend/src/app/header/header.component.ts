@@ -10,6 +10,7 @@ import { AuthenticationService } from '../security/authentication-service.servic
 import { LoginComponent } from '../pages/login/login.component';
 import { RegisterUserComponent } from '../pages/register-user/register-user.component';
 import { CurrentUser } from '../model/currentUser';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -23,7 +24,7 @@ export class HeaderComponent implements OnInit {
 
 
   //moze da se user povuce iz storage-a; uloga i username, ne ceo user, jer se cuva token 
-  constructor(private modalService: NgbModal, private AuthenticationService: AuthenticationService) { }
+  constructor(private _router: Router, private modalService: NgbModal, private AuthenticationService: AuthenticationService) { }
 
   ngOnInit() {
     this.loggedUser = JSON.parse(
@@ -82,9 +83,13 @@ export class HeaderComponent implements OnInit {
     const modalRef = this.modalService.open(EditProfileComponent);
   }
 
+
   logout() {
+   
     this.AuthenticationService.logout();
-    location.reload();
+    localStorage.removeItem('currentUser');
+    this._router.navigate(['/dashboard']);
+    //location.reload();
   }
 
 }
