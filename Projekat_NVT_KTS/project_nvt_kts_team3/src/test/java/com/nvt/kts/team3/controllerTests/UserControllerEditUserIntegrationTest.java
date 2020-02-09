@@ -1,5 +1,4 @@
 package com.nvt.kts.team3.controllerTests;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -28,7 +27,7 @@ import com.nvt.kts.team3.security.auth.JwtAuthenticationRequest;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class UserControllerIntegrationTest {
+public class UserControllerEditUserIntegrationTest {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
@@ -44,51 +43,20 @@ public class UserControllerIntegrationTest {
 		
 	}
 	
+	/*
 	@Test
-	@Transactional
-	public void getLoggedSuccessfull() {
+	public void editUserSuccessfull() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Bearer "+token);
-		HttpEntity<Object> httpEntity = new HttpEntity<Object>(null, headers);
-		ResponseEntity<RegularUser> responseEntity = testRestTemplate.exchange("/api/getLogged", HttpMethod.GET,
-				httpEntity, RegularUser.class);
-		RegularUser user = responseEntity.getBody();
+		UserDTO userDto = new UserDTO();
+		userDto.setUsername("user1");
+		userDto.setName("NewNameOfUser1");
+		userDto.setSurname("NewSurnameOfUser1");
+		HttpEntity<UserDTO> httpEntity = new HttpEntity<UserDTO>(userDto, headers);
+		ResponseEntity<Boolean> responseEntity = testRestTemplate.exchange("/api/editUser", HttpMethod.PUT,
+				httpEntity, Boolean.class);
+	
 		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertEquals("user2", user.getUsername());
-		
 	}
-	
-	
-	@Test
-	@Transactional
-	public void findByIdSuccessfull() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer "+token);
-		HttpEntity<Object> httpEntity = new HttpEntity<Object>(null, headers);
-		ResponseEntity<RegularUser> responseEntity = testRestTemplate.exchange("/api/user/2", HttpMethod.GET,
-				httpEntity, RegularUser.class);
-		RegularUser user = responseEntity.getBody();
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertEquals("user2", user.getUsername());
-		assertEquals("user2", user.getName());
-		assertEquals("user2", user.getSurname());
-	}
-	
-	@Test
-	@Transactional
-	public void getAllUsers() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", "Bearer "+token);
-		HttpEntity<Object> httpEntity = new HttpEntity<Object>(null, headers);
-		ResponseEntity<User[]> responseEntity = testRestTemplate.exchange("/api/user/all", HttpMethod.GET,
-				httpEntity, User[].class);
-		User[] users = responseEntity.getBody();
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertEquals(6, users.length);
-	}
-	
-
-	
-
-	
+	*/
 }

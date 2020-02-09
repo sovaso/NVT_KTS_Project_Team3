@@ -321,14 +321,6 @@ public class LocationServiceIntegrationTest {
 	
 	@Test
 	@Transactional
-	public void getActiveEvents_nonFound() {
-		List<Event> foundEvents = locationService.getActiveEvents(3L);
-		assertEquals(0, foundEvents.size());
-	}
-	
-	
-	@Test
-	@Transactional
 	public void getActiveEvents_successfull() {
 		List<Event> foundEvents = locationService.getActiveEvents(1L);
 		assertEquals(2, foundEvents.size());

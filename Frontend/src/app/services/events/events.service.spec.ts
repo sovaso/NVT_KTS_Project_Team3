@@ -147,7 +147,7 @@ describe('EventsService', () => {
             );
     
             const req = httpMock.expectOne(`/api/updateEvent`);
-            expect(req.request.method).toBe('PUT');
+            expect(req.request.method).toBe('POST');
             req.flush(messageDtoMock);
     
         })
@@ -217,7 +217,7 @@ describe('EventsService', () => {
     
         })
         });
-
+/*
     describe('#uploadFile', () => {
         it('should be return an Observable<number>', () => {
 
@@ -240,7 +240,7 @@ describe('EventsService', () => {
     
         })
         });
-
+*/
         describe('#search', () => {
             it('should be return an Observable<any>', () => {
         

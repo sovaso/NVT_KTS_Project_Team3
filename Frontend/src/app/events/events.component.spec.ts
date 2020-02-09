@@ -26,6 +26,7 @@ import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/t
 import { EventDetailsComponent } from './event-details/event-details.component';
 import { EventReportComponent } from './event-report/event-report.component';
 import { EventReportDto } from '../dto/event_report.dto';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EventsComponent', () => {
   let component: EventsComponent;
@@ -35,13 +36,11 @@ describe('EventsComponent', () => {
   let modalService: NgbModal;
   let modalRef: NgbModalRef;
 
-  
-
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ EventsComponent, AlertBoxComponent, EventDetailsComponent, EventReportComponent ],
-      imports: [NgbModule, FormsModule],
+      imports: [NgbModule, FormsModule, RouterTestingModule],
       providers: [
         NgbActiveModal,
         NgbModal,
@@ -240,8 +239,9 @@ describe('EventsComponent', () => {
     let eventRows: DebugElement[] = fixture.debugElement.queryAll(By.css('table tr'));
     tick();
     fixture.detectChanges();
-    expect(eventRows.length).toBe(2); 
+    expect(eventRows.length).toBe(2);
   }));
+
   
 });
 
@@ -467,6 +467,29 @@ class EventsServiceMock{
   }
 
   search (field: string, startDate: string, endDate: string): Observable<any> {
+    let events : Event[] = [];
+    let e1 = new Event("1");
+    e1.name = "Event 1";
+    e1.status = true;
+    e1.type = "Sports";
+    e1.locationInfo = null;
+    e1.reservations = new Set<Reservation>();
+    e1.maintenances = new Set<Maintenance>();
+    events.push(e1);
+
+    let e2 = new Event("2");
+    e2.name = "Event 2";
+    e2.status = true;
+    e2.type = "Cultural";
+    e2.locationInfo = null;
+    e2.reservations = new Set<Reservation>();
+    e2.maintenances = new Set<Maintenance>();
+    events.push(e2);
+
+    return of(events);
+  }
+
+  getActive(): Observable<Event[]> {
     let events : Event[] = [];
     let e1 = new Event("1");
     e1.name = "Event 1";
