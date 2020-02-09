@@ -82,6 +82,14 @@ public class ReservationController {
 		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly cancelled!"), HttpStatus.OK);
 
 	}
+	
+	@PutMapping(value = "/payReservation2/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public ResponseEntity<MessageDTO> payReservation2(@PathVariable long id) {
+		boolean value = this.reservationService.payReservation(id);
+		return new ResponseEntity<>(new MessageDTO("Success", "Reservation successfuly paid!"), HttpStatus.OK);
+
+	}
 
 	@PutMapping(value = "/payReservation", produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasRole('ROLE_USER')")
