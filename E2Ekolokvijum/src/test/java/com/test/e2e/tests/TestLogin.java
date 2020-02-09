@@ -52,20 +52,15 @@ public class TestLogin {
 		loginPage.getButton().click();
 		String errorMessage3 = loginPage.getMessage().getText();
 		assertTrue(errorMessage3.contains("Please enter username and password."));
+
 		
-		//neispravan username
-		loginPage.setUsername("maki");
-		loginPage.setPassword("123");
-		loginPage.getButton().click();
-		String errorMessage4 = loginPage.getMessage().getText();
-		assertTrue(errorMessage4.contains("Wrong password or username."));
-		
-		//neispravan password
+		//neispravani kredencijali
 		loginPage.setUsername("user1");
 		loginPage.setPassword("nesto");
 		loginPage.getButton().click();
 		String errorMessage5 = loginPage.getMessage().getText();
 		assertTrue(errorMessage5.contains("Wrong password or username."));
+		
 		
 		//sve ispravno
 		loginPage.setUsername("user1");

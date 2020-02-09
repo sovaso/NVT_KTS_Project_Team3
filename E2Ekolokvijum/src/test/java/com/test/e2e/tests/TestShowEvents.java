@@ -45,11 +45,19 @@ public class TestShowEvents {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
-		List<WebElement> events1 = showEventsPage.getEvents();
+		//showEventsPage.ensureTableLoaded();
+		List<WebElement> events1;
+		while(true) {
+			events1= showEventsPage.getEvents();
+			if(events1.size()==9) {
+				break;
+			}
+		}
+		
+		System.out.println("Events size");
+		System.out.println(events1.size());
 		assertEquals(9, events1.size());
 	}
-	
 	
 	@Test
 	public void sortEventsDesc_test() {
@@ -57,7 +65,7 @@ public class TestShowEvents {
 		showEventsPage.ensureTableLoaded();
 		showEventsPage.ensureSortByDateDescLoaded();
 		showEventsPage.getSortByDateDesc().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		List<WebElement> events;
 		while(true) {
 			events = showEventsPage.getEvents();
@@ -88,7 +96,7 @@ public class TestShowEvents {
 		homePage.getEventsLink().click();
 		showEventsPage.ensureTableLoaded();
 		showEventsPage.getSortByDateAcs().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		List<WebElement> events = null;
 		
 		while(true) {
@@ -113,8 +121,6 @@ public class TestShowEvents {
 		assertEquals("3", events.get(12).getText());
 	}
 	
-	
-			
 	@After
 	public void closeSelenium() {
 		browser.quit();

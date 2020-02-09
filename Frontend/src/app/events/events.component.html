@@ -40,13 +40,13 @@
         <tbody>
             <tr *ngFor="let event of events" >
                 <!-- <ngb-tab *ngIf="event.id && event.name && event.type && event.status && event.locationInfo">  -->
-                <td *ngIf="event.id">{{event.id}}</td>
+                <td class="eventIdClass" *ngIf="event.id">{{event.id}}</td>
                 <td *ngIf="event.name">{{event.name}}</td>
                 <td *ngIf="event.type">{{event.type.toLowerCase()}}</td>
                 <td *ngIf="event.id">{{event.status}}</td>
                 <td *ngIf="event.locationInfo">{{event.locationInfo.name}}</td> 
-            
-                <td><button id = "button"class="btn btn-primary" (click)="showDetails(event)">Show details</button></td>
+                                   
+                <td><button (click)="showDetails(event)">Show details</button></td>
                 <ngb-tab title="Create new" id="createEventTab" *ngIf="loggedUser && loggedUser.userRoleName === 'ROLE_ADMIN'">
                 <td><button class="btn btn-danger" (click)="deleteEvent(event)" >Delete</button></td>
                 <td><button class="btn btn-primary" (click)="updateEvent(event)">Edit</button></td>

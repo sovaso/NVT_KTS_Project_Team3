@@ -47,13 +47,13 @@ public class SearchEventsTestSuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.ensureFieldIsDisplayed();
 		showEventsPage.setField("event2");
 		showEventsPage.ensureSearchIsDisplayed();
 		showEventsPage.getSearch().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		showEventsPage.ensureFieldEvent2();
 		List<WebElement> events = showEventsPage.getEvents();
 		assertEquals(1, events.size());
@@ -76,7 +76,7 @@ public class SearchEventsTestSuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.ensureStartDateIsVisible();
 	
@@ -84,13 +84,13 @@ public class SearchEventsTestSuccessfull {
 		
 		showEventsPage.getStartDate().sendKeys(Keys.TAB);
 		showEventsPage.getStartDate().sendKeys("0000AM");
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 	
 	
 		showEventsPage.ensureSearchIsDisplayed();
 		showEventsPage.getSearch().click();
 		
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		List<WebElement> events;
 		while(true) {
 			events = showEventsPage.getEvents();
@@ -103,7 +103,6 @@ public class SearchEventsTestSuccessfull {
 		
 		
 	}
-	
 	@Test
 	public void search_period_successfull() {
 		
@@ -114,7 +113,7 @@ public class SearchEventsTestSuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.ensureStartDateIsVisible();
 	
@@ -125,13 +124,13 @@ public class SearchEventsTestSuccessfull {
 		showEventsPage.getEndDate().sendKeys("03122021");
 		showEventsPage.getEndDate().sendKeys(Keys.TAB);
 		showEventsPage.getEndDate().sendKeys("0000AM");
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 	
 	
 		showEventsPage.ensureSearchIsDisplayed();
 		showEventsPage.getSearch().click();
 		
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		List<WebElement> events;
 		while(true) {
 			events = showEventsPage.getEvents();
@@ -158,7 +157,7 @@ public class SearchEventsTestSuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.setField("sports");
 		showEventsPage.ensureStartDateIsVisible();
@@ -169,13 +168,13 @@ public class SearchEventsTestSuccessfull {
 		showEventsPage.getEndDate().sendKeys("03122021");
 		showEventsPage.getEndDate().sendKeys(Keys.TAB);
 		showEventsPage.getEndDate().sendKeys("0000AM");
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 	
 	
 		showEventsPage.ensureSearchIsDisplayed();
 		showEventsPage.getSearch().click();
 		
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		List<WebElement> events;
 		while(true) {
 			events = showEventsPage.getEvents();

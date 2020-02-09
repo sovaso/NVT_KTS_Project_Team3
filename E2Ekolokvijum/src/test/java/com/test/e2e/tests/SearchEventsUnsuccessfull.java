@@ -41,7 +41,7 @@ public class SearchEventsUnsuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		//nepostojeci field unos
 		showEventsPage.ensureFieldIsDisplayed();
@@ -65,7 +65,7 @@ public class SearchEventsUnsuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.ensureStartDateIsVisible();
 	
@@ -89,7 +89,7 @@ public class SearchEventsUnsuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.ensureStartDateIsVisible();
 	
@@ -100,7 +100,7 @@ public class SearchEventsUnsuccessfull {
 		showEventsPage.getEndDate().sendKeys("03122021");
 		showEventsPage.getEndDate().sendKeys(Keys.TAB);
 		showEventsPage.getEndDate().sendKeys("0000AM");
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 	
 	
 		showEventsPage.ensureSearchIsDisplayed();
@@ -122,7 +122,7 @@ public class SearchEventsUnsuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.setField("someField");
 		showEventsPage.ensureStartDateIsVisible();
@@ -133,7 +133,7 @@ public class SearchEventsUnsuccessfull {
 		showEventsPage.getEndDate().sendKeys("03122021");
 		showEventsPage.getEndDate().sendKeys(Keys.TAB);
 		showEventsPage.getEndDate().sendKeys("0000AM");
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 	
 	
 		showEventsPage.ensureSearchIsDisplayed();
@@ -155,7 +155,7 @@ public class SearchEventsUnsuccessfull {
 		loginPage.getButton().click();
 		homePage.ensureUserButtonVisible();
 		homePage.getEventsLink().click();
-		showEventsPage.ensureTableLoaded();
+		//showEventsPage.ensureTableLoaded();
 		
 		showEventsPage.ensureEndDateIsVisible();
 	
@@ -168,6 +168,7 @@ public class SearchEventsUnsuccessfull {
 		assertTrue(showEventsPage.getMessage().getText().contains("No appropriate events found."));
 		
 	}
+	
 	
 	
 }

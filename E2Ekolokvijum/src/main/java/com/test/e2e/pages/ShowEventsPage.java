@@ -49,8 +49,8 @@ public class ShowEventsPage {
 	
 	@FindBy(xpath = "/html/body/app-root/div/app-dashboard/div/app-events/div/div[6]/table/tbody/tr[1]/td[1]")
 	WebElement firstId;
-	
-	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-events/div/div[6]/table/tbody/tr[1]/td[6]/button")
+
+	@FindBy(xpath="/html/body/app-root/div/app-dashboard/div/app-events/div/div[6]/table/tbody/tr[1]/td[5]/button")
 	WebElement showDetailsButton;
 	
 	public ShowEventsPage(WebDriver driver) {
@@ -59,7 +59,7 @@ public class ShowEventsPage {
 	
 	public List<WebElement> getEvents(){
 		//events = driver.findElements(By.xpath("/html/body/app-root/div/app-dashboard/div/app-events/div/div[6]/table/tbody/tr/td[1]"));
-		events = driver.findElements(By.className("eventIdClass"));
+		events = driver.findElements(By.xpath("/html/body/app-root/div/app-dashboard/div/app-events/div/div[6]/table/tbody/tr/td[1]"));
 		System.out.println(events.size());
 		return events;
 	}
@@ -106,7 +106,7 @@ public class ShowEventsPage {
 	}
 	
 	public void ensureTableLoaded() {
-		(new WebDriverWait(driver, 30)).ignoring(StaleElementReferenceException.class).until(ExpectedConditions.elementToBeClickable(showDetailsButton));
+		(new WebDriverWait(driver, 30)).ignoring(StaleElementReferenceException.class).until(ExpectedConditions.visibilityOf(showDetailsButton));
 		
 	}
 	
